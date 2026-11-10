@@ -283,7 +283,7 @@ export default function LogisticsDeliveryAnimation() {
         )}
 
         {/* ======================================================== */}
-        {/* PHASE 2: GODOWN DISPATCH (TRUCK STAYS LOCKED ON ROAD)    */}
+        {/* PHASE 2: GODOWN DISPATCH (2 TYRES ONLY, NO REAR WINDOWS) */}
         {/* ======================================================== */}
         {phase === 2 && (
           <svg
@@ -322,7 +322,7 @@ export default function LogisticsDeliveryAnimation() {
               {/* Shutter Doorway Cavity (Dark Interior) */}
               <rect x="42" y="152" width="116" height="108" fill="#20201F" rx="2" />
 
-              {/* Roll-up Shutter Slats (Nested properly: outer holds X=42, Y=152; inner animates) */}
+              {/* Roll-up Shutter Slats */}
               <g clipPath="url(#p2-shutter-clip)">
                 <g transform="translate(42, 152)">
                   <g className="p2-shutter-door">
@@ -341,32 +341,39 @@ export default function LogisticsDeliveryAnimation() {
               <line x1="0" y1="318" x2="400" y2="318" stroke="#FFFFFF" strokeWidth="3" strokeDasharray="18 14" />
 
               {/* ==================================================== */}
-              {/* DEPARTING TRUCK: Y COORDINATES FIRMLY GROUNDED AT 260 */}
-              {/* ONLY translateX ANIMATES - ZERO VERTICAL FLYING     */}
+              {/* DEPARTING TRUCK: 2 TYRES TOTAL, SOLID CARGO CONTAINER*/}
+              {/* (NO WINDOWS IN BACK, ONLY DRIVER CAB WINDOW)          */}
               {/* ==================================================== */}
               <g className="p2-truck-motion">
                 {/* Translucent Headlight Beam */}
                 <polygon points="164,228 252,214 252,252 164,238" fill="rgba(251,146,60,0.22)" />
 
-                {/* Orange Cargo Trailer: Height 58px, Bottom sits on chassis at y=240 */}
+                {/* Orange Solid Cargo Container: No windows! */}
                 <rect x="20" y="184" width="98" height="58" rx="4" fill="#e65c00" />
-                {/* Minimalist Geometric Ribs (No text) */}
-                <rect x="30" y="196" width="20" height="24" rx="2" fill="#FFEDD5" />
-                <rect x="56" y="196" width="20" height="24" rx="2" fill="#FFEDD5" />
-                <rect x="82" y="196" width="20" height="24" rx="2" fill="#FFEDD5" />
-                <line x1="20" y1="226" x2="118" y2="226" stroke="#C2410C" strokeWidth="1.5" />
+                
+                {/* Realistic Corrugated Steel Cargo Container Ribs */}
+                <line x1="42" y1="188" x2="42" y2="238" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+                <line x1="64" y1="188" x2="64" y2="238" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+                <line x1="86" y1="188" x2="86" y2="238" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+                <line x1="108" y1="188" x2="108" y2="238" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+                <line x1="20" y1="212" x2="118" y2="212" stroke="#C2410C" strokeWidth="1.5" />
+                {/* Rear Cargo Door Hinge/Latch bar */}
+                <rect x="23" y="190" width="3" height="46" rx="1" fill="#444441" />
 
                 {/* Truck Cab Front (Dark Orange #C2410C) */}
                 <path d="M118 196 L144 196 L166 218 L166 242 L118 242 Z" fill="#C2410C" />
+                {/* ONLY WINDOW ON THE TRUCK: Driver Cabin Window */}
                 <polygon points="142,200 160,218 134,218 134,200" fill="#FFEDD5" />
                 <rect x="162" y="222" width="5" height="8" rx="1" fill="#FEF08A" />
 
                 {/* Under-chassis rail */}
                 <rect x="20" y="240" width="144" height="6" fill="#444441" />
 
-                {/* Wheels: Radius 10, Hub at Y=250 -> Touches Road at exactly Y=260 */}
-                {/* Wheel 1 (Rear) */}
-                <g transform="translate(48, 250)">
+                {/* ================================================== */}
+                {/* 2 TYRES TOTAL (1 REAR TYRE + 1 FRONT TYRE)         */}
+                {/* ================================================== */}
+                {/* Tyre 1: Rear Tyre under container */}
+                <g transform="translate(56, 250)">
                   <circle cx="0" cy="0" r="10" fill="#2C2C2A" />
                   <circle cx="0" cy="0" r="4" fill="#B4B2A9" />
                   <g className="wheel-rim-spin">
@@ -375,18 +382,8 @@ export default function LogisticsDeliveryAnimation() {
                   </g>
                 </g>
 
-                {/* Wheel 2 (Mid) */}
-                <g transform="translate(92, 250)">
-                  <circle cx="0" cy="0" r="10" fill="#2C2C2A" />
-                  <circle cx="0" cy="0" r="4" fill="#B4B2A9" />
-                  <g className="wheel-rim-spin">
-                    <line x1="-8" y1="0" x2="8" y2="0" stroke="#B4B2A9" strokeWidth="1.5" />
-                    <line x1="0" y1="-8" x2="0" y2="8" stroke="#B4B2A9" strokeWidth="1.5" />
-                  </g>
-                </g>
-
-                {/* Wheel 3 (Front Cab) */}
-                <g transform="translate(148, 250)">
+                {/* Tyre 2: Front Tyre under driver cab */}
+                <g transform="translate(145, 250)">
                   <circle cx="0" cy="0" r="10" fill="#2C2C2A" />
                   <circle cx="0" cy="0" r="4" fill="#B4B2A9" />
                   <g className="wheel-rim-spin">
@@ -400,7 +397,7 @@ export default function LogisticsDeliveryAnimation() {
         )}
 
         {/* ======================================================== */}
-        {/* PHASE 3: HIGHWAY PARALLAX (TREES & TRUCK FIRMLY GROUNDED)*/}
+        {/* PHASE 3: HIGHWAY PARALLAX (2 TYRES TOTAL, NO BACK WINDOW)*/}
         {/* ======================================================== */}
         {phase === 3 && (
           <svg
@@ -419,36 +416,28 @@ export default function LogisticsDeliveryAnimation() {
               {/* Sky background */}
               <rect x="0" y="0" width="400" height="400" fill="#FBFBFA" />
 
-              {/* Parallax Clouds Drift (Y coordinates baked into ellipses) */}
+              {/* Parallax Clouds Drift */}
               <g className="p3-clouds">
                 <ellipse cx="0" cy="95" rx="36" ry="12" fill="#E7E5E4" opacity="0.65" />
                 <ellipse cx="16" cy="87" rx="22" ry="14" fill="#E7E5E4" opacity="0.65" />
               </g>
 
-              {/* ==================================================== */}
-              {/* PARALLAX TREES: TRUNKS SIT FIRMLY AT Y = 260 GROUND  */}
-              {/* NO transform="translate" on group -> ZERO FLYING     */}
-              {/* ==================================================== */}
-              {/* Parallax Tree 1: Oak tree grounded at Y = 260 */}
+              {/* Parallax Background Tree 1 (Trunk sits on road at Y = 260) */}
               <g className="p3-tree-1">
-                {/* Trunk: from Y=215 down to 260 */}
                 <rect x="-4" y="215" width="8" height="45" rx="1" fill="#78350F" />
-                {/* Foliage crown */}
                 <circle cx="0" cy="195" r="24" fill="#65A30D" />
                 <circle cx="-12" cy="188" r="17" fill="#84CC16" />
                 <circle cx="12" cy="188" r="17" fill="#4D7C0F" />
               </g>
 
-              {/* Parallax Pine Tree 2: Grounded at Y = 260 */}
+              {/* Parallax Pine Tree 2 (Trunk sits on road at Y = 260) */}
               <g className="p3-tree-2">
-                {/* Trunk: from Y=222 down to 260 */}
                 <rect x="-3" y="222" width="6" height="38" rx="1" fill="#78350F" />
-                {/* Pine foliage triangles */}
                 <polygon points="0,170 -20,228 20,228" fill="#15803D" />
                 <polygon points="0,154 -15,204 15,204" fill="#16A34A" />
               </g>
 
-              {/* Parallax Highway Milestone Marker: Grounded at Y = 260 */}
+              {/* Parallax Highway Milestone Marker (Sits on road at Y = 260) */}
               <g className="p3-milestone">
                 <rect x="-2" y="234" width="4" height="26" fill="#78716C" />
                 <rect x="-12" y="222" width="24" height="14" rx="2" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="1" />
@@ -473,8 +462,8 @@ export default function LogisticsDeliveryAnimation() {
               <line x1="0" y1="375" x2="400" y2="375" stroke="#444441" strokeWidth="2" strokeDasharray="10 10" />
 
               {/* ==================================================== */}
-              {/* TRUCK CENTERED (X: 115) - WHEELS HARDCODED AT Y=250   */}
-              {/* ONLY CABIN ENGINE VIBRATES, WHEELS STAY ON GROUND   */}
+              {/* TRUCK CENTERED: 2 TYRES TOTAL, SOLID CARGO CONTAINER */}
+              {/* (NO WINDOWS IN BACK, ONLY CABIN WINDOW)              */}
               {/* ==================================================== */}
               <g transform="translate(115, 0)">
                 {/* Aerodynamic Speed Lines */}
@@ -484,18 +473,24 @@ export default function LogisticsDeliveryAnimation() {
 
                 {/* Vibrating Engine Body */}
                 <g className="p3-engine-vibe">
-                  {/* Trailer: Height 62px, sits on chassis at Y=240 */}
+                  {/* Solid Orange Cargo Container (NO windows) */}
                   <rect x="0" y="178" width="112" height="62" rx="4" fill="#e65c00" />
-                  {/* Minimalist Paneling (No text) */}
-                  <rect x="12" y="190" width="24" height="26" rx="2" fill="#FFEDD5" />
-                  <rect x="44" y="190" width="24" height="26" rx="2" fill="#FFEDD5" />
-                  <rect x="76" y="190" width="24" height="26" rx="2" fill="#FFEDD5" />
-                  <line x1="0" y1="222" x2="112" y2="222" stroke="#C2410C" strokeWidth="2" />
+                  
+                  {/* Corrugated Cargo Container Steel Ribs */}
+                  <line x1="24" y1="182" x2="24" y2="236" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="48" y1="182" x2="48" y2="236" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="72" y1="182" x2="72" y2="236" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="96" y1="182" x2="96" y2="236" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="0" y1="208" x2="112" y2="208" stroke="#C2410C" strokeWidth="1.5" />
+                  {/* Container Corner Lock Castings */}
+                  <rect x="2" y="180" width="6" height="6" rx="1" fill="#C2410C" />
+                  <rect x="104" y="180" width="6" height="6" rx="1" fill="#C2410C" />
 
                   {/* Cab Front (Dark Orange #C2410C) */}
                   <path d="M112 190 L140 190 L166 214 L166 240 L112 240 Z" fill="#C2410C" />
+                  {/* ONLY WINDOW ON TRUCK: Driver Cabin Window */}
                   <polygon points="138,194 160,214 128,214 128,194" fill="#FFEDD5" />
-                  <rect x="116" y="198" width="10" height="14" rx="1" fill="#FFEDD5" opacity="0.8" />
+                  <rect x="116" y="198" width="9" height="14" rx="1" fill="#FFEDD5" opacity="0.8" />
 
                   {/* Headlight beam */}
                   <rect x="162" y="220" width="5" height="8" rx="1" fill="#FEF08A" />
@@ -510,8 +505,11 @@ export default function LogisticsDeliveryAnimation() {
                   <circle cx="-18" cy="200" r="6" fill="#E7E5E4" opacity="0.4" />
                 </g>
 
-                {/* Wheel 1 (Rear Left): Grounded at Y=250 */}
-                <g transform="translate(24, 250)">
+                {/* ================================================== */}
+                {/* 2 TYRES TOTAL (1 REAR TYRE + 1 FRONT TYRE)         */}
+                {/* ================================================== */}
+                {/* Tyre 1: Rear Tyre under cargo container */}
+                <g transform="translate(36, 250)">
                   <circle cx="0" cy="0" r="10" fill="#2C2C2A" />
                   <circle cx="0" cy="0" r="4" fill="#B4B2A9" />
                   <g className="wheel-rim-spin-fast">
@@ -520,18 +518,8 @@ export default function LogisticsDeliveryAnimation() {
                   </g>
                 </g>
 
-                {/* Wheel 2 (Rear Right): Grounded at Y=250 */}
-                <g transform="translate(70, 250)">
-                  <circle cx="0" cy="0" r="10" fill="#2C2C2A" />
-                  <circle cx="0" cy="0" r="4" fill="#B4B2A9" />
-                  <g className="wheel-rim-spin-fast">
-                    <line x1="-8" y1="0" x2="8" y2="0" stroke="#B4B2A9" strokeWidth="1.5" />
-                    <line x1="0" y1="-8" x2="0" y2="8" stroke="#B4B2A9" strokeWidth="1.5" />
-                  </g>
-                </g>
-
-                {/* Wheel 3 (Front Cab): Grounded at Y=250 */}
-                <g transform="translate(144, 250)">
+                {/* Tyre 2: Front Tyre under driver cab */}
+                <g transform="translate(142, 250)">
                   <circle cx="0" cy="0" r="10" fill="#2C2C2A" />
                   <circle cx="0" cy="0" r="4" fill="#B4B2A9" />
                   <g className="wheel-rim-spin-fast">
@@ -545,7 +533,7 @@ export default function LogisticsDeliveryAnimation() {
         )}
 
         {/* ======================================================== */}
-        {/* PHASE 4: RETAILER ARRIVAL & STOP (GROUNDED, NO BOX EJECT)*/}
+        {/* PHASE 4: RETAILER ARRIVAL & STOP (2 TYRES, NO BACK WINDOW)*/}
         {/* ======================================================== */}
         {phase === 4 && (
           <svg
@@ -597,39 +585,44 @@ export default function LogisticsDeliveryAnimation() {
               </g>
 
               {/* ==================================================== */}
-              {/* TRUCK BRAKES IN FRONT OF SHOP: HARDCODED AT Y = 260 */}
-              {/* ONLY translateX ANIMATES - ZERO VERTICAL FLYING     */}
-              {/* NO BOX EJECTED, WHEELS FULLY STOPPED                */}
+              {/* TRUCK BRAKES IN FRONT OF SHOP: 2 TYRES, NO BACK WINDOW*/}
+              {/* (ONLY DRIVER CABIN WINDOW, WHEELS STILL UPON STOP)   */}
               {/* ==================================================== */}
               <g className="p4-truck-arrival">
-                {/* Truck Trailer in Orange #e65c00 (Sits on chassis at Y=240) */}
+                {/* Truck Cargo Container in Orange #e65c00 (No windows!) */}
                 <rect x="75" y="182" width="98" height="58" rx="4" fill="#e65c00" />
-                <rect x="85" y="194" width="22" height="22" rx="2" fill="#FFEDD5" />
-                <rect x="113" y="194" width="22" height="22" rx="2" fill="#FFEDD5" />
-                <rect x="141" y="194" width="22" height="22" rx="2" fill="#FFEDD5" />
+                
+                {/* Container Corrugated Steel Vertical Ribs */}
+                <line x1="97" y1="186" x2="97" y2="236" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+                <line x1="119" y1="186" x2="119" y2="236" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+                <line x1="141" y1="186" x2="141" y2="236" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+                <line x1="163" y1="186" x2="163" y2="236" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+                <line x1="75" y1="210" x2="173" y2="210" stroke="#C2410C" strokeWidth="1.5" />
+                {/* Rear Cargo Door Hinge/Latch bar */}
+                <rect x="78" y="188" width="3" height="46" rx="1" fill="#444441" />
 
                 {/* Truck Cab Front (Dark Orange #C2410C) */}
                 <path d="M173 194 L199 194 L220 216 L220 240 L173 240 Z" fill="#C2410C" />
+                {/* ONLY WINDOW ON TRUCK: Driver Cabin Window */}
                 <polygon points="197,198 213,216 189,216 189,198" fill="#FFEDD5" />
                 <rect x="215" y="220" width="5" height="8" rx="1" fill="#FEF08A" />
 
                 {/* Under-chassis rail */}
                 <rect x="75" y="240" width="144" height="6" fill="#444441" />
 
-                {/* Stationary Wheels: Firmly Grounded at Y=250 (Touched at 260) */}
-                <g transform="translate(99, 250)">
+                {/* ================================================== */}
+                {/* 2 TYRES TOTAL (STATIONARY ON BRAKE STOP)           */}
+                {/* ================================================== */}
+                {/* Tyre 1: Rear Tyre under container */}
+                <g transform="translate(110, 250)">
                   <circle cx="0" cy="0" r="10" fill="#2C2C2A" />
                   <circle cx="0" cy="0" r="4" fill="#B4B2A9" />
                   <line x1="-8" y1="0" x2="8" y2="0" stroke="#B4B2A9" strokeWidth="1.5" />
                   <line x1="0" y1="-8" x2="0" y2="8" stroke="#B4B2A9" strokeWidth="1.5" />
                 </g>
-                <g transform="translate(143, 250)">
-                  <circle cx="0" cy="0" r="10" fill="#2C2C2A" />
-                  <circle cx="0" cy="0" r="4" fill="#B4B2A9" />
-                  <line x1="-8" y1="0" x2="8" y2="0" stroke="#B4B2A9" strokeWidth="1.5" />
-                  <line x1="0" y1="-8" x2="0" y2="8" stroke="#B4B2A9" strokeWidth="1.5" />
-                </g>
-                <g transform="translate(201, 250)">
+
+                {/* Tyre 2: Front Tyre under driver cab */}
+                <g transform="translate(198, 250)">
                   <circle cx="0" cy="0" r="10" fill="#2C2C2A" />
                   <circle cx="0" cy="0" r="4" fill="#B4B2A9" />
                   <line x1="-8" y1="0" x2="8" y2="0" stroke="#B4B2A9" strokeWidth="1.5" />
