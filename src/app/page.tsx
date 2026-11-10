@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import ColorStudio from '@/components/ColorStudio';
 import HeroSection from '@/components/HeroSection';
 import RecoveryCalculator from '@/components/RecoveryCalculator';
 import GradeScaleExplorer from '@/components/GradeScaleExplorer';
@@ -6,10 +7,15 @@ import FeaturedLots from '@/components/FeaturedLots';
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col w-full bg-slate-50 text-slate-900 selection:bg-emerald-100 selection:text-emerald-900">
+    <div className="flex flex-col w-full bg-canvas-subtle text-main selection:bg-emerald-100 selection:text-emerald-900 transition-colors duration-200">
       
       {/* ======================================================== */}
-      {/* 1. HERO SECTION (Main Heading: 68px desktop / 42px mob) */}
+      {/* 60-30-10 COLOR PALETTE STUDIO (INTERACTIVE THEME PICKER) */}
+      {/* ======================================================== */}
+      <ColorStudio />
+
+      {/* ======================================================== */}
+      {/* 1. HERO SECTION                                         */}
       {/* ======================================================== */}
       <HeroSection />
 
@@ -275,24 +281,24 @@ export default function HomePage() {
       {/* ======================================================== */}
       {/* 9. BOTTOM CTA STRIP                                     */}
       {/* ======================================================== */}
-      <section className="w-full bg-emerald-700 py-16 px-4 sm:px-6 lg:px-8 text-white text-center">
+      <section className="w-full bg-accent py-16 px-4 sm:px-6 lg:px-8 text-white text-center transition-colors duration-200">
         <div className="max-w-3xl mx-auto">
           <h2 className="type-sub text-white font-quicksand">
             Ready to turn dead inventory into working capital?
           </h2>
-          <p className="type-body text-emerald-100 mt-3 max-w-xl mx-auto font-quicksand">
+          <p className="type-body text-white/90 mt-3 max-w-xl mx-auto font-quicksand">
             Join verified manufacturers, distributors, and retailers trading surplus inventory with complete trust and discretion.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               href="/register"
-              className="w-full sm:w-auto rounded-xl bg-white px-8 py-3.5 text-base font-bold text-emerald-800 shadow-sm transition hover:bg-emerald-50 focus:outline-none font-quicksand"
+              className="w-full sm:w-auto rounded-xl bg-white px-8 py-3.5 text-base font-bold text-slate-900 shadow-sm transition hover:bg-slate-100 focus:outline-none font-quicksand"
             >
               Apply for Business Account
             </Link>
             <Link
               href="/grade-guide"
-              className="w-full sm:w-auto rounded-xl border border-emerald-500 bg-emerald-800/60 px-8 py-3.5 text-base font-bold text-white transition hover:bg-emerald-800 font-quicksand"
+              className="w-full sm:w-auto rounded-xl border border-white/40 bg-black/10 px-8 py-3.5 text-base font-bold text-white transition hover:bg-black/20 font-quicksand"
             >
               Read the 5-Grade Manual
             </Link>

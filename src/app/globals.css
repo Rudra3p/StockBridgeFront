@@ -1,15 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
+  /* ======================================================== */
+  /* 60-30-10 COLOR RULE CSS VARIABLES (USER LOCKED PALETTE)   */
+  /* 60%: Dominant Canvas & Background Family                */
+  /* 30%: Secondary Typography, Structure & Borders          */
+  /* 10%: High-Impact Brand Accent (Vibrant Orange #e65c00)  */
+  /* ======================================================== */
+  --color-canvas: #ffffff;
+  --color-canvas-subtle: #f8fafc;
+  --color-canvas-card: #ffffff;
+  --color-canvas-muted: #f1f5f9;
+
+  --color-text-main: #000000;
+  --color-text-body: #333333;
+  --color-text-muted: #666666;
+  --color-border-subtle: #e2e8f0;
+
+  --color-accent-main: #e65c00;
+  --color-accent-hover: #cc5200;
+  --color-accent-light: #fff7ed;
+  --color-accent-border: #fed7aa;
+  --color-accent-contrast: #ffffff;
 
   /* ======================================================== */
-  /* HARMONIC TYPOGRAPHIC SCALE (PERFECT SWEET SPOT)           */
-  /* Base: 16px                                               */
-  /* Little Heading (H3): ~23px                               */
-  /* Subheading (H2):     ~36px                               */
-  /* Main Heading (H1):   ~54px                               */
+  /* HARMONIC TYPOGRAPHIC SCALE                               */
   /* ======================================================== */
   --font-size-base: 16px;
   --font-size-little: 23px;
@@ -18,43 +33,40 @@
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-quicksand), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-quicksand: var(--font-quicksand);
 }
 
 /* Base Body with Quicksand Regular (400) Andrew Paglinawan */
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-canvas-subtle);
+  color: var(--color-text-main);
   font-family: var(--font-quicksand), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-weight: 400;
   font-size: 1rem;
-  line-height: 1.618; /* Golden Ratio Line Height for optimal reading */
+  line-height: 1.618; /* Golden Ratio Line Height */
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* ======================================================== */
-/* 1. MAIN HEADING (H1 / .type-main) - SWEET SPOT (54px)     */
-/* Desktop: 54px | Tablet: 44px | Mobile: 34px             */
-/* Quicksand Bold (700)                                     */
+/* 1. MAIN HEADING (H1 / .type-main) - 54px                  */
 /* ======================================================== */
 h1, .type-main {
   font-family: var(--font-quicksand), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-weight: 700;
-  font-size: clamp(2.125rem, 4vw, 3.375rem); /* 34px mobile to 54px desktop */
+  color: var(--color-text-main);
+  font-size: clamp(2.125rem, 4vw, 3.375rem); /* 34px to 54px */
   line-height: 1.12;
   letter-spacing: -0.022em;
 }
 
 /* ======================================================== */
 /* 2. SUBHEADING (H2 / .type-sub) - 36px                     */
-/* Desktop: 36px | Mobile: 24px                            */
-/* Quicksand Bold (700)                                     */
 /* ======================================================== */
 h2, .type-sub {
   font-family: var(--font-quicksand), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-weight: 700;
+  color: var(--color-text-main);
   font-size: clamp(1.5rem, 2.6vw, 2.25rem); /* 24px to 36px */
   line-height: 1.2;
   letter-spacing: -0.018em;
@@ -62,29 +74,80 @@ h2, .type-sub {
 
 /* ======================================================== */
 /* 3. LITTLE HEADING (H3, H4 / .type-little) - 23px          */
-/* Desktop: 23px | Mobile: 18px                            */
-/* Quicksand Bold (700)                                     */
 /* ======================================================== */
 h3, h4, .type-little {
   font-family: var(--font-quicksand), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-weight: 700;
+  color: var(--color-text-main);
   font-size: clamp(1.125rem, 1.8vw, 1.4375rem); /* 18px to 23px */
   line-height: 1.28;
   letter-spacing: -0.012em;
 }
 
 /* ======================================================== */
-/* 4. PARAGRAPH (p / .type-body)                            */
-/* Base: 16px | Line Height: 1.618                          */
-/* Quicksand Regular (400)                                  */
+/* 4. PARAGRAPH (p / .type-body) - 16px                      */
 /* ======================================================== */
 p, .type-body {
   font-family: var(--font-quicksand), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-weight: 400;
-  font-size: 1rem; /* 16px */
-  line-height: 1.618; /* Golden Ratio line height */
+  color: var(--color-text-body);
+  font-size: 1rem;
+  line-height: 1.618;
 }
 
 span, li, a, button, input, label {
   font-family: var(--font-quicksand), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ======================================================== */
+/* 60-30-10 UTILITY CLASSES                                 */
+/* ======================================================== */
+/* 60% Dominant Canvas Family */
+.bg-canvas {
+  background-color: var(--color-canvas) !important;
+}
+.bg-canvas-subtle {
+  background-color: var(--color-canvas-subtle) !important;
+}
+.bg-canvas-card {
+  background-color: var(--color-canvas-card) !important;
+}
+.bg-canvas-muted {
+  background-color: var(--color-canvas-muted) !important;
+}
+
+/* 30% Secondary Structure & Text Family */
+.text-main {
+  color: var(--color-text-main) !important;
+}
+.text-body {
+  color: var(--color-text-body) !important;
+}
+.text-muted {
+  color: var(--color-text-muted) !important;
+}
+.border-canvas {
+  border-color: var(--color-border-subtle) !important;
+}
+
+/* 10% Accent Action & Highlight Family */
+.text-accent {
+  color: var(--color-accent-main) !important;
+}
+.bg-accent {
+  background-color: var(--color-accent-main) !important;
+  color: var(--color-accent-contrast) !important;
+}
+.bg-accent:hover {
+  background-color: var(--color-accent-hover) !important;
+}
+.bg-accent-light {
+  background-color: var(--color-accent-light) !important;
+  color: var(--color-accent-main) !important;
+}
+.border-accent {
+  border-color: var(--color-accent-main) !important;
+}
+.border-accent-light {
+  border-color: var(--color-accent-border) !important;
 }
