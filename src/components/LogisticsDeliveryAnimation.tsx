@@ -31,7 +31,7 @@ export default function LogisticsDeliveryAnimation() {
       {/* ======================================================== */}
       <div className="relative w-full max-w-[390px] aspect-square rounded-2xl overflow-hidden bg-[#FBFBFA] flex items-center justify-center select-none shadow-xs border-0 outline-none">
         
-        {/* Bulletproof CSS Animations: All Y coordinates are baked in SVG geometry */}
+        {/* Bulletproof CSS Animations: All Y coordinates baked directly into SVG geometry */}
         <style dangerouslySetInnerHTML={{ __html: `
           /* Wheel Rotation: Rotates rim spokes precisely around local (0, 0) */
           @keyframes spinWheelRims {
@@ -106,7 +106,7 @@ export default function LogisticsDeliveryAnimation() {
             animation: p2ShutterUp 3.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
           }
 
-          /* Phase 2: Truck Drives Forward out of Godown (ONLY X changes, Y stays firmly at 260 road level) */
+          /* Phase 2: Truck Drives Forward out of Godown (Firmly on road at Y = 260) */
           @keyframes p2TruckDrive {
             0%, 35% { transform: translateX(0); }
             100% { transform: translateX(270px); }
@@ -124,7 +124,7 @@ export default function LogisticsDeliveryAnimation() {
             animation: p3RoadMoving 0.36s linear infinite;
           }
 
-          /* Phase 3: Parallax Trees Rushing Backward */
+          /* Phase 3: Parallax Trees Rushing Backward (Hardcoded Y=260 on ground) */
           @keyframes p3TreeScroll1 {
             0% { transform: translateX(430px); }
             100% { transform: translateX(-60px); }
@@ -141,6 +141,14 @@ export default function LogisticsDeliveryAnimation() {
             animation: p3TreeScroll2 3.4s linear infinite -1.4s;
           }
 
+          @keyframes p3MilestoneScroll {
+            0% { transform: translateX(430px); }
+            100% { transform: translateX(-50px); }
+          }
+          .p3-milestone {
+            animation: p3MilestoneScroll 1.8s linear infinite -0.6s;
+          }
+
           @keyframes p3CloudScroll {
             0% { transform: translateX(440px); }
             100% { transform: translateX(-120px); }
@@ -149,7 +157,7 @@ export default function LogisticsDeliveryAnimation() {
             animation: p3CloudScroll 7s linear infinite;
           }
 
-          /* Phase 3: Truck Engine Idle Bounce (ONLY body moves, wheels stay grounded) */
+          /* Phase 3: Truck Engine Idle Bounce (ONLY cabin bounces, wheels grounded) */
           @keyframes p3TruckVibe {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-2px); }
@@ -314,14 +322,16 @@ export default function LogisticsDeliveryAnimation() {
               {/* Shutter Doorway Cavity (Dark Interior) */}
               <rect x="42" y="152" width="116" height="108" fill="#20201F" rx="2" />
 
-              {/* Roll-up Shutter Slats (Retracts vertically inside doorway clip) */}
+              {/* Roll-up Shutter Slats (Nested properly: outer holds X=42, Y=152; inner animates) */}
               <g clipPath="url(#p2-shutter-clip)">
-                <g className="p2-shutter-door" transform="translate(42, 152)">
-                  <rect x="0" y="0" width="116" height="108" fill="#B4B2A9" />
-                  {[12, 24, 36, 48, 60, 72, 84, 96].map((y) => (
-                    <line key={y} x1="0" y1={y} x2="116" y2={y} stroke="#78716C" strokeWidth="1.5" />
-                  ))}
-                  <rect x="0" y="104" width="116" height="4" fill="#52514E" />
+                <g transform="translate(42, 152)">
+                  <g className="p2-shutter-door">
+                    <rect x="0" y="0" width="116" height="108" fill="#B4B2A9" />
+                    {[12, 24, 36, 48, 60, 72, 84, 96].map((y) => (
+                      <line key={y} x1="0" y1={y} x2="116" y2={y} stroke="#78716C" strokeWidth="1.5" />
+                    ))}
+                    <rect x="0" y="104" width="116" height="4" fill="#52514E" />
+                  </g>
                 </g>
               </g>
 
@@ -338,7 +348,7 @@ export default function LogisticsDeliveryAnimation() {
                 {/* Translucent Headlight Beam */}
                 <polygon points="164,228 252,214 252,252 164,238" fill="rgba(251,146,60,0.22)" />
 
-                {/* Orange Cargo Trailer: Height 58px, Bottom sits on chassis at y=242 */}
+                {/* Orange Cargo Trailer: Height 58px, Bottom sits on chassis at y=240 */}
                 <rect x="20" y="184" width="98" height="58" rx="4" fill="#e65c00" />
                 {/* Minimalist Geometric Ribs (No text) */}
                 <rect x="30" y="196" width="20" height="24" rx="2" fill="#FFEDD5" />
@@ -390,7 +400,7 @@ export default function LogisticsDeliveryAnimation() {
         )}
 
         {/* ======================================================== */}
-        {/* PHASE 3: HIGHWAY PARALLAX (TRUCK LOCKED FIRMLY IN CENTER)*/}
+        {/* PHASE 3: HIGHWAY PARALLAX (TREES & TRUCK FIRMLY GROUNDED)*/}
         {/* ======================================================== */}
         {phase === 3 && (
           <svg
@@ -409,28 +419,43 @@ export default function LogisticsDeliveryAnimation() {
               {/* Sky background */}
               <rect x="0" y="0" width="400" height="400" fill="#FBFBFA" />
 
-              {/* Parallax Clouds Drift */}
-              <g className="p3-clouds" transform="translate(0, 105)">
-                <ellipse cx="0" cy="0" rx="36" ry="12" fill="#E7E5E4" opacity="0.65" />
-                <ellipse cx="16" cy="-8" rx="22" ry="14" fill="#E7E5E4" opacity="0.65" />
+              {/* Parallax Clouds Drift (Y coordinates baked into ellipses) */}
+              <g className="p3-clouds">
+                <ellipse cx="0" cy="95" rx="36" ry="12" fill="#E7E5E4" opacity="0.65" />
+                <ellipse cx="16" cy="87" rx="22" ry="14" fill="#E7E5E4" opacity="0.65" />
               </g>
 
-              {/* Parallax Background Tree 1 */}
-              <g className="p3-tree-1" transform="translate(0, 202)">
-                <rect x="-3" y="16" width="6" height="42" fill="#78350F" rx="1" />
-                <circle cx="0" cy="12" r="22" fill="#65A30D" />
-                <circle cx="-10" cy="6" r="16" fill="#84CC16" />
-                <circle cx="10" cy="6" r="16" fill="#4D7C0F" />
+              {/* ==================================================== */}
+              {/* PARALLAX TREES: TRUNKS SIT FIRMLY AT Y = 260 GROUND  */}
+              {/* NO transform="translate" on group -> ZERO FLYING     */}
+              {/* ==================================================== */}
+              {/* Parallax Tree 1: Oak tree grounded at Y = 260 */}
+              <g className="p3-tree-1">
+                {/* Trunk: from Y=215 down to 260 */}
+                <rect x="-4" y="215" width="8" height="45" rx="1" fill="#78350F" />
+                {/* Foliage crown */}
+                <circle cx="0" cy="195" r="24" fill="#65A30D" />
+                <circle cx="-12" cy="188" r="17" fill="#84CC16" />
+                <circle cx="12" cy="188" r="17" fill="#4D7C0F" />
               </g>
 
-              {/* Parallax Background Pine Tree 2 */}
-              <g className="p3-tree-2" transform="translate(0, 212)">
-                <rect x="-3" y="14" width="6" height="36" fill="#78350F" rx="1" />
-                <polygon points="0,-6 -18,28 18,28" fill="#15803D" />
-                <polygon points="0,-16 -14,12 14,12" fill="#16A34A" />
+              {/* Parallax Pine Tree 2: Grounded at Y = 260 */}
+              <g className="p3-tree-2">
+                {/* Trunk: from Y=222 down to 260 */}
+                <rect x="-3" y="222" width="6" height="38" rx="1" fill="#78350F" />
+                {/* Pine foliage triangles */}
+                <polygon points="0,170 -20,228 20,228" fill="#15803D" />
+                <polygon points="0,154 -15,204 15,204" fill="#16A34A" />
               </g>
 
-              {/* Asphalt Road: Y = 260 */}
+              {/* Parallax Highway Milestone Marker: Grounded at Y = 260 */}
+              <g className="p3-milestone">
+                <rect x="-2" y="234" width="4" height="26" fill="#78716C" />
+                <rect x="-12" y="222" width="24" height="14" rx="2" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="1" />
+                <circle cx="0" cy="229" r="3" fill="#e65c00" />
+              </g>
+
+              {/* Asphalt Road: Exactly at Y = 260 */}
               <rect x="0" y="260" width="400" height="140" fill="#2C2C2A" />
               <line x1="0" y1="260" x2="400" y2="260" stroke="#5F5E5A" strokeWidth="2" />
 
