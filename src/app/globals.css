@@ -2,25 +2,89 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0f172a;
+
+  /* ======================================================== */
+  /* HARMONIC TYPOGRAPHIC SCALE (PERFECT SWEET SPOT)           */
+  /* Base: 16px                                               */
+  /* Little Heading (H3): ~23px                               */
+  /* Subheading (H2):     ~36px                               */
+  /* Main Heading (H1):   ~54px                               */
+  /* ======================================================== */
+  --font-size-base: 16px;
+  --font-size-little: 23px;
+  --font-size-sub: 36px;
+  --font-size-main: 54px;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-quicksand), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-quicksand: var(--font-quicksand);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Base Body with Quicksand Regular (400) Andrew Paglinawan */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-quicksand), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.618; /* Golden Ratio Line Height for optimal reading */
+}
+
+/* ======================================================== */
+/* 1. MAIN HEADING (H1 / .type-main) - SWEET SPOT (54px)     */
+/* Desktop: 54px | Tablet: 44px | Mobile: 34px             */
+/* Quicksand Bold (700)                                     */
+/* ======================================================== */
+h1, .type-main {
+  font-family: var(--font-quicksand), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.125rem, 4vw, 3.375rem); /* 34px mobile to 54px desktop */
+  line-height: 1.12;
+  letter-spacing: -0.022em;
+}
+
+/* ======================================================== */
+/* 2. SUBHEADING (H2 / .type-sub) - 36px                     */
+/* Desktop: 36px | Mobile: 24px                            */
+/* Quicksand Bold (700)                                     */
+/* ======================================================== */
+h2, .type-sub {
+  font-family: var(--font-quicksand), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.5rem, 2.6vw, 2.25rem); /* 24px to 36px */
+  line-height: 1.2;
+  letter-spacing: -0.018em;
+}
+
+/* ======================================================== */
+/* 3. LITTLE HEADING (H3, H4 / .type-little) - 23px          */
+/* Desktop: 23px | Mobile: 18px                            */
+/* Quicksand Bold (700)                                     */
+/* ======================================================== */
+h3, h4, .type-little {
+  font-family: var(--font-quicksand), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.125rem, 1.8vw, 1.4375rem); /* 18px to 23px */
+  line-height: 1.28;
+  letter-spacing: -0.012em;
+}
+
+/* ======================================================== */
+/* 4. PARAGRAPH (p / .type-body)                            */
+/* Base: 16px | Line Height: 1.618                          */
+/* Quicksand Regular (400)                                  */
+/* ======================================================== */
+p, .type-body {
+  font-family: var(--font-quicksand), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 400;
+  font-size: 1rem; /* 16px */
+  line-height: 1.618; /* Golden Ratio line height */
+}
+
+span, li, a, button, input, label {
+  font-family: var(--font-quicksand), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }

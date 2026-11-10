@@ -72,7 +72,28 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex md:items-center md:gap-4">
+        <nav className="hidden md:flex md:items-center md:gap-6">
+          <Link
+            href="/#marketplace"
+            className="text-sm font-medium text-slate-600 hover:text-slate-900 transition"
+          >
+            Marketplace
+          </Link>
+          <Link
+            href="/grade-guide"
+            className="text-sm font-medium text-slate-600 hover:text-slate-900 transition"
+          >
+            5-Grade Guide
+          </Link>
+          <Link
+            href="/#how-it-works"
+            className="text-sm font-medium text-slate-600 hover:text-slate-900 transition"
+          >
+            How It Works
+          </Link>
+
+          <div className="h-4 w-px bg-slate-200" />
+
           {!loading && (
             <>
               {user ? (
@@ -149,6 +170,30 @@ export default function Navbar() {
       {/* Mobile menu dropdown */}
       {mobileMenuOpen && (
         <div className="border-b border-slate-200 bg-white px-4 pt-2 pb-4 md:hidden">
+          <div className="flex flex-col gap-2 pb-3 border-b border-slate-100 text-sm">
+            <Link
+              href="/#marketplace"
+              onClick={() => setMobileMenuOpen(false)}
+              className="py-1 font-medium text-slate-700 hover:text-emerald-600"
+            >
+              Marketplace
+            </Link>
+            <Link
+              href="/grade-guide"
+              onClick={() => setMobileMenuOpen(false)}
+              className="py-1 font-medium text-slate-700 hover:text-emerald-600"
+            >
+              5-Grade Guide
+            </Link>
+            <Link
+              href="/#how-it-works"
+              onClick={() => setMobileMenuOpen(false)}
+              className="py-1 font-medium text-slate-700 hover:text-emerald-600"
+            >
+              How It Works
+            </Link>
+          </div>
+
           {!loading && (
             <div className="flex flex-col gap-3">
               {user ? (
