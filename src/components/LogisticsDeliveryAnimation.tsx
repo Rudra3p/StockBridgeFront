@@ -2,6 +2,109 @@
 
 import { useState, useEffect } from 'react';
 
+// ========================================================
+// 100% UNIFIED MASTER TRUCK MODEL
+// Identical proportions, colors, 2 tyres, and detailing
+// across Phase 2, Phase 3, and Phase 4
+// ========================================================
+function MasterTruck({
+  isSpinning = false,
+  isFast = false,
+  showHeadlightBeam = true,
+  showSpeedLines = false,
+  isVibrating = false,
+}: {
+  isSpinning?: boolean;
+  isFast?: boolean;
+  showHeadlightBeam?: boolean;
+  showSpeedLines?: boolean;
+  isVibrating?: boolean;
+}) {
+  const wheelClass = isSpinning
+    ? isFast
+      ? 'wheel-rim-spin-fast'
+      : 'wheel-rim-spin'
+    : '';
+
+  return (
+    <g>
+      {/* Aerodynamic Speed Lines (Phase 3 transit) */}
+      {showSpeedLines && (
+        <g>
+          <line x1="154" y1="28" x2="186" y2="28" stroke="#FB923C" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+          <line x1="160" y1="38" x2="200" y2="38" stroke="#FB923C" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+          <line x1="152" y1="50" x2="180" y2="50" stroke="#FB923C" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+        </g>
+      )}
+
+      {/* Headlight Beam */}
+      {showHeadlightBeam && (
+        <polygon points="144,46 230,32 230,68 144,54" fill="rgba(254,240,138,0.22)" />
+      )}
+
+      {/* Truck Body (Container + Cab) */}
+      <g className={isVibrating ? 'p3-engine-vibe' : ''}>
+        {/* Solid Orange Cargo Container (NO windows in back) */}
+        <rect x="0" y="0" width="102" height="60" rx="4" fill="#e65c00" />
+        <rect x="0" y="0" width="102" height="4" fill="#C2410C" />
+
+        {/* Corrugated Steel Container Ribs */}
+        <line x1="22" y1="4" x2="22" y2="56" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+        <line x1="44" y1="4" x2="44" y2="56" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+        <line x1="66" y1="4" x2="66" y2="56" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+        <line x1="88" y1="4" x2="88" y2="56" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+        <line x1="0" y1="30" x2="102" y2="30" stroke="#C2410C" strokeWidth="1.5" />
+
+        {/* Rear Door Locking Rod / Hinge Bar */}
+        <rect x="3" y="6" width="3" height="48" rx="1" fill="#444441" />
+        <rect x="1" y="2" width="6" height="6" rx="1" fill="#C2410C" />
+
+        {/* Truck Driver Cab Front (Dark Orange #C2410C) */}
+        <path d="M102 14 L128 14 L148 38 L148 60 L102 60 Z" fill="#C2410C" />
+
+        {/* ONLY WINDOW ON THE TRUCK: Driver Cabin Window */}
+        <polygon points="126,18 142,36 116,36 116,18" fill="#FFEDD5" />
+        <line x1="116" y1="36" x2="116" y2="58" stroke="#9A3412" strokeWidth="1.2" />
+
+        {/* Headlight Lamp */}
+        <rect x="144" y="44" width="4" height="8" rx="1" fill="#FEF08A" />
+
+        {/* Exhaust Pipe & Subtle Smoke */}
+        <rect x="-3" y="18" width="3" height="28" fill="#78716C" rx="1" />
+        <circle cx="-8" cy="22" r="3.5" fill="#D6D3D1" opacity="0.6" />
+        <circle cx="-15" cy="18" r="5" fill="#E7E5E4" opacity="0.4" />
+      </g>
+
+      {/* Under-chassis rail (Static, perfectly level at Y=58) */}
+      <rect x="0" y="58" width="148" height="6" fill="#444441" />
+
+      {/* ======================================================== */}
+      {/* 2 TYRES TOTAL (EXACT SAME POSITION IN ALL PHASES)        */}
+      {/* Hubs at Y=68, r=10 -> Touches road perfectly at Y=78     */}
+      {/* ======================================================== */}
+      {/* Tyre 1: Rear Tyre under cargo container */}
+      <g transform="translate(34, 68)">
+        <circle cx="0" cy="0" r="10" fill="#2C2C2A" />
+        <circle cx="0" cy="0" r="4" fill="#B4B2A9" />
+        <g className={wheelClass}>
+          <line x1="-8" y1="0" x2="8" y2="0" stroke="#B4B2A9" strokeWidth="1.5" />
+          <line x1="0" y1="-8" x2="0" y2="8" stroke="#B4B2A9" strokeWidth="1.5" />
+        </g>
+      </g>
+
+      {/* Tyre 2: Front Tyre under driver cab */}
+      <g transform="translate(126, 68)">
+        <circle cx="0" cy="0" r="10" fill="#2C2C2A" />
+        <circle cx="0" cy="0" r="4" fill="#B4B2A9" />
+        <g className={wheelClass}>
+          <line x1="-8" y1="0" x2="8" y2="0" stroke="#B4B2A9" strokeWidth="1.5" />
+          <line x1="0" y1="-8" x2="0" y2="8" stroke="#B4B2A9" strokeWidth="1.5" />
+        </g>
+      </g>
+    </g>
+  );
+}
+
 export default function LogisticsDeliveryAnimation() {
   const [phase, setPhase] = useState<1 | 2 | 3 | 4>(1);
   const [isManual, setIsManual] = useState(false);
@@ -283,7 +386,7 @@ export default function LogisticsDeliveryAnimation() {
         )}
 
         {/* ======================================================== */}
-        {/* PHASE 2: GODOWN DISPATCH (2 TYRES ONLY, NO REAR WINDOWS) */}
+        {/* PHASE 2: GODOWN DISPATCH (UNIFIED MASTER TRUCK)          */}
         {/* ======================================================== */}
         {phase === 2 && (
           <svg
@@ -341,55 +444,18 @@ export default function LogisticsDeliveryAnimation() {
               <line x1="0" y1="318" x2="400" y2="318" stroke="#FFFFFF" strokeWidth="3" strokeDasharray="18 14" />
 
               {/* ==================================================== */}
-              {/* DEPARTING TRUCK: 2 TYRES TOTAL, SOLID CARGO CONTAINER*/}
-              {/* (NO WINDOWS IN BACK, ONLY DRIVER CAB WINDOW)          */}
+              {/* DEPARTING TRUCK: 100% UNIFIED MODEL (2 TYRES ONLY)   */}
+              {/* Sits at Y=182, Touches road at Y=260 (182+78=260)    */}
               {/* ==================================================== */}
               <g className="p2-truck-motion">
-                {/* Translucent Headlight Beam */}
-                <polygon points="164,228 252,214 252,252 164,238" fill="rgba(251,146,60,0.22)" />
-
-                {/* Orange Solid Cargo Container: No windows! */}
-                <rect x="20" y="184" width="98" height="58" rx="4" fill="#e65c00" />
-                
-                {/* Realistic Corrugated Steel Cargo Container Ribs */}
-                <line x1="42" y1="188" x2="42" y2="238" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
-                <line x1="64" y1="188" x2="64" y2="238" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
-                <line x1="86" y1="188" x2="86" y2="238" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
-                <line x1="108" y1="188" x2="108" y2="238" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
-                <line x1="20" y1="212" x2="118" y2="212" stroke="#C2410C" strokeWidth="1.5" />
-                {/* Rear Cargo Door Hinge/Latch bar */}
-                <rect x="23" y="190" width="3" height="46" rx="1" fill="#444441" />
-
-                {/* Truck Cab Front (Dark Orange #C2410C) */}
-                <path d="M118 196 L144 196 L166 218 L166 242 L118 242 Z" fill="#C2410C" />
-                {/* ONLY WINDOW ON THE TRUCK: Driver Cabin Window */}
-                <polygon points="142,200 160,218 134,218 134,200" fill="#FFEDD5" />
-                <rect x="162" y="222" width="5" height="8" rx="1" fill="#FEF08A" />
-
-                {/* Under-chassis rail */}
-                <rect x="20" y="240" width="144" height="6" fill="#444441" />
-
-                {/* ================================================== */}
-                {/* 2 TYRES TOTAL (1 REAR TYRE + 1 FRONT TYRE)         */}
-                {/* ================================================== */}
-                {/* Tyre 1: Rear Tyre under container */}
-                <g transform="translate(56, 250)">
-                  <circle cx="0" cy="0" r="10" fill="#2C2C2A" />
-                  <circle cx="0" cy="0" r="4" fill="#B4B2A9" />
-                  <g className="wheel-rim-spin">
-                    <line x1="-8" y1="0" x2="8" y2="0" stroke="#B4B2A9" strokeWidth="1.5" />
-                    <line x1="0" y1="-8" x2="0" y2="8" stroke="#B4B2A9" strokeWidth="1.5" />
-                  </g>
-                </g>
-
-                {/* Tyre 2: Front Tyre under driver cab */}
-                <g transform="translate(145, 250)">
-                  <circle cx="0" cy="0" r="10" fill="#2C2C2A" />
-                  <circle cx="0" cy="0" r="4" fill="#B4B2A9" />
-                  <g className="wheel-rim-spin">
-                    <line x1="-8" y1="0" x2="8" y2="0" stroke="#B4B2A9" strokeWidth="1.5" />
-                    <line x1="0" y1="-8" x2="0" y2="8" stroke="#B4B2A9" strokeWidth="1.5" />
-                  </g>
+                <g transform="translate(18, 182)">
+                  <MasterTruck
+                    isSpinning={true}
+                    isFast={false}
+                    showHeadlightBeam={true}
+                    showSpeedLines={false}
+                    isVibrating={false}
+                  />
                 </g>
               </g>
             </g>
@@ -397,7 +463,7 @@ export default function LogisticsDeliveryAnimation() {
         )}
 
         {/* ======================================================== */}
-        {/* PHASE 3: HIGHWAY PARALLAX (2 TYRES TOTAL, NO BACK WINDOW)*/}
+        {/* PHASE 3: HIGHWAY PARALLAX (UNIFIED MASTER TRUCK)         */}
         {/* ======================================================== */}
         {phase === 3 && (
           <svg
@@ -462,78 +528,24 @@ export default function LogisticsDeliveryAnimation() {
               <line x1="0" y1="375" x2="400" y2="375" stroke="#444441" strokeWidth="2" strokeDasharray="10 10" />
 
               {/* ==================================================== */}
-              {/* TRUCK CENTERED: 2 TYRES TOTAL, SOLID CARGO CONTAINER */}
-              {/* (NO WINDOWS IN BACK, ONLY CABIN WINDOW)              */}
+              {/* TRUCK CENTERED: 100% UNIFIED MASTER TRUCK MODEL      */}
+              {/* Sits at X=120, Y=182, Touches road at Y=260          */}
               {/* ==================================================== */}
-              <g transform="translate(115, 0)">
-                {/* Aerodynamic Speed Lines */}
-                <line x1="174" y1="210" x2="204" y2="210" stroke="#FB923C" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
-                <line x1="180" y1="220" x2="218" y2="220" stroke="#FB923C" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
-                <line x1="172" y1="232" x2="200" y2="232" stroke="#FB923C" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
-
-                {/* Vibrating Engine Body */}
-                <g className="p3-engine-vibe">
-                  {/* Solid Orange Cargo Container (NO windows) */}
-                  <rect x="0" y="178" width="112" height="62" rx="4" fill="#e65c00" />
-                  
-                  {/* Corrugated Cargo Container Steel Ribs */}
-                  <line x1="24" y1="182" x2="24" y2="236" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="48" y1="182" x2="48" y2="236" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="72" y1="182" x2="72" y2="236" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="96" y1="182" x2="96" y2="236" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="0" y1="208" x2="112" y2="208" stroke="#C2410C" strokeWidth="1.5" />
-                  {/* Container Corner Lock Castings */}
-                  <rect x="2" y="180" width="6" height="6" rx="1" fill="#C2410C" />
-                  <rect x="104" y="180" width="6" height="6" rx="1" fill="#C2410C" />
-
-                  {/* Cab Front (Dark Orange #C2410C) */}
-                  <path d="M112 190 L140 190 L166 214 L166 240 L112 240 Z" fill="#C2410C" />
-                  {/* ONLY WINDOW ON TRUCK: Driver Cabin Window */}
-                  <polygon points="138,194 160,214 128,214 128,194" fill="#FFEDD5" />
-                  <rect x="116" y="198" width="9" height="14" rx="1" fill="#FFEDD5" opacity="0.8" />
-
-                  {/* Headlight beam */}
-                  <rect x="162" y="220" width="5" height="8" rx="1" fill="#FEF08A" />
-                  <polygon points="167,222 248,206 248,238 167,230" fill="rgba(254,240,138,0.22)" />
-
-                  {/* Under-chassis rail */}
-                  <rect x="4" y="240" width="156" height="6" fill="#1C1917" />
-
-                  {/* Exhaust Pipe & Smoke */}
-                  <rect x="-4" y="200" width="4" height="28" fill="#78716C" rx="1" />
-                  <circle cx="-10" cy="204" r="4" fill="#D6D3D1" opacity="0.6" />
-                  <circle cx="-18" cy="200" r="6" fill="#E7E5E4" opacity="0.4" />
-                </g>
-
-                {/* ================================================== */}
-                {/* 2 TYRES TOTAL (1 REAR TYRE + 1 FRONT TYRE)         */}
-                {/* ================================================== */}
-                {/* Tyre 1: Rear Tyre under cargo container */}
-                <g transform="translate(36, 250)">
-                  <circle cx="0" cy="0" r="10" fill="#2C2C2A" />
-                  <circle cx="0" cy="0" r="4" fill="#B4B2A9" />
-                  <g className="wheel-rim-spin-fast">
-                    <line x1="-8" y1="0" x2="8" y2="0" stroke="#B4B2A9" strokeWidth="1.5" />
-                    <line x1="0" y1="-8" x2="0" y2="8" stroke="#B4B2A9" strokeWidth="1.5" />
-                  </g>
-                </g>
-
-                {/* Tyre 2: Front Tyre under driver cab */}
-                <g transform="translate(142, 250)">
-                  <circle cx="0" cy="0" r="10" fill="#2C2C2A" />
-                  <circle cx="0" cy="0" r="4" fill="#B4B2A9" />
-                  <g className="wheel-rim-spin-fast">
-                    <line x1="-8" y1="0" x2="8" y2="0" stroke="#B4B2A9" strokeWidth="1.5" />
-                    <line x1="0" y1="-8" x2="0" y2="8" stroke="#B4B2A9" strokeWidth="1.5" />
-                  </g>
-                </g>
+              <g transform="translate(120, 182)">
+                <MasterTruck
+                  isSpinning={true}
+                  isFast={true}
+                  showHeadlightBeam={true}
+                  showSpeedLines={true}
+                  isVibrating={true}
+                />
               </g>
             </g>
           </svg>
         )}
 
         {/* ======================================================== */}
-        {/* PHASE 4: RETAILER ARRIVAL & STOP (2 TYRES, NO BACK WINDOW)*/}
+        {/* PHASE 4: RETAILER ARRIVAL & STOP (UNIFIED MASTER TRUCK)  */}
         {/* ======================================================== */}
         {phase === 4 && (
           <svg
@@ -585,48 +597,19 @@ export default function LogisticsDeliveryAnimation() {
               </g>
 
               {/* ==================================================== */}
-              {/* TRUCK BRAKES IN FRONT OF SHOP: 2 TYRES, NO BACK WINDOW*/}
-              {/* (ONLY DRIVER CABIN WINDOW, WHEELS STILL UPON STOP)   */}
+              {/* TRUCK BRAKES IN FRONT OF SHOP: 100% UNIFIED MODEL    */}
+              {/* Sits at X=75, Y=182, Touches road at Y=260           */}
+              {/* Wheels are still upon stop, NO box ejected           */}
               {/* ==================================================== */}
               <g className="p4-truck-arrival">
-                {/* Truck Cargo Container in Orange #e65c00 (No windows!) */}
-                <rect x="75" y="182" width="98" height="58" rx="4" fill="#e65c00" />
-                
-                {/* Container Corrugated Steel Vertical Ribs */}
-                <line x1="97" y1="186" x2="97" y2="236" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
-                <line x1="119" y1="186" x2="119" y2="236" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
-                <line x1="141" y1="186" x2="141" y2="236" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
-                <line x1="163" y1="186" x2="163" y2="236" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
-                <line x1="75" y1="210" x2="173" y2="210" stroke="#C2410C" strokeWidth="1.5" />
-                {/* Rear Cargo Door Hinge/Latch bar */}
-                <rect x="78" y="188" width="3" height="46" rx="1" fill="#444441" />
-
-                {/* Truck Cab Front (Dark Orange #C2410C) */}
-                <path d="M173 194 L199 194 L220 216 L220 240 L173 240 Z" fill="#C2410C" />
-                {/* ONLY WINDOW ON TRUCK: Driver Cabin Window */}
-                <polygon points="197,198 213,216 189,216 189,198" fill="#FFEDD5" />
-                <rect x="215" y="220" width="5" height="8" rx="1" fill="#FEF08A" />
-
-                {/* Under-chassis rail */}
-                <rect x="75" y="240" width="144" height="6" fill="#444441" />
-
-                {/* ================================================== */}
-                {/* 2 TYRES TOTAL (STATIONARY ON BRAKE STOP)           */}
-                {/* ================================================== */}
-                {/* Tyre 1: Rear Tyre under container */}
-                <g transform="translate(110, 250)">
-                  <circle cx="0" cy="0" r="10" fill="#2C2C2A" />
-                  <circle cx="0" cy="0" r="4" fill="#B4B2A9" />
-                  <line x1="-8" y1="0" x2="8" y2="0" stroke="#B4B2A9" strokeWidth="1.5" />
-                  <line x1="0" y1="-8" x2="0" y2="8" stroke="#B4B2A9" strokeWidth="1.5" />
-                </g>
-
-                {/* Tyre 2: Front Tyre under driver cab */}
-                <g transform="translate(198, 250)">
-                  <circle cx="0" cy="0" r="10" fill="#2C2C2A" />
-                  <circle cx="0" cy="0" r="4" fill="#B4B2A9" />
-                  <line x1="-8" y1="0" x2="8" y2="0" stroke="#B4B2A9" strokeWidth="1.5" />
-                  <line x1="0" y1="-8" x2="0" y2="8" stroke="#B4B2A9" strokeWidth="1.5" />
+                <g transform="translate(75, 182)">
+                  <MasterTruck
+                    isSpinning={false}
+                    isFast={false}
+                    showHeadlightBeam={false}
+                    showSpeedLines={false}
+                    isVibrating={false}
+                  />
                 </g>
               </g>
 
