@@ -128,11 +128,11 @@ export default function LogisticsDeliveryAnimation() {
   }, [phase, isManual]);
 
   return (
-    <div className="w-full flex flex-col items-center lg:items-start justify-center">
+    <div className="w-full flex flex-col items-center justify-center">
       {/* ======================================================== */}
-      {/* SQUARE FRAME: BORDERLESS, OVERFLOW-HIDDEN, CENTERED     */}
+      {/* SQUARE FRAME: 90% OF PARENT COLUMN, BORDERLESS, ROUNDED */}
       {/* ======================================================== */}
-      <div className="relative w-full max-w-[390px] aspect-square rounded-2xl overflow-hidden bg-[#FBFBFA] flex items-center justify-center select-none shadow-xs border-0 outline-none">
+      <div className="relative w-[90%] sm:w-[92%] max-w-[460px] aspect-square rounded-2xl overflow-hidden bg-[#FBFBFA] flex items-center justify-center select-none shadow-xs border-0 outline-none">
         
         {/* Bulletproof CSS Animations: All Y coordinates baked directly into SVG geometry */}
         <style dangerouslySetInnerHTML={{ __html: `

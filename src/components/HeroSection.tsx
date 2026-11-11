@@ -87,10 +87,9 @@ export default function HeroSection() {
         </div>
 
         {/* ====================================================== */}
-        {/* RIGHT COLUMN: SQUARE LOGISTICS ANIMATION              */}
-        {/* Directly adjacent to left block without gap           */}
+        {/* RIGHT COLUMN: SQUARE LOGISTICS ANIMATION (40% COL)    */}
         {/* ====================================================== */}
-        <div className="w-full flex items-center justify-center lg:justify-start">
+        <div className="w-full flex items-center justify-center">
           <LogisticsDeliveryAnimation />
         </div>
 
