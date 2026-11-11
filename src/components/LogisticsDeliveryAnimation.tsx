@@ -438,10 +438,9 @@ export default function LogisticsDeliveryAnimation() {
                 </g>
               </g>
 
-              {/* Asphalt Road Ground Level: Exactly at Y = 260 */}
+              {/* Asphalt Road Ground Level: Exactly at Y = 260 (Clean solid road without stripes, matching Phase 4) */}
               <rect x="0" y="260" width="400" height="140" fill="#2C2C2A" />
               <line x1="0" y1="260" x2="400" y2="260" stroke="#5F5E5A" strokeWidth="2" />
-              <line x1="0" y1="318" x2="400" y2="318" stroke="#FFFFFF" strokeWidth="3" strokeDasharray="18 14" />
 
               {/* ==================================================== */}
               {/* DEPARTING TRUCK: 100% UNIFIED MODEL (2 TYRES ONLY)   */}
@@ -514,24 +513,24 @@ export default function LogisticsDeliveryAnimation() {
               <rect x="0" y="260" width="400" height="140" fill="#2C2C2A" />
               <line x1="0" y1="260" x2="400" y2="260" stroke="#5F5E5A" strokeWidth="2" />
 
-              {/* Rushing Road Dashed Center Line (Backward Motion) */}
+              {/* Rushing Road Dashed Center Line (Backward Motion in Crisp White) */}
               <line
                 x1="-60"
                 y1="318"
                 x2="460"
                 y2="318"
-                stroke="#e65c00"
-                strokeWidth="4"
-                strokeDasharray="22 22"
+                stroke="#FFFFFF"
+                strokeWidth="3.5"
+                strokeDasharray="22 18"
                 className="p3-road-rush"
               />
               <line x1="0" y1="375" x2="400" y2="375" stroke="#444441" strokeWidth="2" strokeDasharray="10 10" />
 
               {/* ==================================================== */}
-              {/* TRUCK CENTERED: 100% UNIFIED MASTER TRUCK MODEL      */}
-              {/* Sits at X=120, Y=182, Touches road at Y=260          */}
+              {/* TRUCK CENTERED: LOWERED TO ROAD SO WHEELS TOUCH      */}
+              {/* WHITE DASHED STRIPES AT Y=318 (240 + 78 = 318)       */}
               {/* ==================================================== */}
-              <g transform="translate(120, 182)">
+              <g transform="translate(120, 240)">
                 <MasterTruck
                   isSpinning={true}
                   isFast={true}
