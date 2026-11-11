@@ -12,13 +12,13 @@ export default function HeroSection() {
       {/*          Right (40%) = Clean Gray Canvas Block           */}
       {/* Mobile:  Top = Heading + CTAs, Bottom = Gray Block       */}
       {/* ======================================================== */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[60%_40%] gap-8 lg:gap-12 items-center">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[60%_40%] gap-8 lg:gap-0 items-center">
         
         {/* ====================================================== */}
         {/* LEFT COLUMN: PURE HEADING + CTAs + TRUST ANCHORS       */}
         {/* (No AI pill on top, No paragraph)                      */}
         {/* ====================================================== */}
-        <div className="flex flex-col justify-center text-left">
+        <div className="flex flex-col justify-center text-left lg:pr-4">
           
           {/* MAIN HEADING - Golden Ratio Main (54px desktop / 34px mobile) Quicksand Bold */}
           <h1 className="type-main text-main font-quicksand font-bold">
@@ -87,10 +87,10 @@ export default function HeroSection() {
         </div>
 
         {/* ====================================================== */}
-        {/* RIGHT COLUMN: CENTERED SQUARE LOGISTICS ANIMATION      */}
-        {/* (No border outside square, pure orange accent, 4 phases) */}
+        {/* RIGHT COLUMN: SQUARE LOGISTICS ANIMATION              */}
+        {/* Directly adjacent to left block without gap           */}
         {/* ====================================================== */}
-        <div className="w-full flex items-center justify-center">
+        <div className="w-full flex items-center justify-center lg:justify-start">
           <LogisticsDeliveryAnimation />
         </div>
 

@@ -128,7 +128,7 @@ export default function LogisticsDeliveryAnimation() {
   }, [phase, isManual]);
 
   return (
-    <div className="w-full flex flex-col items-center justify-center">
+    <div className="w-full flex flex-col items-center lg:items-start justify-center">
       {/* ======================================================== */}
       {/* SQUARE FRAME: BORDERLESS, OVERFLOW-HIDDEN, CENTERED     */}
       {/* ======================================================== */}
