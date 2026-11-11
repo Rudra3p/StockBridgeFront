@@ -107,12 +107,9 @@ function MasterTruck({
 
 export default function LogisticsDeliveryAnimation() {
   const [phase, setPhase] = useState<1 | 2 | 3 | 4>(1);
-  const [isManual, setIsManual] = useState(false);
 
-  // Auto-advance through the 4 phases
+  // Auto-advance continuously through the 4 phases in an infinite loop
   useEffect(() => {
-    if (isManual) return;
-
     const durations: Record<number, number> = {
       1: 3600, // Phase 1: Surplus Lot Packing & Sealed Inspection (3.6s)
       2: 3800, // Phase 2: Godown Shutter Roll-up & Truck Dispatch (3.8s)
@@ -125,14 +122,14 @@ export default function LogisticsDeliveryAnimation() {
     }, durations[phase]);
 
     return () => clearTimeout(timer);
-  }, [phase, isManual]);
+  }, [phase]);
 
   return (
     <div className="w-full flex flex-col items-center justify-center">
       {/* ======================================================== */}
-      {/* SQUARE FRAME: 90% OF PARENT COLUMN, BORDERLESS, ROUNDED */}
+      {/* SQUARE FRAME: 90% OF PARENT, 90-DEGREE CORNERS (NO RADIUS)*/}
       {/* ======================================================== */}
-      <div className="relative w-[90%] sm:w-[92%] max-w-[460px] aspect-square rounded-2xl overflow-hidden bg-[#FBFBFA] flex items-center justify-center select-none shadow-xs border-0 outline-none">
+      <div className="relative w-[90%] sm:w-[92%] max-w-[460px] aspect-square rounded-none overflow-hidden bg-[#FBFBFA] flex items-center justify-center select-none shadow-xs border-0 outline-none">
         
         {/* Bulletproof CSS Animations: All Y coordinates baked directly into SVG geometry */}
         <style dangerouslySetInnerHTML={{ __html: `
@@ -316,7 +313,7 @@ export default function LogisticsDeliveryAnimation() {
           >
             <defs>
               <clipPath id="p1-box-clip">
-                <rect x="0" y="0" width="400" height="400" rx="16" />
+                <rect x="0" y="0" width="400" height="400" />
               </clipPath>
             </defs>
 
@@ -397,7 +394,7 @@ export default function LogisticsDeliveryAnimation() {
           >
             <defs>
               <clipPath id="p2-full-clip">
-                <rect x="0" y="0" width="400" height="400" rx="16" />
+                <rect x="0" y="0" width="400" height="400" />
               </clipPath>
               {/* Shutter doorway boundary: strictly clips slats within the lintel */}
               <clipPath id="p2-shutter-clip">
@@ -473,7 +470,7 @@ export default function LogisticsDeliveryAnimation() {
           >
             <defs>
               <clipPath id="p3-highway-clip">
-                <rect x="0" y="0" width="400" height="400" rx="16" />
+                <rect x="0" y="0" width="400" height="400" />
               </clipPath>
             </defs>
 
@@ -555,7 +552,7 @@ export default function LogisticsDeliveryAnimation() {
           >
             <defs>
               <clipPath id="p4-arrival-clip">
-                <rect x="0" y="0" width="400" height="400" rx="16" />
+                <rect x="0" y="0" width="400" height="400" />
               </clipPath>
             </defs>
 
@@ -623,33 +620,6 @@ export default function LogisticsDeliveryAnimation() {
             </g>
           </svg>
         )}
-
-        {/* ======================================================== */}
-        {/* INTERACTIVE PHASE SWITCHER CONTROLS                      */}
-        {/* ======================================================== */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 bg-white/95 px-2.5 py-1 rounded-full shadow-xs border border-slate-200/80">
-          {([1, 2, 3, 4] as const).map((stepNum) => (
-            <button
-              key={stepNum}
-              type="button"
-              onClick={() => {
-                setIsManual(true);
-                setPhase(stepNum);
-                setTimeout(() => setIsManual(false), 9000);
-              }}
-              className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold transition-all cursor-pointer ${
-                phase === stepNum
-                  ? 'bg-orange-600 text-white shadow-xs'
-                  : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              P{stepNum}
-            </button>
-          ))}
-          <span className="text-[9px] font-mono text-slate-400 pl-1 border-l border-slate-200">
-            {isManual ? 'Manual' : 'Auto'}
-          </span>
-        </div>
 
       </div>
     </div>
