@@ -290,17 +290,6 @@ export default function LogisticsDeliveryAnimation() {
           }
         `}} />
 
-        {/* Phase Indicator Top Tag */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-white/95 px-3.5 py-1 rounded-full shadow-xs border border-slate-200/80">
-          <span className="w-2 h-2 rounded-full bg-orange-600 animate-pulse" />
-          <span className="text-[11px] font-mono font-bold text-slate-900 tracking-wider">
-            {phase === 1 && '01. PACKING SURPLUS LOT'}
-            {phase === 2 && '02. GODOWN DISPATCH'}
-            {phase === 3 && '03. HIGHWAY TRANSIT'}
-            {phase === 4 && '04. RETAILER ARRIVAL'}
-          </span>
-        </div>
-
         {/* ======================================================== */}
         {/* PHASE 1: BOX PACKING IN CENTER                           */}
         {/* ======================================================== */}
