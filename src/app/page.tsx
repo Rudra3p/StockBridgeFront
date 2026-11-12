@@ -22,14 +22,7 @@ export default function HomePage() {
       {/* ======================================================== */}
       {/* 2. THE THREE LINKED PROBLEMS (SECTION 2 OF BLUEPRINT)    */}
       {/* ======================================================== */}
-      <section className="w-full py-16 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          {/* Subheading (H2: 42px desktop / 28px mobile) */}
-          <h2 className="type-sub text-slate-900 font-quicksand font-bold">
-            Excess stock is only the symptom.
-          </h2>
-        </div>
-
+      <section className="w-full py-14 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
           {/* Column 1 */}
           <div className="pb-8 md:pb-0 md:pr-10 lg:pr-12">
