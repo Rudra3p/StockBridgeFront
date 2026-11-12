@@ -24,17 +24,10 @@ export default function HomePage() {
       {/* ======================================================== */}
       <section className="w-full py-16 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-500 bg-slate-200/60 px-3 py-1 rounded-md font-quicksand">
-            The Industry Problem • Section 2
-          </span>
           {/* Subheading (H2: 42px desktop / 28px mobile) */}
-          <h2 className="type-sub text-slate-900 mt-3 font-quicksand">
+          <h2 className="type-sub text-slate-900 font-quicksand font-bold">
             Excess stock is only the symptom.
           </h2>
-          {/* Paragraph (P: 16px / line-height: 1.618) */}
-          <p className="type-body text-slate-600 mt-2 font-quicksand">
-            Traditional liquidation forces sellers to accept lowball scrap broker prices while retail buyers struggle with uninspected junk. A solution that fixes only one fails.
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
