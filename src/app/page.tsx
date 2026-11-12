@@ -30,57 +30,57 @@ export default function HomePage() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1 */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-7 shadow-xs">
+        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+          {/* Column 1 */}
+          <div className="pb-8 md:pb-0 md:pr-10 lg:pr-12">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-50 text-rose-700 font-bold text-sm mb-4 border border-rose-100 font-mono">
               01
             </div>
             {/* Little Heading (H3: 26px desktop / 20px mobile) */}
-            <h3 className="type-little text-slate-900 mb-2 font-quicksand">
+            <h3 className="type-little text-slate-900 mb-2 font-quicksand font-bold">
               Capital Frozen in Warehouse Rack Space
             </h3>
             {/* Paragraph (P: 16px / line-height: 1.618) */}
             <p className="type-body text-slate-600 font-quicksand">
               Inventory is working capital that has stopped working. Every month dead lines sit on warehouse pallets, they lose value, accrue storage costs, and prevent businesses from buying fast-moving goods.
             </p>
-            <div className="mt-4 pt-3 border-t border-slate-100 text-[11px] font-semibold text-rose-600 font-quicksand">
+            <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] font-semibold text-rose-600 font-quicksand">
               Typical cost: 5% to 15% annual purchases lost to aging stock.
             </div>
           </div>
 
-          {/* Card 2 */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-7 shadow-xs">
+          {/* Column 2 */}
+          <div className="py-8 md:py-0 md:px-10 lg:px-12">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-amber-700 font-bold text-sm mb-4 border border-amber-100 font-mono">
               02
             </div>
             {/* Little Heading (H3: 26px desktop / 20px mobile) */}
-            <h3 className="type-little text-slate-900 mb-2 font-quicksand">
+            <h3 className="type-little text-slate-900 mb-2 font-quicksand font-bold">
               Information Asymmetry & Brand Fear
             </h3>
             {/* Paragraph (P: 16px / line-height: 1.618) */}
             <p className="type-body text-slate-600 font-quicksand">
               Sellers do not know who would pay fair recovery value for excess stock. Even worse, brands avoid public discounting out of fear that local customers or authorized distributors will demand the same markdown.
             </p>
-            <div className="mt-4 pt-3 border-t border-slate-100 text-[11px] font-semibold text-amber-700 font-quicksand">
+            <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] font-semibold text-amber-700 font-quicksand">
               Solution: Anonymous brand listings & competitor geo-blocking.
             </div>
           </div>
 
-          {/* Card 3 */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-7 shadow-xs">
+          {/* Column 3 */}
+          <div className="pt-8 md:pt-0 md:pl-10 lg:pl-12">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 font-bold text-sm mb-4 border border-emerald-100 font-mono">
               03
             </div>
             {/* Little Heading (H3: 26px desktop / 20px mobile) */}
-            <h3 className="type-little text-slate-900 mb-2 font-quicksand">
+            <h3 className="type-little text-slate-900 mb-2 font-quicksand font-bold">
               Low Trust in Informal Bulk Trading
             </h3>
             {/* Paragraph (P: 16px / line-height: 1.618) */}
             <p className="type-body text-slate-600 font-quicksand">
               Informal WhatsApp bulk deals carry enormous risk. Buyers pay advance and receive damaged goods; sellers ship on credit and wait weeks for payment. StockBridge eliminates both with partner escrow.
             </p>
-            <div className="mt-4 pt-3 border-t border-slate-100 text-[11px] font-semibold text-emerald-700 font-quicksand">
+            <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] font-semibold text-emerald-700 font-quicksand">
               Solution: Funds held in escrow until 48h physical inspection.
             </div>
           </div>
