@@ -33,9 +33,6 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
           {/* Column 1 */}
           <div className="pb-8 md:pb-0 md:pr-10 lg:pr-12">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-50 text-rose-700 font-bold text-sm mb-4 border border-rose-100 font-mono">
-              01
-            </div>
             {/* Little Heading (H3: 26px desktop / 20px mobile) */}
             <h3 className="type-little text-slate-900 mb-2 font-quicksand font-bold">
               Capital Frozen in Warehouse Rack Space
@@ -51,9 +48,6 @@ export default function HomePage() {
 
           {/* Column 2 */}
           <div className="py-8 md:py-0 md:px-10 lg:px-12">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-amber-700 font-bold text-sm mb-4 border border-amber-100 font-mono">
-              02
-            </div>
             {/* Little Heading (H3: 26px desktop / 20px mobile) */}
             <h3 className="type-little text-slate-900 mb-2 font-quicksand font-bold">
               Information Asymmetry & Brand Fear
@@ -69,9 +63,6 @@ export default function HomePage() {
 
           {/* Column 3 */}
           <div className="pt-8 md:pt-0 md:pl-10 lg:pl-12">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 font-bold text-sm mb-4 border border-emerald-100 font-mono">
-              03
-            </div>
             {/* Little Heading (H3: 26px desktop / 20px mobile) */}
             <h3 className="type-little text-slate-900 mb-2 font-quicksand font-bold">
               Low Trust in Informal Bulk Trading
