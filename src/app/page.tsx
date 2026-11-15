@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import ColorStudio from '@/components/ColorStudio';
 import HeroSection from '@/components/HeroSection';
 import RecoveryCalculator from '@/components/RecoveryCalculator';
 import GradeScaleExplorer from '@/components/GradeScaleExplorer';
@@ -9,11 +8,6 @@ export default function HomePage() {
   return (
     <div className="flex flex-col w-full bg-canvas-subtle text-main selection:bg-emerald-100 selection:text-emerald-900 transition-colors duration-200">
       
-      {/* ======================================================== */}
-      {/* 60-30-10 COLOR PALETTE STUDIO (INTERACTIVE THEME PICKER) */}
-      {/* ======================================================== */}
-      <ColorStudio />
-
       {/* ======================================================== */}
       {/* 1. HERO SECTION                                         */}
       {/* ======================================================== */}
