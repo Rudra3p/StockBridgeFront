@@ -58,7 +58,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-canvas bg-canvas/95 backdrop-blur transition-colors duration-200">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
         <Link
@@ -174,21 +174,21 @@ export default function Navbar() {
             <Link
               href="/#marketplace"
               onClick={() => setMobileMenuOpen(false)}
-              className="py-1 font-medium text-slate-700 hover:text-emerald-600"
+              className="py-1 font-medium text-slate-700 hover:text-accent"
             >
               Marketplace
             </Link>
             <Link
               href="/grade-guide"
               onClick={() => setMobileMenuOpen(false)}
-              className="py-1 font-medium text-slate-700 hover:text-emerald-600"
+              className="py-1 font-medium text-slate-700 hover:text-accent"
             >
               5-Grade Guide
             </Link>
             <Link
               href="/#how-it-works"
               onClick={() => setMobileMenuOpen(false)}
-              className="py-1 font-medium text-slate-700 hover:text-emerald-600"
+              className="py-1 font-medium text-slate-700 hover:text-accent"
             >
               How It Works
             </Link>
@@ -205,7 +205,7 @@ export default function Navbar() {
                   <Link
                     href={getDashboardLink()}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-sm font-medium text-slate-700 hover:text-emerald-600 py-1"
+                    className="text-sm font-medium text-slate-700 hover:text-accent py-1"
                   >
                     Dashboard
                   </Link>
@@ -233,7 +233,7 @@ export default function Navbar() {
                   <Link
                     href="/register"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block rounded-md bg-emerald-600 px-3 py-2 text-center text-base font-medium text-white shadow-sm hover:bg-emerald-700"
+                    className="block rounded-md bg-accent px-3 py-2 text-center text-base font-bold text-white shadow-sm hover:opacity-90"
                   >
                     Register Business
                   </Link>
