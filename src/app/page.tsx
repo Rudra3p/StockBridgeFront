@@ -87,78 +87,7 @@ export default function HomePage() {
       </section>
 
       {/* ======================================================== */}
-      {/* 6. HOW IT WORKS / ORDER LIFECYCLE (#how-it-works)        */}
-      {/* ======================================================== */}
-      <section id="how-it-works" className="w-full py-20 px-4 sm:px-6 lg:px-8 bg-white border-y border-slate-200">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200 font-quicksand">
-              The 4-Step Settlement Process
-            </span>
-            {/* Subheading (H2: 42px desktop / 28px mobile) */}
-            <h2 className="type-sub text-slate-900 mt-3 font-quicksand">
-              How a Structured Trade Works
-            </h2>
-            {/* Paragraph (P: 16px / line-height: 1.618) */}
-            <p className="type-body text-slate-600 mt-2 font-quicksand">
-              Rules, not informal promises, govern each step from lot verification to protected payment release.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {/* Step 1 */}
-            <div className="relative flex flex-col p-6 rounded-2xl border border-slate-200 bg-slate-50/60">
-              <span className="text-3xl font-black text-slate-300 mb-4 font-mono">01</span>
-              <h3 className="type-little text-slate-900 mb-1.5 font-quicksand">Structured Lot Listing</h3>
-              <p className="type-body text-slate-600 font-quicksand text-sm">
-                Seller defines cartons, total units, MOQ, and selects an A–E condition grade. Minimum 6 photos, packaging condition, and hidden reserve price are configured.
-              </p>
-              <div className="mt-4 pt-3 border-t border-slate-200 text-[11px] font-semibold text-slate-700 font-quicksand">
-                • Ops QA review within 24 hours
-              </div>
-            </div>
-
-            {/* Step 2 */}
-            <div className="relative flex flex-col p-6 rounded-2xl border border-slate-200 bg-slate-50/60">
-              <span className="text-3xl font-black text-slate-300 mb-4 font-mono">02</span>
-              <h3 className="type-little text-slate-900 mb-1.5 font-quicksand">Make-Offer Negotiation</h3>
-              <p className="type-body text-slate-600 font-quicksand text-sm">
-                Verified buyers propose bulk price and quantity. Offers below seller reserve are auto-rejected; offers above can be accepted or countered within a 48h window.
-              </p>
-              <div className="mt-4 pt-3 border-t border-slate-200 text-[11px] font-semibold text-slate-700 font-quicksand">
-                • Keeps private discounts confidential
-              </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="relative flex flex-col p-6 rounded-2xl border border-slate-200 bg-slate-50/60">
-              <span className="text-3xl font-black text-emerald-600 mb-4 font-mono">03</span>
-              <h3 className="type-little text-slate-900 mb-1.5 font-quicksand">Protected Escrow Hold</h3>
-              <p className="type-body text-slate-600 font-quicksand text-sm">
-                Buyer deposits funds into a neutral licensed hold account. Seller sees &quot;Payment Secured&quot; and dispatches goods with packing video and weight proof.
-              </p>
-              <div className="mt-4 pt-3 border-t border-slate-200 text-[11px] font-semibold text-emerald-700 font-quicksand">
-                • Seller is guaranteed funds before shipping
-              </div>
-            </div>
-
-            {/* Step 4 */}
-            <div className="relative flex flex-col p-6 rounded-2xl border border-slate-200 bg-slate-50/60">
-              <span className="text-3xl font-black text-emerald-600 mb-4 font-mono">04</span>
-              <h3 className="type-little text-slate-900 mb-1.5 font-quicksand">48h Inspection & Settlement</h3>
-              <p className="type-body text-slate-600 font-quicksand text-sm">
-                Buyer inspects shipment against the specified grade guide. When accepted (or if 48h passes without dispute), funds are automatically released to the seller minus fee.
-              </p>
-              <div className="mt-4 pt-3 border-t border-slate-200 text-[11px] font-semibold text-emerald-700 font-quicksand">
-                • Objective dispute resolution if mismatch
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ======================================================== */}
-      {/* 7. BRAND PROTECTION & GUARDRAILS FOR SELLERS            */}
+      {/* 6. BRAND PROTECTION & GUARDRAILS FOR SELLERS            */}
       {/* ======================================================== */}
       <section className="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="rounded-2xl border border-slate-900 bg-slate-900 p-8 sm:p-12 text-white">
