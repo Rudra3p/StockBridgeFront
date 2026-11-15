@@ -48,42 +48,6 @@ export default function HeroSection() {
             </Link>
           </div>
 
-          {/* Trust Anchors Strip - Increased gap from buttons */}
-          <div className="mt-10 sm:mt-12 pt-8 sm:pt-10 border-t border-canvas grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-            <div className="p-3 rounded-lg bg-canvas-subtle border border-canvas">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted block font-quicksand">
-                Verification
-              </span>
-              <span className="text-xs font-bold text-main mt-0.5 block font-quicksand">
-                GSTIN & KYC Verified
-              </span>
-            </div>
-            <div className="p-3 rounded-lg bg-canvas-subtle border border-canvas">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted block font-quicksand">
-                Condition Standard
-              </span>
-              <span className="text-xs font-bold text-main mt-0.5 block font-quicksand">
-                5-Grade Yardstick (A–E)
-              </span>
-            </div>
-            <div className="p-3 rounded-lg bg-canvas-subtle border border-canvas">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted block font-quicksand">
-                Payment Safety
-              </span>
-              <span className="text-xs font-bold text-main mt-0.5 block font-quicksand">
-                Pre-funded Escrow
-              </span>
-            </div>
-            <div className="p-3 rounded-lg bg-canvas-subtle border border-canvas">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted block font-quicksand">
-                Channel Protection
-              </span>
-              <span className="text-xs font-bold text-main mt-0.5 block font-quicksand">
-                Masked & Geo-fenced
-              </span>
-            </div>
-          </div>
-
         </div>
 
         {/* ====================================================== */}
