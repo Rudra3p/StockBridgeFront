@@ -85,12 +85,6 @@ export default function Navbar() {
           >
             5-Grade Guide
           </Link>
-          <Link
-            href="/#how-it-works"
-            className="text-sm font-medium text-slate-600 hover:text-main transition"
-          >
-            How It Works
-          </Link>
 
           <div className="h-4 w-px bg-slate-200" />
 
@@ -184,13 +178,6 @@ export default function Navbar() {
               className="py-1 font-medium text-slate-700 hover:text-accent"
             >
               5-Grade Guide
-            </Link>
-            <Link
-              href="/#how-it-works"
-              onClick={() => setMobileMenuOpen(false)}
-              className="py-1 font-medium text-slate-700 hover:text-accent"
-            >
-              How It Works
             </Link>
           </div>
 
