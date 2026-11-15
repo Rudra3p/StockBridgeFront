@@ -1,160 +1,427 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 
-interface GradeInfo {
+interface GradeItem {
   grade: 'A' | 'B' | 'C' | 'D' | 'E';
+  code: string;
   name: string;
-  badgeColor: string;
-  badgeBg: string;
-  discountRange: string;
-  definition: string;
-  packagingCondition: string;
-  defectTolerance: string;
-  idealBuyer: string;
+  discount: string;
+  oneLiner: string;
+  tolerance: string;
+  packaging: string;
+  buyer: string;
+  image: string;
+  imageAlt: string;
 }
 
-const GRADES: GradeInfo[] = [
+const GRADES_DATA: GradeItem[] = [
   {
     grade: 'A',
+    code: 'SPEC // 01-A',
     name: 'New, Current Line',
-    badgeColor: 'text-emerald-700 border-emerald-300',
-    badgeBg: 'bg-emerald-50',
-    discountRange: '10% – 25% below wholesale',
-    definition: 'Brand new, unused, factory-sealed original packaging, current season design with all accessories and intact tags. Excess purely from over-ordering or cancellations.',
-    packagingCondition: 'Original factory sealed; pristine master cartons',
-    defectTolerance: 'Zero defects. 100% first-quality retail ready.',
-    idealBuyer: 'Boutiques, mainstream retail stores, multi-brand outlets.',
+    discount: '10% – 25% BELOW WHOLESALE',
+    oneLiner: 'Factory-sealed master cartons. 100% first-quality retail ready. Direct surplus from order cancellations or over-runs.',
+    tolerance: 'Zero defects. Pristine retail mint.',
+    packaging: 'Factory sealed master cartons',
+    buyer: 'Boutiques & mainstream retail outlets',
+    image: '/images/grades/grade-a.jpg',
+    imageAlt: 'Pristine factory-sealed warehouse pallet inventory',
   },
   {
     grade: 'B',
-    name: 'New, Outdated / Previous Season',
-    badgeColor: 'text-blue-700 border-blue-300',
-    badgeBg: 'bg-blue-50',
-    discountRange: '25% – 45% below wholesale',
-    definition: 'Brand new and factory-sealed, but discontinued SKU, previous-season colourway, or superseded packaging. No functional or cosmetic defects.',
-    packagingCondition: 'Original sealed cartons; old branding or model codes',
-    defectTolerance: 'Zero functional defects. Unused and mint condition.',
-    idealBuyer: 'Value retailers, online marketplace sellers, discount department stores.',
+    code: 'SPEC // 02-B',
+    name: 'New, Outdated Season',
+    discount: '25% – 45% BELOW WHOLESALE',
+    oneLiner: 'Factory-sealed inventory from discontinued SKUs, previous colourways, or superseded packaging. Zero functional defects.',
+    tolerance: 'Zero functional or cosmetic flaws.',
+    packaging: 'Original sealed cartons; older model codes',
+    buyer: 'Value retailers & online marketplace sellers',
+    image: '/images/grades/grade-b.jpg',
+    imageAlt: 'Overstock sealed inventory in warehouse racking',
   },
   {
     grade: 'C',
-    name: 'New, Packaging Damage',
-    badgeColor: 'text-amber-700 border-amber-300',
-    badgeBg: 'bg-amber-50',
-    discountRange: '40% – 60% below wholesale',
-    definition: 'New and completely unused items, but outer master cartons or individual retail boxes are dented, crushed, or missing. Products inside are 100% complete.',
-    packagingCondition: 'Dented, torn, or re-boxed in plain brown cartons',
-    defectTolerance: 'Product itself is undamaged and fully functional.',
-    idealBuyer: 'Local neighbourhood retailers, unbox sellers, bazaar traders.',
+    code: 'SPEC // 03-C',
+    name: 'Packaging Damage',
+    discount: '40% – 60% BELOW WHOLESALE',
+    oneLiner: 'Crushed, dented, or torn outer master cartons. Products inside are 100% complete, undamaged, and factory-tested.',
+    tolerance: 'Outer packaging only. Product is 100% mint.',
+    packaging: 'Dented, torn, or plain re-boxed cartons',
+    buyer: 'Local bazaar traders & unbox retailers',
+    image: '/images/grades/grade-c.jpg',
+    imageAlt: 'Outer carton package with crushed corner or dented edges',
   },
   {
     grade: 'D',
+    code: 'SPEC // 04-D',
     name: 'Open-Box / Minor Cosmetic',
-    badgeColor: 'text-orange-700 border-orange-300',
-    badgeBg: 'bg-orange-50',
-    discountRange: '55% – 75% below wholesale',
-    definition: 'Unsealed, customer inspection returns, showroom display units, or items with minor cosmetic imperfections clearly photographed and disclosed.',
-    packagingCondition: 'Open box, repackaged, or unboxed palletized lots',
-    defectTolerance: 'Minor cosmetic marks; full testing verified.',
-    idealBuyer: 'Refurbishers, thrift outlets, clearance liquidators.',
+    discount: '55% – 75% BELOW WHOLESALE',
+    oneLiner: 'Showroom display units and customer returns. Fully inspected and verified functional with minor cosmetic marks disclosed.',
+    tolerance: 'Minor cosmetic blemishes; 100% tested.',
+    packaging: 'Open-box, repackaged, or palletized loose',
+    buyer: 'Refurbishers & clearance liquidators',
+    image: '/images/grades/grade-d.jpg',
+    imageAlt: 'Warehouse technician inspecting open-box stock with scanner',
   },
   {
     grade: 'E',
+    code: 'SPEC // 05-E',
     name: 'As-Is / Industrial Salvage',
-    badgeColor: 'text-purple-700 border-purple-300',
-    badgeBg: 'bg-purple-50',
-    discountRange: '70%+ below wholesale',
-    definition: 'Untested, mixed condition batches, customer return pallets, or excess raw manufacturing materials. Sold strictly for scrap, rework, or component harvesting.',
-    packagingCondition: 'Bulk gaylord boxes, raw pallets, uncounted bulk',
-    defectTolerance: 'No guarantees beyond verified carton count or net weight.',
-    idealBuyer: 'Recyclers, industrial rework shops, parts salvagers.',
+    discount: '70%+ AS-IS RECOVERY',
+    oneLiner: 'Untested bulk gaylords, raw pallets, and excess manufacturing stock sold strictly for scrap, parts, or component rework.',
+    tolerance: 'Untested raw bulk. Verified weight only.',
+    packaging: 'Raw gaylord bulk bins & mixed pallets',
+    buyer: 'Recyclers & industrial salvagers',
+    image: '/images/grades/grade-e.jpg',
+    imageAlt: 'Industrial scrap and mixed salvage inventory bins',
   },
 ];
 
 export default function GradeScaleExplorer() {
-  const [selectedGrade, setSelectedGrade] = useState<GradeInfo>(GRADES[0]);
+  const gradeA = GRADES_DATA[0];
+  const gradeB = GRADES_DATA[1];
+  const gradeC = GRADES_DATA[2];
+  const gradeD = GRADES_DATA[3];
+  const gradeE = GRADES_DATA[4];
 
   return (
-    <div className="w-full rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
-      <div className="max-w-2xl">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 border border-slate-200">
-          Trust Architecture • Section 7.2
-        </span>
-        <h3 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
-          The 5-Grade Standardized Lot Scale
-        </h3>
-        <p className="mt-1 text-sm text-slate-600">
-          Eliminate guesswork and informal WhatsApp disputes. Every lot listed on StockBridge is certified and inspected against a shared 5-tier yardstick.
-        </p>
+    <div className="w-full">
+      {/* Header Area */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-8 border-b border-slate-200">
+        <div>
+          <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-slate-500 mb-2">
+            <span className="h-2 w-2 rounded-full bg-[#e65c00]" />
+            Trust Architecture • Section 7.2
+          </div>
+          <h2 className="type-sub text-slate-950 font-quicksand font-bold tracking-tight">
+            The 5-Grade Standardized Lot Scale
+          </h2>
+          <p className="type-body text-slate-600 mt-2 max-w-2xl font-quicksand">
+            Physical condition yardsticks. Every lot is verified against strict inspection criteria to eliminate WhatsApp surprises, lowball offers, and return disputes.
+          </p>
+        </div>
+
+        <Link
+          href="/grade-guide"
+          className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#e65c00] hover:text-[#c44e00] transition self-start md:self-end font-mono"
+        >
+          <span>Inspection Manual</span>
+          <span aria-hidden="true">→</span>
+        </Link>
       </div>
 
-      {/* Grade Selector Tabs */}
-      <div className="mt-6 flex flex-wrap gap-2">
-        {GRADES.map((item) => {
-          const isSelected = selectedGrade.grade === item.grade;
-          return (
-            <button
-              key={item.grade}
-              type="button"
-              onClick={() => setSelectedGrade(item)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border ${
-                isSelected
-                  ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
-                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-              }`}
-            >
-              <span className={`h-5 w-5 rounded-md flex items-center justify-center font-bold text-xs ${isSelected ? 'bg-white/20 text-white' : item.badgeBg + ' ' + item.badgeColor}`}>
-                {item.grade}
+      {/* UNEVEN ASYMMETRIC GRID (Agency & Real Business Aesthetic) */}
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 items-start">
+        
+        {/* ======================================================== */}
+        {/* GRADE A (Primary Flagship / Hero Anchor Card: 7 Cols)    */}
+        {/* ======================================================== */}
+        <div className="group lg:col-span-7 rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm hover:border-slate-400 hover:shadow-md transition-all duration-300 flex flex-col sm:flex-row">
+          {/* Real Photo with Technical Overlay */}
+          <div className="sm:w-1/2 relative bg-slate-900 overflow-hidden min-h-[220px] sm:min-h-[300px]">
+            <img
+              src={gradeA.image}
+              alt={gradeA.imageAlt}
+              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent sm:bg-gradient-to-r sm:from-transparent sm:to-black/30" />
+            <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm text-[11px] font-mono text-white px-2 py-0.5 rounded border border-white/20">
+              {gradeA.code}
+            </div>
+            <div className="absolute bottom-3 left-3 text-white">
+              <span className="text-[10px] uppercase font-mono tracking-wider text-slate-300 block">
+                Condition Standard
               </span>
-              <span>{item.name.split(',')[0]}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Active Grade Deep-Dive Card */}
-      <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50/70 p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-200/80">
-          <div className="flex items-center gap-3">
-            <span className={`h-12 w-12 rounded-xl flex items-center justify-center font-black text-2xl border ${selectedGrade.badgeBg} ${selectedGrade.badgeColor}`}>
-              {selectedGrade.grade}
-            </span>
-            <div>
-              <h4 className="text-lg font-bold text-slate-900">{selectedGrade.name}</h4>
-              <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                Typical pricing: {selectedGrade.discountRange}
-              </span>
+              <span className="text-xs font-semibold">100% Factory Sealed</span>
             </div>
           </div>
 
-          <Link
-            href="/grade-guide"
-            className="text-xs font-medium text-slate-600 hover:text-slate-900 underline underline-offset-4 self-start sm:self-auto"
-          >
-            View full photo standards manual →
-          </Link>
+          {/* Card Content */}
+          <div className="sm:w-1/2 p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="flex items-center justify-center h-10 w-10 rounded-lg bg-slate-950 text-white font-black text-xl font-quicksand shadow-sm">
+                  {gradeA.grade}
+                </span>
+                <span className="text-[11px] font-bold font-mono text-[#e65c00] bg-orange-50 px-2.5 py-1 rounded border border-orange-200">
+                  {gradeA.discount}
+                </span>
+              </div>
+
+              <h3 className="type-little text-slate-950 font-quicksand font-bold">
+                {gradeA.name}
+              </h3>
+
+              <p className="type-body text-slate-600 mt-2 text-sm leading-relaxed font-quicksand">
+                {gradeA.oneLiner}
+              </p>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-slate-100 space-y-2 text-xs">
+              <div className="flex items-baseline justify-between text-slate-700">
+                <span className="font-mono text-slate-400 uppercase text-[10px]">Defect</span>
+                <span className="font-medium text-slate-900">{gradeA.tolerance}</span>
+              </div>
+              <div className="flex items-baseline justify-between text-slate-700">
+                <span className="font-mono text-slate-400 uppercase text-[10px]">Packaging</span>
+                <span className="font-medium text-slate-900">{gradeA.packaging}</span>
+              </div>
+              <div className="flex items-baseline justify-between text-slate-700">
+                <span className="font-mono text-slate-400 uppercase text-[10px]">Channel</span>
+                <span className="font-medium text-slate-900">{gradeA.buyer}</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <p className="mt-4 text-sm text-slate-700 leading-relaxed">
-          {selectedGrade.definition}
-        </p>
+        {/* ======================================================== */}
+        {/* GRADE B (Offset Secondary Anchor: 5 Cols, Staggered)      */}
+        {/* ======================================================== */}
+        <div className="group lg:col-span-5 lg:translate-y-2 rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm hover:border-slate-400 hover:shadow-md transition-all duration-300 flex flex-col">
+          {/* Real Photo (Landscape orientation) */}
+          <div className="relative w-full h-48 bg-slate-900 overflow-hidden">
+            <img
+              src={gradeB.image}
+              alt={gradeB.imageAlt}
+              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm text-[11px] font-mono text-white px-2 py-0.5 rounded border border-white/20">
+              {gradeB.code}
+            </div>
+            <div className="absolute bottom-3 left-3 text-white">
+              <span className="text-[10px] uppercase font-mono tracking-wider text-slate-300 block">
+                Condition Standard
+              </span>
+              <span className="text-xs font-semibold">Superseded / Overstock</span>
+            </div>
+          </div>
 
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-200/80 text-xs">
-          <div>
-            <span className="text-slate-400 font-medium uppercase tracking-wider block text-[10px]">Packaging Requirement</span>
-            <span className="mt-1 font-semibold text-slate-800 block">{selectedGrade.packagingCondition}</span>
-          </div>
-          <div>
-            <span className="text-slate-400 font-medium uppercase tracking-wider block text-[10px]">Defect Tolerance</span>
-            <span className="mt-1 font-semibold text-slate-800 block">{selectedGrade.defectTolerance}</span>
-          </div>
-          <div>
-            <span className="text-slate-400 font-medium uppercase tracking-wider block text-[10px]">Ideal Buyer Channel</span>
-            <span className="mt-1 font-semibold text-slate-800 block">{selectedGrade.idealBuyer}</span>
+          {/* Card Content */}
+          <div className="p-6 flex flex-col justify-between flex-1">
+            <div>
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="flex items-center justify-center h-9 w-9 rounded-lg bg-slate-800 text-white font-black text-lg font-quicksand">
+                  {gradeB.grade}
+                </span>
+                <span className="text-[11px] font-bold font-mono text-[#e65c00] bg-orange-50 px-2.5 py-1 rounded border border-orange-200">
+                  {gradeB.discount}
+                </span>
+              </div>
+
+              <h3 className="type-little text-slate-950 font-quicksand font-bold">
+                {gradeB.name}
+              </h3>
+
+              <p className="type-body text-slate-600 mt-2 text-sm leading-relaxed font-quicksand">
+                {gradeB.oneLiner}
+              </p>
+            </div>
+
+            <div className="mt-5 pt-4 border-t border-slate-100 space-y-2 text-xs">
+              <div className="flex items-baseline justify-between text-slate-700">
+                <span className="font-mono text-slate-400 uppercase text-[10px]">Defect</span>
+                <span className="font-medium text-slate-900">{gradeB.tolerance}</span>
+              </div>
+              <div className="flex items-baseline justify-between text-slate-700">
+                <span className="font-mono text-slate-400 uppercase text-[10px]">Packaging</span>
+                <span className="font-medium text-slate-900">{gradeB.packaging}</span>
+              </div>
+              <div className="flex items-baseline justify-between text-slate-700">
+                <span className="font-mono text-slate-400 uppercase text-[10px]">Channel</span>
+                <span className="font-medium text-slate-900">{gradeB.buyer}</span>
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* ======================================================== */}
+        {/* GRADE C (Packaging Damage: 4 Cols, Compact Frame)        */}
+        {/* ======================================================== */}
+        <div className="group lg:col-span-4 rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm hover:border-slate-400 hover:shadow-md transition-all duration-300 flex flex-col">
+          {/* Photo showing dented box */}
+          <div className="relative w-full h-44 bg-slate-900 overflow-hidden">
+            <img
+              src={gradeC.image}
+              alt={gradeC.imageAlt}
+              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm text-[11px] font-mono text-white px-2 py-0.5 rounded border border-white/20">
+              {gradeC.code}
+            </div>
+            <div className="absolute bottom-3 left-3 text-white">
+              <span className="text-[10px] uppercase font-mono tracking-wider text-slate-300 block">
+                Condition Standard
+              </span>
+              <span className="text-xs font-semibold">Box Dents / Mint Inside</span>
+            </div>
+          </div>
+
+          <div className="p-6 flex flex-col justify-between flex-1">
+            <div>
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="flex items-center justify-center h-9 w-9 rounded-lg bg-amber-700 text-white font-black text-lg font-quicksand">
+                  {gradeC.grade}
+                </span>
+                <span className="text-[11px] font-bold font-mono text-[#e65c00] bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
+                  {gradeC.discount}
+                </span>
+              </div>
+
+              <h3 className="type-little text-slate-950 font-quicksand font-bold">
+                {gradeC.name}
+              </h3>
+
+              <p className="type-body text-slate-600 mt-2 text-sm leading-relaxed font-quicksand">
+                {gradeC.oneLiner}
+              </p>
+            </div>
+
+            <div className="mt-5 pt-4 border-t border-slate-100 space-y-1.5 text-xs">
+              <div className="flex items-baseline justify-between text-slate-700">
+                <span className="font-mono text-slate-400 uppercase text-[10px]">Defect</span>
+                <span className="font-medium text-slate-900">{gradeC.tolerance}</span>
+              </div>
+              <div className="flex items-baseline justify-between text-slate-700">
+                <span className="font-mono text-slate-400 uppercase text-[10px]">Packaging</span>
+                <span className="font-medium text-slate-900">{gradeC.packaging}</span>
+              </div>
+              <div className="flex items-baseline justify-between text-slate-700">
+                <span className="font-mono text-slate-400 uppercase text-[10px]">Channel</span>
+                <span className="font-medium text-slate-900">{gradeC.buyer}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ======================================================== */}
+        {/* GRADE D (Open-Box & Tested: 4 Cols, Vertical Rhythm)     */}
+        {/* ======================================================== */}
+        <div className="group lg:col-span-4 lg:-translate-y-1 rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm hover:border-slate-400 hover:shadow-md transition-all duration-300 flex flex-col">
+          {/* Photo showing open box technician inspection */}
+          <div className="relative w-full h-48 bg-slate-900 overflow-hidden">
+            <img
+              src={gradeD.image}
+              alt={gradeD.imageAlt}
+              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm text-[11px] font-mono text-white px-2 py-0.5 rounded border border-white/20">
+              {gradeD.code}
+            </div>
+            <div className="absolute bottom-3 left-3 text-white">
+              <span className="text-[10px] uppercase font-mono tracking-wider text-slate-300 block">
+                Condition Standard
+              </span>
+              <span className="text-xs font-semibold">Inspected & Tested</span>
+            </div>
+          </div>
+
+          <div className="p-6 flex flex-col justify-between flex-1">
+            <div>
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="flex items-center justify-center h-9 w-9 rounded-lg bg-orange-700 text-white font-black text-lg font-quicksand">
+                  {gradeD.grade}
+                </span>
+                <span className="text-[11px] font-bold font-mono text-[#e65c00] bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
+                  {gradeD.discount}
+                </span>
+              </div>
+
+              <h3 className="type-little text-slate-950 font-quicksand font-bold">
+                {gradeD.name}
+              </h3>
+
+              <p className="type-body text-slate-600 mt-2 text-sm leading-relaxed font-quicksand">
+                {gradeD.oneLiner}
+              </p>
+            </div>
+
+            <div className="mt-5 pt-4 border-t border-slate-100 space-y-1.5 text-xs">
+              <div className="flex items-baseline justify-between text-slate-700">
+                <span className="font-mono text-slate-400 uppercase text-[10px]">Defect</span>
+                <span className="font-medium text-slate-900">{gradeD.tolerance}</span>
+              </div>
+              <div className="flex items-baseline justify-between text-slate-700">
+                <span className="font-mono text-slate-400 uppercase text-[10px]">Packaging</span>
+                <span className="font-medium text-slate-900">{gradeD.packaging}</span>
+              </div>
+              <div className="flex items-baseline justify-between text-slate-700">
+                <span className="font-mono text-slate-400 uppercase text-[10px]">Channel</span>
+                <span className="font-medium text-slate-900">{gradeD.buyer}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ======================================================== */}
+        {/* GRADE E (Industrial Salvage: 4 Cols, Dark Contrast)      */}
+        {/* ======================================================== */}
+        <div className="group lg:col-span-4 lg:translate-y-2 rounded-xl border border-slate-900 bg-slate-950 text-white overflow-hidden shadow-sm hover:border-slate-700 hover:shadow-md transition-all duration-300 flex flex-col">
+          {/* Photo showing salvage raw pallet */}
+          <div className="relative w-full h-44 bg-black overflow-hidden">
+            <img
+              src={gradeE.image}
+              alt={gradeE.imageAlt}
+              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out opacity-90"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent" />
+            <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-sm text-[11px] font-mono text-white px-2 py-0.5 rounded border border-white/20">
+              {gradeE.code}
+            </div>
+            <div className="absolute bottom-3 left-3 text-white">
+              <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400 block">
+                Condition Standard
+              </span>
+              <span className="text-xs font-semibold">Bulk As-Is / Salvage</span>
+            </div>
+          </div>
+
+          <div className="p-6 flex flex-col justify-between flex-1">
+            <div>
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="flex items-center justify-center h-9 w-9 rounded-lg bg-white text-slate-950 font-black text-lg font-quicksand">
+                  {gradeE.grade}
+                </span>
+                <span className="text-[11px] font-bold font-mono text-[#e65c00] bg-orange-950/60 px-2 py-0.5 rounded border border-orange-900">
+                  {gradeE.discount}
+                </span>
+              </div>
+
+              <h3 className="type-little text-white font-quicksand font-bold">
+                {gradeE.name}
+              </h3>
+
+              <p className="type-body text-slate-400 mt-2 text-sm leading-relaxed font-quicksand">
+                {gradeE.oneLiner}
+              </p>
+            </div>
+
+            <div className="mt-5 pt-4 border-t border-slate-800 space-y-1.5 text-xs">
+              <div className="flex items-baseline justify-between text-slate-300">
+                <span className="font-mono text-slate-500 uppercase text-[10px]">Defect</span>
+                <span className="font-medium text-slate-200">{gradeE.tolerance}</span>
+              </div>
+              <div className="flex items-baseline justify-between text-slate-300">
+                <span className="font-mono text-slate-500 uppercase text-[10px]">Packaging</span>
+                <span className="font-medium text-slate-200">{gradeE.packaging}</span>
+              </div>
+              <div className="flex items-baseline justify-between text-slate-300">
+                <span className="font-mono text-slate-500 uppercase text-[10px]">Channel</span>
+                <span className="font-medium text-slate-200">{gradeE.buyer}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );
