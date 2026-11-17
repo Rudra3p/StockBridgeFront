@@ -75,9 +75,7 @@ export default function HomePage() {
       {/* ======================================================== */}
       {/* 4. THE 5-GRADE LOT SCALE EXPLORER                       */}
       {/* ======================================================== */}
-      <section className="w-full py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <GradeScaleExplorer />
-      </section>
+      <GradeScaleExplorer />
 
       {/* ======================================================== */}
       {/* 5. LIVE MARKETPLACE SAMPLES (#marketplace)              */}
