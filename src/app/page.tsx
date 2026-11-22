@@ -51,7 +51,7 @@ export default function HomePage() {
             <div className="space-y-3">
               <div>
                 <div className="text-3xl sm:text-4xl font-black text-white font-quicksand leading-none mb-2">
-                  1
+                  1.
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold font-quicksand text-white leading-snug">
                   Hidden Brand Name
@@ -64,7 +64,7 @@ export default function HomePage() {
             <div className="space-y-3">
               <div>
                 <div className="text-3xl sm:text-4xl font-black text-white font-quicksand leading-none mb-2">
-                  2
+                  2.
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold font-quicksand text-white leading-snug">
                   Geographic Blocker
@@ -77,7 +77,7 @@ export default function HomePage() {
             <div className="space-y-3">
               <div>
                 <div className="text-3xl sm:text-4xl font-black text-white font-quicksand leading-none mb-2">
-                  3
+                  3.
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold font-quicksand text-white leading-snug">
                   Channel Allow-lists
