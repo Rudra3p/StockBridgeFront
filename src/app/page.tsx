@@ -39,11 +39,7 @@ export default function HomePage() {
       <section className="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden relative">
         <div className="rounded-2xl border border-slate-800 bg-[#0a0f1d] p-8 sm:p-12 text-white shadow-2xl">
           <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#ff7a1a] bg-orange-950/60 px-3 py-1 rounded-md border border-orange-500/40">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#ff7a1a]" />
-              Brand Protection Architecture
-            </span>
-            <h2 className="type-sub !text-white mt-4 font-quicksand font-bold tracking-tight text-2xl sm:text-3xl lg:text-4xl">
+            <h2 className="type-sub !text-white font-quicksand font-bold tracking-tight text-2xl sm:text-3xl lg:text-4xl">
               Sell excess inventory without <span className="text-[#ff7a1a]">cannibalizing</span> your regular distribution network.
             </h2>
             <p className="type-body !text-slate-100 mt-3 font-quicksand leading-relaxed text-base sm:text-lg">
