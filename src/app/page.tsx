@@ -37,35 +37,44 @@ export default function HomePage() {
       {/* 6. BRAND PROTECTION & GUARDRAILS FOR SELLERS            */}
       {/* ======================================================== */}
       <section className="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden relative">
-        <div className="rounded-2xl border border-slate-900 bg-slate-900 p-8 sm:p-12 text-white">
+        <div className="rounded-2xl border border-slate-900 bg-slate-950 p-8 sm:p-12 text-white shadow-xl">
           <div className="max-w-3xl">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/80 px-3 py-1 rounded border border-emerald-800 font-quicksand">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#e65c00] bg-orange-950/60 px-3 py-1 rounded border border-orange-900 font-mono">
               Brand Protection Architecture
             </span>
-            <h2 className="type-sub text-white mt-4 font-quicksand">
-              Sell excess inventory without cannibalizing your regular distribution network.
+            <h2 className="type-sub text-white mt-4 font-quicksand font-bold tracking-tight">
+              Sell excess inventory without <span className="text-[#e65c00]">cannibalizing</span> your regular distribution network.
             </h2>
-            <p className="type-body text-slate-300 mt-3 font-quicksand">
+            <p className="type-body text-slate-200 mt-3 font-quicksand leading-relaxed text-base">
               We know brand owners and authorised distributors refuse to dump inventory on public websites because their regular retail clients will demand the same discount. StockBridge is built with three strict confidentiality layers:
             </p>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-slate-800">
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-8 pt-6 border-t border-slate-800">
             <div>
-              <div className="text-emerald-400 font-bold mb-1 type-little font-quicksand">01. Hidden Brand Name</div>
-              <p className="type-body text-slate-400 text-sm font-quicksand">
+              <div className="text-[#e65c00] font-bold mb-2 type-little font-quicksand flex items-center gap-2">
+                <span className="text-xs font-mono text-white/60 bg-white/10 px-1.5 py-0.5 rounded">01</span>
+                <span>Hidden Brand Name</span>
+              </div>
+              <p className="type-body text-slate-200 text-sm font-quicksand leading-relaxed">
                 List as &quot;Tier-1 Premium Footwear&quot; or &quot;Export Quality Apparel&quot;. Your brand name is completely hidden from public view and disclosed only after a verified buyer is accepted.
               </p>
             </div>
             <div>
-              <div className="text-emerald-400 font-bold mb-1 type-little font-quicksand">02. Geographic Blocker</div>
-              <p className="type-body text-slate-400 text-sm font-quicksand">
+              <div className="text-[#e65c00] font-bold mb-2 type-little font-quicksand flex items-center gap-2">
+                <span className="text-xs font-mono text-white/60 bg-white/10 px-1.5 py-0.5 rounded">02</span>
+                <span>Geographic Blocker</span>
+              </div>
+              <p className="type-body text-slate-200 text-sm font-quicksand leading-relaxed">
                 Block buyers in your home city or state from seeing or purchasing your surplus lots, ensuring local retail shops never see discounted stock.
               </p>
             </div>
             <div>
-              <div className="text-emerald-400 font-bold mb-1 type-little font-quicksand">03. Channel Allow-lists</div>
-              <p className="type-body text-slate-400 text-sm font-quicksand">
+              <div className="text-[#e65c00] font-bold mb-2 type-little font-quicksand flex items-center gap-2">
+                <span className="text-xs font-mono text-white/60 bg-white/10 px-1.5 py-0.5 rounded">03</span>
+                <span>Channel Allow-lists</span>
+              </div>
+              <p className="type-body text-slate-200 text-sm font-quicksand leading-relaxed">
                 Restrict purchase eligibility exclusively to off-price liquidators, export traders, or institutional buyers—blocking online marketplace scrapers.
               </p>
             </div>
