@@ -13,60 +13,9 @@ export default function HomePage() {
       {/* ======================================================== */}
       <HeroSection />
 
-      {/* ======================================================== */}
-      {/* 2. THE THREE LINKED PROBLEMS (SECTION 2 OF BLUEPRINT)    */}
-      {/* ======================================================== */}
-      <section className="w-full py-14 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
-          {/* Column 1 */}
-          <div className="pb-8 md:pb-0 md:pr-10 lg:pr-12">
-            {/* Little Heading (H3: 26px desktop / 20px mobile) */}
-            <h3 className="type-little text-slate-900 mb-2 font-quicksand font-bold">
-              Capital Frozen in Warehouse Rack Space
-            </h3>
-            {/* Paragraph (P: 16px / line-height: 1.618) */}
-            <p className="type-body text-slate-600 font-quicksand">
-              Inventory is working capital that has stopped working. Every month dead lines sit on warehouse pallets, they lose value, accrue storage costs, and prevent businesses from buying fast-moving goods.
-            </p>
-            <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] font-semibold text-rose-600 font-quicksand">
-              Typical cost: 5% to 15% annual purchases lost to aging stock.
-            </div>
-          </div>
-
-          {/* Column 2 */}
-          <div className="py-8 md:py-0 md:px-10 lg:px-12">
-            {/* Little Heading (H3: 26px desktop / 20px mobile) */}
-            <h3 className="type-little text-slate-900 mb-2 font-quicksand font-bold">
-              Information Asymmetry & Brand Fear
-            </h3>
-            {/* Paragraph (P: 16px / line-height: 1.618) */}
-            <p className="type-body text-slate-600 font-quicksand">
-              Sellers do not know who would pay fair recovery value for excess stock. Even worse, brands avoid public discounting out of fear that local customers or authorized distributors will demand the same markdown.
-            </p>
-            <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] font-semibold text-amber-700 font-quicksand">
-              Solution: Anonymous brand listings & competitor geo-blocking.
-            </div>
-          </div>
-
-          {/* Column 3 */}
-          <div className="pt-8 md:pt-0 md:pl-10 lg:pl-12">
-            {/* Little Heading (H3: 26px desktop / 20px mobile) */}
-            <h3 className="type-little text-slate-900 mb-2 font-quicksand font-bold">
-              Low Trust in Informal Bulk Trading
-            </h3>
-            {/* Paragraph (P: 16px / line-height: 1.618) */}
-            <p className="type-body text-slate-600 font-quicksand">
-              Informal WhatsApp bulk deals carry enormous risk. Buyers pay advance and receive damaged goods; sellers ship on credit and wait weeks for payment. StockBridge eliminates both with partner escrow.
-            </p>
-            <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] font-semibold text-emerald-700 font-quicksand">
-              Solution: Funds held in escrow until 48h physical inspection.
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ======================================================== */}
-      {/* 3. INTERACTIVE RECOVERY CALCULATOR                      */}
+      {/* 2. INTERACTIVE RECOVERY CALCULATOR                      */}
       {/* ======================================================== */}
       <section className="w-full py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <RecoveryCalculator />
