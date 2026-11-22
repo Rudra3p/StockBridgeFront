@@ -48,28 +48,40 @@ export default function HomePage() {
           </div>
 
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-8 pt-6 border-t border-slate-800">
-            <div className="space-y-2">
-              <div className="font-bold type-little font-quicksand flex items-center gap-2 !text-white">
-                <span className="text-xs font-mono font-bold text-[#ff7a1a] bg-orange-950/80 px-2 py-0.5 rounded border border-orange-500/40">01</span>
-                <span className="text-white text-lg">Hidden Brand Name</span>
+            <div className="space-y-3">
+              <div>
+                <div className="text-3xl sm:text-4xl font-black text-white font-quicksand leading-none mb-2">
+                  1
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold font-quicksand text-white leading-snug">
+                  Hidden Brand Name
+                </h3>
               </div>
               <p className="type-body !text-slate-200 text-sm font-quicksand leading-relaxed">
                 List as &quot;Tier-1 Premium Footwear&quot; or &quot;Export Quality Apparel&quot;. Your brand name is completely hidden from public view and disclosed only after a verified buyer is accepted.
               </p>
             </div>
-            <div className="space-y-2">
-              <div className="font-bold type-little font-quicksand flex items-center gap-2 !text-white">
-                <span className="text-xs font-mono font-bold text-[#ff7a1a] bg-orange-950/80 px-2 py-0.5 rounded border border-orange-500/40">02</span>
-                <span className="text-white text-lg">Geographic Blocker</span>
+            <div className="space-y-3">
+              <div>
+                <div className="text-3xl sm:text-4xl font-black text-white font-quicksand leading-none mb-2">
+                  2
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold font-quicksand text-white leading-snug">
+                  Geographic Blocker
+                </h3>
               </div>
               <p className="type-body !text-slate-200 text-sm font-quicksand leading-relaxed">
                 Block buyers in your home city or state from seeing or purchasing your surplus lots, ensuring local retail shops never see discounted stock.
               </p>
             </div>
-            <div className="space-y-2">
-              <div className="font-bold type-little font-quicksand flex items-center gap-2 !text-white">
-                <span className="text-xs font-mono font-bold text-[#ff7a1a] bg-orange-950/80 px-2 py-0.5 rounded border border-orange-500/40">03</span>
-                <span className="text-white text-lg">Channel Allow-lists</span>
+            <div className="space-y-3">
+              <div>
+                <div className="text-3xl sm:text-4xl font-black text-white font-quicksand leading-none mb-2">
+                  3
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold font-quicksand text-white leading-snug">
+                  Channel Allow-lists
+                </h3>
               </div>
               <p className="type-body !text-slate-200 text-sm font-quicksand leading-relaxed">
                 Restrict purchase eligibility exclusively to off-price liquidators, export traders, or institutional buyers—blocking online marketplace scrapers.
