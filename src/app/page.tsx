@@ -6,7 +6,7 @@ import FeaturedLots from '@/components/FeaturedLots';
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col w-full bg-canvas-subtle text-main selection:bg-emerald-100 selection:text-emerald-900 transition-colors duration-200">
+    <div className="flex flex-col w-full max-w-full overflow-x-hidden bg-canvas-subtle text-main selection:bg-emerald-100 selection:text-emerald-900 transition-colors duration-200">
       
       {/* ======================================================== */}
       {/* 1. HERO SECTION                                         */}
@@ -80,14 +80,14 @@ export default function HomePage() {
       {/* ======================================================== */}
       {/* 5. LIVE MARKETPLACE SAMPLES (#marketplace)              */}
       {/* ======================================================== */}
-      <section id="marketplace" className="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-200">
+      <section id="marketplace" className="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-200 overflow-hidden relative">
         <FeaturedLots />
       </section>
 
       {/* ======================================================== */}
       {/* 6. BRAND PROTECTION & GUARDRAILS FOR SELLERS            */}
       {/* ======================================================== */}
-      <section className="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <section className="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden relative">
         <div className="rounded-2xl border border-slate-900 bg-slate-900 p-8 sm:p-12 text-white">
           <div className="max-w-3xl">
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/80 px-3 py-1 rounded border border-emerald-800 font-quicksand">
@@ -127,7 +127,7 @@ export default function HomePage() {
       {/* ======================================================== */}
       {/* 8. COMMON QUESTIONS (FAQ FROM REALITY CHECK)            */}
       {/* ======================================================== */}
-      <section className="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+      <section className="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto overflow-hidden relative">
         <div className="text-center mb-10">
           <h2 className="type-sub text-slate-900 font-quicksand">
             Frequently Asked Questions

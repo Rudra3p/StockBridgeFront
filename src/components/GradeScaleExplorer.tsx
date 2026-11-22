@@ -99,7 +99,7 @@ export default function GradeScaleExplorer() {
       ctx = gsap.context(() => {
         // Calculate the exact horizontal distance needed to scroll all cards into view
         const getScrollDistance = () => {
-          return track.scrollWidth - window.innerWidth + 80;
+          return Math.max(0, track.scrollWidth - (container.clientWidth || window.innerWidth));
         };
 
         // Horizontal translation animation
@@ -128,17 +128,29 @@ export default function GradeScaleExplorer() {
           start: 'top top+=64', // aligns directly below the 64px sticky navbar
           end: () => `+=${getScrollDistance()}`,
           pin: true,
+          pinSpacing: true,
           anticipatePin: 1,
           scrub: 1, // smooth fluid scrubbing
           animation: horizontalTween,
           invalidateOnRefresh: true,
+          fastScrollEnd: true,
+          preventOverlaps: true,
         });
       }, container);
     }
 
+    // Lock window horizontal scroll to 0 at all times
+    const enforceZeroScrollX = () => {
+      if (window.scrollX !== 0) {
+        window.scrollTo(0, window.scrollY);
+      }
+    };
+    window.addEventListener('scroll', enforceZeroScrollX, { passive: true });
+
     initScroll();
 
     return () => {
+      window.removeEventListener('scroll', enforceZeroScrollX);
       ctx?.revert();
     };
   }, []);
@@ -146,7 +158,7 @@ export default function GradeScaleExplorer() {
   return (
     <section
       ref={containerRef}
-      className="relative w-full bg-white border-y border-slate-200 overflow-hidden"
+      className="relative w-full max-w-full bg-white border-y border-slate-200 overflow-hidden"
     >
       {/* ── Section Header (Pinned Top Bar) ──────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-5 flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -187,7 +199,7 @@ export default function GradeScaleExplorer() {
       </div>
 
       {/* ── Horizontal Track ─────────────────────────────────────── */}
-      <div className="py-6 sm:py-8 overflow-visible">
+      <div className="py-6 sm:py-8 overflow-hidden w-full max-w-full">
         <div
           ref={trackRef}
           className="flex items-stretch gap-6 sm:gap-8 px-4 sm:px-8 lg:px-16 will-change-transform"
