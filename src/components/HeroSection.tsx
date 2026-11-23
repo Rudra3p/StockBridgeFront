@@ -22,20 +22,20 @@ export default function HeroSection() {
           
           {/* MAIN HEADING - Golden Ratio Main (54px desktop / 34px mobile) Quicksand Bold */}
           <h1 className="type-main text-main font-quicksand font-bold">
-            Where{' '}
+            Source Verified{' '}
             <span className="text-accent transition-colors duration-200">
               Factory Surplus
             </span>{' '}
-            Meets Direct Volume Liquidity.
+            at 30% to 70% Below Wholesale.
           </h1>
 
           {/* Action CTAs - Increased gap from heading */}
           <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
             <Link
-              href="/register"
+              href="/register?role=BUYER"
               className="inline-flex items-center justify-center rounded-xl bg-accent px-7 py-4 text-base font-bold text-white shadow-sm transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 font-quicksand"
             >
-              Register Business (Sell or Buy)
+              Register as Wholesale Buyer
               <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>

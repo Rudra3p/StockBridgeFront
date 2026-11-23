@@ -34,16 +34,16 @@ export default function HomePage() {
       </section>
 
       {/* ======================================================== */}
-      {/* 6. BRAND PROTECTION & GUARDRAILS FOR SELLERS            */}
+      {/* 5. BUYER TRADE PROTECTION & QUALITY GUARDRAILS          */}
       {/* ======================================================== */}
       <section className="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden relative">
         <div className="rounded-2xl border border-slate-800 bg-[#0a0f1d] p-8 sm:p-12 text-white shadow-2xl">
           <div className="max-w-3xl">
             <h2 className="type-sub !text-white font-quicksand font-bold tracking-tight text-2xl sm:text-3xl lg:text-4xl">
-              Sell excess inventory without <span className="text-[#ff7a1a]">cannibalizing</span> your regular distribution network.
+              Source authentic factory surplus with <span className="text-[#ff7a1a]">zero quality risk</span> and protected escrow.
             </h2>
             <p className="type-body !text-slate-100 mt-3 font-quicksand leading-relaxed text-base sm:text-lg">
-              We know brand owners and authorised distributors refuse to dump inventory on public websites because their regular retail clients will demand the same discount. StockBridge is built with three strict confidentiality layers:
+              We know wholesale buyers hesitate to buy liquidation lots because informal WhatsApp dealers often ship damaged junk or missing items. StockBridge protects buyers with three strict safety layers:
             </p>
           </div>
 
@@ -54,11 +54,11 @@ export default function HomePage() {
                   1.
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold font-quicksand text-white leading-snug">
-                  Hidden Brand Name
+                  Pre-Funded Escrow Protection
                 </h3>
               </div>
               <p className="type-body !text-slate-200 text-sm font-quicksand leading-relaxed">
-                List as &quot;Tier-1 Premium Footwear&quot; or &quot;Export Quality Apparel&quot;. Your brand name is completely hidden from public view and disclosed only after a verified buyer is accepted.
+                Your payment is never sent directly to the seller upfront. StockBridge holds all funds securely in neutral escrow until goods are delivered to your facility and physically verified.
               </p>
             </div>
             <div className="space-y-3">
@@ -67,11 +67,11 @@ export default function HomePage() {
                   2.
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold font-quicksand text-white leading-snug">
-                  Geographic Blocker
+                  48-Hour Physical Inspection Window
                 </h3>
               </div>
               <p className="type-body !text-slate-200 text-sm font-quicksand leading-relaxed">
-                Block buyers in your home city or state from seeing or purchasing your surplus lots, ensuring local retail shops never see discounted stock.
+                Open master cartons, inspect unit conditions, and cross-check manifests against the lot&apos;s 5-grade yardstick before a single rupee is released to the vendor.
               </p>
             </div>
             <div className="space-y-3">
@@ -80,11 +80,11 @@ export default function HomePage() {
                   3.
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold font-quicksand text-white leading-snug">
-                  Channel Allow-lists
+                  Direct Factory Invoices &amp; GST Credit
                 </h3>
               </div>
               <p className="type-body !text-slate-200 text-sm font-quicksand leading-relaxed">
-                Restrict purchase eligibility exclusively to off-price liquidators, export traders, or institutional buyers—blocking online marketplace scrapers.
+                100% verified B2B tax invoices with valid HSN codes for every lot. Claim full GST input tax credit (ITC) with zero grey-market or counterfeit risk.
               </p>
             </div>
           </div>
@@ -92,7 +92,7 @@ export default function HomePage() {
       </section>
 
       {/* ======================================================== */}
-      {/* 8. COMMON QUESTIONS (FAQ FROM REALITY CHECK)            */}
+      {/* 6. COMMON QUESTIONS (FAQ FOR WHOLESALE BUYERS)          */}
       {/* ======================================================== */}
       <section className="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto overflow-hidden relative">
         <div className="text-center mb-10">
@@ -100,72 +100,72 @@ export default function HomePage() {
             Frequently Asked Questions
           </h2>
           <p className="type-body text-slate-500 mt-1 font-quicksand">
-            Straightforward answers to the most common questions from businesses.
+            Straightforward answers for retail store owners, wholesalers, and procurement managers.
           </p>
         </div>
 
         <div className="space-y-4">
           <div className="rounded-xl border border-slate-200 bg-white p-6">
             <h3 className="type-little text-slate-900 font-quicksand">
-              Who is allowed to buy and sell on StockBridge?
+              Who is eligible to buy wholesale surplus on StockBridge?
             </h3>
             <p className="type-body text-slate-600 mt-2 font-quicksand">
-              StockBridge is exclusively for registered businesses (manufacturers, wholesalers, distributors, retail shop owners, and corporate buyers). Every account must provide a valid GST/tax identification and business address before accessing wholesale trade functions.
+              StockBridge is exclusively for registered businesses (retail shop owners, regional wholesalers, modern trade chains, and corporate procurement teams). A valid GSTIN/tax identification and business address are required during verification to access wholesale lots and pricing.
             </p>
           </div>
 
           <div className="rounded-xl border border-slate-200 bg-white p-6">
             <h3 className="type-little text-slate-900 font-quicksand">
-              How does the 48-hour inspection window work?
+              How does the 48-hour buyer inspection window work?
             </h3>
             <p className="type-body text-slate-600 mt-2 font-quicksand">
-              When a shipment arrives, the buyer has 48 hours (up to 120 hours for large multi-pallet consignments) to inspect the goods against the lot&apos;s specified condition grade. If there is a grade mismatch or quantity shortage, the buyer uploads photo evidence, and the disputed amount remains frozen in escrow while operations arbitrates.
+              Once your consignment arrives at your facility, you have 48 hours (extended up to 120 hours for multi-pallet container consignments) to inspect the goods against the lot&apos;s manifest and guaranteed condition grade. If there is an undisclosed grade mismatch or shortage, upload photo evidence directly in your dashboard—the disputed payout remains frozen in escrow while our operations team arbitrates.
             </p>
           </div>
 
           <div className="rounded-xl border border-slate-200 bg-white p-6">
             <h3 className="type-little text-slate-900 font-quicksand">
-              Why make-offer negotiation instead of open auctions?
+              Can I negotiate or make offers below the asking price?
             </h3>
             <p className="type-body text-slate-600 mt-2 font-quicksand">
-              Open auctions require dozens of active simultaneous bidders to avoid selling goods at pennies. Make-offer negotiation allows a single serious buyer to bid against a seller&apos;s confidential hidden reserve price, protecting seller dignity and floor margins.
+              Yes! You can purchase instantly at the listed lot price or submit a binding &quot;Make Offer&quot; proposal. Sellers receive your offer with verified proof of funds and can accept, counter, or decline within 24 hours without prolonged back-and-forth.
             </p>
           </div>
 
           <div className="rounded-xl border border-slate-200 bg-white p-6">
             <h3 className="type-little text-slate-900 font-quicksand">
-              What are the platform fees?
+              What are the buyer fees and payment terms?
             </h3>
             <p className="type-body text-slate-600 mt-2 font-quicksand">
-              Sellers pay a standard 7% commission deducted only upon successful order settlement. Buyers pay a 1.5% buyer protection fee covering secure escrow handling and tax invoice generation. There are zero upfront listing fees for standard accounts.
+              Browsing the marketplace and registering an account are completely free. Buyers pay a transparent 1.5% buyer protection fee at checkout, covering end-to-end escrow security, manifest verification, and automated GST tax invoicing. There are zero hidden markups or broker commissions.
             </p>
           </div>
         </div>
       </section>
 
       {/* ======================================================== */}
-      {/* 9. BOTTOM CTA STRIP                                     */}
+      {/* 7. BOTTOM CTA STRIP                                     */}
       {/* ======================================================== */}
       <section className="w-full bg-accent py-16 px-4 sm:px-6 lg:px-8 text-white text-center transition-colors duration-200">
         <div className="max-w-3xl mx-auto">
           <h2 className="type-sub text-white font-quicksand">
-            Ready to turn dead inventory into working capital?
+            Ready to source high-margin surplus inventory for your store?
           </h2>
           <p className="type-body text-white/90 mt-3 max-w-xl mx-auto font-quicksand">
-            Join verified manufacturers, distributors, and retailers trading surplus inventory with complete trust and discretion.
+            Join thousands of verified retail shops, regional wholesalers, and trading firms sourcing verified surplus stock at 30% to 70% below wholesale.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
-              href="/register"
+              href="/register?role=BUYER"
               className="w-full sm:w-auto rounded-xl bg-white px-8 py-3.5 text-base font-bold text-slate-900 shadow-sm transition hover:bg-slate-100 focus:outline-none font-quicksand"
             >
-              Apply for Business Account
+              Register as Wholesale Buyer
             </Link>
             <Link
-              href="/grade-guide"
+              href="#marketplace"
               className="w-full sm:w-auto rounded-xl border border-white/40 bg-black/10 px-8 py-3.5 text-base font-bold text-white transition hover:bg-black/20 font-quicksand"
             >
-              Read the 5-Grade Manual
+              Browse Graded Marketplace
             </Link>
           </div>
         </div>

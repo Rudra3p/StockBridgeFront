@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,8 +9,12 @@ import { registerSchema, RegisterFormData } from '@/lib/validations';
 import { clientAuth } from '@/lib/client-api';
 import { OrgType, Role } from '@/lib/types';
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialRoleParam = searchParams.get('role')?.toUpperCase();
+  const initialRole = initialRoleParam === 'BUYER' ? 'BUYER' : 'SELLER';
+
   const [serverError, setServerError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -23,8 +27,8 @@ export default function RegisterPage() {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      role: 'SELLER',
-      orgType: 'WHOLESALER',
+      role: initialRole,
+      orgType: initialRole === 'BUYER' ? 'RETAILER' : 'WHOLESALER',
       legalName: '',
       gstNumber: '',
       addressLine: '',
@@ -39,6 +43,15 @@ export default function RegisterPage() {
   });
 
   const selectedRole = watch('role');
+
+  useEffect(() => {
+    if (initialRoleParam === 'BUYER' || initialRoleParam === 'SELLER') {
+      setValue('role', initialRoleParam);
+      if (initialRoleParam === 'BUYER') {
+        setValue('orgType', 'RETAILER');
+      }
+    }
+  }, [initialRoleParam, setValue]);
 
   const onSubmit = async (data: RegisterFormData) => {
     setServerError(null);
@@ -83,14 +96,16 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-2xl bg-white p-8 sm:p-10 rounded-2xl border border-slate-200 shadow-sm">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-            Register your Business
-          </h1>
-          <p className="mt-2 text-sm text-slate-600">
-            Join the StockBridge B2B marketplace to buy or liquidate surplus inventory.
-          </p>
-        </div>
+          <div className="text-center mb-8">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+              {selectedRole === 'BUYER' ? 'Register as Wholesale Buyer' : 'Register your Business'}
+            </h1>
+            <p className="mt-2 text-sm text-slate-600">
+              {selectedRole === 'BUYER'
+                ? 'Source authentic factory surplus lots at 30% to 70% below wholesale with 48-hour escrow protection.'
+                : 'Join the StockBridge B2B marketplace to liquidate excess stock confidentially or source inventory.'}
+            </p>
+          </div>
 
         {/* Server-side Error Alert */}
         {serverError && (
@@ -489,5 +504,19 @@ export default function RegisterPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent" />
+        </div>
+      }
+    >
+      <RegisterForm />
+    </Suspense>
   );
 }

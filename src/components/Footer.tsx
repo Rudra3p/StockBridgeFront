@@ -76,19 +76,22 @@ export default function Footer() {
 
           {/* Col 3: Portal & Legal */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Portals & Legal</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Portals &amp; Legal</h4>
             <ul className="mt-4 space-y-2 text-xs">
               <li>
-                <Link href="/login" className="hover:text-white transition">Seller Portal</Link>
+                <Link href="/register?role=SELLER" className="hover:text-white transition font-semibold text-slate-300">Sell on StockBridge</Link>
               </li>
               <li>
-                <Link href="/login" className="hover:text-white transition">Buyer Portal</Link>
+                <Link href="/register?role=BUYER" className="hover:text-white transition font-semibold text-slate-300">Register as Buyer</Link>
               </li>
               <li>
-                <Link href="/register" className="hover:text-white transition">Business Registration</Link>
+                <Link href="/login" className="hover:text-white transition">Seller Portal (Login)</Link>
               </li>
               <li>
-                <span className="text-slate-500 cursor-not-allowed">Trading Rules & Policy</span>
+                <Link href="/login" className="hover:text-white transition">Buyer Portal (Login)</Link>
+              </li>
+              <li>
+                <span className="text-slate-500 cursor-not-allowed">Trading Rules &amp; Policy</span>
               </li>
               <li>
                 <span className="text-slate-500 cursor-not-allowed">Terms of Intermediary</span>
