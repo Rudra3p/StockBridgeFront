@@ -1,34 +1,28 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema, RegisterFormData } from '@/lib/validations';
 import { clientAuth } from '@/lib/client-api';
-import { OrgType, Role } from '@/lib/types';
+import { OrgType } from '@/lib/types';
 
-function RegisterForm() {
+export default function RegisterPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const initialRoleParam = searchParams.get('role')?.toUpperCase();
-  const initialRole = initialRoleParam === 'BUYER' ? 'BUYER' : 'SELLER';
-
   const [serverError, setServerError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
     handleSubmit,
-    watch,
-    setValue,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      role: initialRole,
-      orgType: initialRole === 'BUYER' ? 'RETAILER' : 'WHOLESALER',
+      role: 'BUYER',
+      orgType: 'RETAILER',
       legalName: '',
       gstNumber: '',
       addressLine: '',
@@ -41,17 +35,6 @@ function RegisterForm() {
       password: '',
     },
   });
-
-  const selectedRole = watch('role');
-
-  useEffect(() => {
-    if (initialRoleParam === 'BUYER' || initialRoleParam === 'SELLER') {
-      setValue('role', initialRoleParam);
-      if (initialRoleParam === 'BUYER') {
-        setValue('orgType', 'RETAILER');
-      }
-    }
-  }, [initialRoleParam, setValue]);
 
   const onSubmit = async (data: RegisterFormData) => {
     setServerError(null);
@@ -73,7 +56,7 @@ function RegisterForm() {
           email: data.email.trim().toLowerCase(),
           phone: data.phone.trim(),
           password: data.password,
-          role: data.role as 'SELLER' | 'BUYER',
+          role: 'BUYER' as const,
         },
       };
 
@@ -96,16 +79,14 @@ function RegisterForm() {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-2xl bg-white p-8 sm:p-10 rounded-2xl border border-slate-200 shadow-sm">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-              {selectedRole === 'BUYER' ? 'Register as Wholesale Buyer' : 'Register your Business'}
-            </h1>
-            <p className="mt-2 text-sm text-slate-600">
-              {selectedRole === 'BUYER'
-                ? 'Source authentic factory surplus lots at 30% to 70% below wholesale with 48-hour escrow protection.'
-                : 'Join the StockBridge B2B marketplace to liquidate excess stock confidentially or source inventory.'}
-            </p>
-          </div>
+        <div className="text-center mb-8">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-quicksand">
+            Register your Business
+          </h1>
+          <p className="mt-2 text-sm text-slate-600 font-quicksand">
+            Join the StockBridge B2B marketplace to access verified factory surplus inventory.
+          </p>
+        </div>
 
         {/* Server-side Error Alert */}
         {serverError && (
@@ -132,66 +113,12 @@ function RegisterForm() {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8" noValidate>
-          {/* 1. Account Role Selection */}
+          {/* Hidden Role Input */}
+          <input type="hidden" value="BUYER" {...register('role')} />
+
+          {/* 1. Business Details */}
           <fieldset>
-            <legend className="block text-sm font-semibold text-slate-900 mb-3">
-              I want to use StockBridge as:
-            </legend>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <label
-                className={`relative flex cursor-pointer rounded-xl border p-4 shadow-sm focus:outline-none transition ${
-                  selectedRole === 'SELLER'
-                    ? 'border-emerald-600 bg-emerald-50/50 ring-2 ring-emerald-500'
-                    : 'border-slate-200 bg-white hover:border-slate-300'
-                }`}
-              >
-                <input
-                  type="radio"
-                  value="SELLER"
-                  {...register('role')}
-                  className="sr-only"
-                />
-                <div className="flex flex-col">
-                  <span className="block text-sm font-bold text-slate-900">
-                    I am a Seller
-                  </span>
-                  <span className="mt-1 block text-xs text-slate-500">
-                    Manufacturer, Distributor, or Wholesaler liquidating surplus stock.
-                  </span>
-                </div>
-              </label>
-
-              <label
-                className={`relative flex cursor-pointer rounded-xl border p-4 shadow-sm focus:outline-none transition ${
-                  selectedRole === 'BUYER'
-                    ? 'border-emerald-600 bg-emerald-50/50 ring-2 ring-emerald-500'
-                    : 'border-slate-200 bg-white hover:border-slate-300'
-                }`}
-              >
-                <input
-                  type="radio"
-                  value="BUYER"
-                  {...register('role')}
-                  className="sr-only"
-                />
-                <div className="flex flex-col">
-                  <span className="block text-sm font-bold text-slate-900">
-                    I am a Buyer
-                  </span>
-                  <span className="mt-1 block text-xs text-slate-500">
-                    Retailer or Reseller sourcing discounted inventory in bulk.
-                  </span>
-                </div>
-              </label>
-            </div>
-            {errors.role && (
-              <p className="mt-1 text-xs text-rose-600">{errors.role.message}</p>
-            )}
-          </fieldset>
-
-          {/* 2. Business Details */}
-          <fieldset className="pt-4 border-t border-slate-200">
-            <legend className="text-base font-semibold text-slate-900 mb-4">
+            <legend className="text-base font-semibold text-slate-900 mb-4 font-quicksand">
               Business Information
             </legend>
 
@@ -208,10 +135,10 @@ function RegisterForm() {
                   type="text"
                   autoComplete="organization"
                   {...register('legalName')}
-                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent ${
                     errors.legalName ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
                   }`}
-                  placeholder="e.g. Apex Industrial Supplies Pvt Ltd"
+                  placeholder="e.g. Apex Retail Enterprises Pvt Ltd"
                 />
                 {errors.legalName && (
                   <p className="mt-1 text-xs text-rose-600">{errors.legalName.message}</p>
@@ -228,14 +155,13 @@ function RegisterForm() {
                 <select
                   id="orgType"
                   {...register('orgType')}
-                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-accent ${
                     errors.orgType ? 'border-rose-300' : 'border-slate-300'
                   }`}
                 >
-                  <option value="MANUFACTURER">Manufacturer</option>
-                  <option value="DISTRIBUTOR">Distributor</option>
-                  <option value="WHOLESALER">Wholesaler</option>
                   <option value="RETAILER">Retailer</option>
+                  <option value="WHOLESALER">Wholesaler</option>
+                  <option value="DISTRIBUTOR">Distributor</option>
                   <option value="ONLINE_RESELLER">Online Reseller</option>
                   <option value="OTHER">Other</option>
                 </select>
@@ -256,7 +182,7 @@ function RegisterForm() {
                   type="text"
                   autoCapitalize="characters"
                   {...register('gstNumber')}
-                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 uppercase placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 uppercase placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent ${
                     errors.gstNumber ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
                   }`}
                   placeholder="e.g. 29ABCDE1234F1Z5"
@@ -278,7 +204,7 @@ function RegisterForm() {
                   type="text"
                   autoComplete="address-line1"
                   {...register('addressLine')}
-                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent ${
                     errors.addressLine ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
                   }`}
                   placeholder="Street, Industrial Area, Building name"
@@ -300,7 +226,7 @@ function RegisterForm() {
                   type="text"
                   autoComplete="address-level2"
                   {...register('city')}
-                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent ${
                     errors.city ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
                   }`}
                   placeholder="e.g. Bengaluru"
@@ -322,7 +248,7 @@ function RegisterForm() {
                   type="text"
                   autoComplete="address-level1"
                   {...register('state')}
-                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent ${
                     errors.state ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
                   }`}
                   placeholder="e.g. Karnataka"
@@ -345,7 +271,7 @@ function RegisterForm() {
                   inputMode="numeric"
                   autoComplete="postal-code"
                   {...register('pinCode')}
-                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent ${
                     errors.pinCode ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
                   }`}
                   placeholder="e.g. 560001"
@@ -357,9 +283,9 @@ function RegisterForm() {
             </div>
           </fieldset>
 
-          {/* 3. Personal / User Account Details */}
+          {/* 2. Personal / User Account Details */}
           <fieldset className="pt-4 border-t border-slate-200">
-            <legend className="text-base font-semibold text-slate-900 mb-4">
+            <legend className="text-base font-semibold text-slate-900 mb-4 font-quicksand">
               Authorized Representative Details
             </legend>
 
@@ -376,7 +302,7 @@ function RegisterForm() {
                   type="text"
                   autoComplete="name"
                   {...register('fullName')}
-                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent ${
                     errors.fullName ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
                   }`}
                   placeholder="e.g. Rajesh Verma"
@@ -399,10 +325,10 @@ function RegisterForm() {
                   autoComplete="username"
                   spellCheck="false"
                   {...register('email')}
-                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent ${
                     errors.email ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
                   }`}
-                  placeholder="e.g. rajesh@apexsupplies.com"
+                  placeholder="e.g. rajesh@apexretail.com"
                 />
                 {errors.email && (
                   <p className="mt-1 text-xs text-rose-600">{errors.email.message}</p>
@@ -421,7 +347,7 @@ function RegisterForm() {
                   type="tel"
                   autoComplete="tel"
                   {...register('phone')}
-                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent ${
                     errors.phone ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
                   }`}
                   placeholder="e.g. +91 9876543210"
@@ -443,7 +369,7 @@ function RegisterForm() {
                   type="password"
                   autoComplete="new-password"
                   {...register('password')}
-                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent ${
                     errors.password ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
                   }`}
                   placeholder="••••••••"
@@ -460,7 +386,7 @@ function RegisterForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full flex items-center justify-center rounded-lg bg-emerald-600 py-3 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-60"
+              className="w-full flex items-center justify-center rounded-lg bg-accent py-3 px-4 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 disabled:opacity-60"
             >
               {isSubmitting ? (
                 <span className="flex items-center gap-2">
@@ -492,31 +418,28 @@ function RegisterForm() {
             </button>
           </div>
 
-          <div className="text-center text-xs text-slate-600">
-            Already have an account?{' '}
-            <Link
-              href="/login"
-              className="font-semibold text-emerald-600 hover:text-emerald-500 underline underline-offset-2"
-            >
-              Log In here
-            </Link>
+          <div className="text-center text-xs text-slate-600 space-y-2">
+            <div>
+              Already have an account?{' '}
+              <Link
+                href="/login"
+                className="font-semibold text-accent hover:underline underline-offset-2"
+              >
+                Log In here
+              </Link>
+            </div>
+            <div className="pt-2 border-t border-slate-100 text-slate-500">
+              Want to liquidate surplus inventory?{' '}
+              <Link
+                href="/seller/register"
+                className="font-semibold text-slate-800 hover:text-accent underline underline-offset-2"
+              >
+                Sell on StockBridge →
+              </Link>
+            </div>
           </div>
         </form>
       </div>
     </div>
-  );
-}
-
-export default function RegisterPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent" />
-        </div>
-      }
-    >
-      <RegisterForm />
-    </Suspense>
   );
 }

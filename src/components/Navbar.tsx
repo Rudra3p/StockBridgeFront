@@ -86,7 +86,7 @@ export default function Navbar() {
             5-Grade Guide
           </Link>
           <Link
-            href="/register?role=SELLER"
+            href="/seller/register"
             className="text-sm font-semibold text-slate-700 hover:text-[#ff7a1a] transition"
           >
             Sell on StockBridge
@@ -134,10 +134,10 @@ export default function Navbar() {
                     Log In
                   </Link>
                   <Link
-                    href="/register?role=BUYER"
+                    href="/register"
                     className="inline-flex items-center rounded-md bg-accent px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2"
                   >
-                    Register as Buyer
+                    Register Business
                   </Link>
                 </div>
               )}
@@ -186,7 +186,7 @@ export default function Navbar() {
               5-Grade Guide
             </Link>
             <Link
-              href="/register?role=SELLER"
+              href="/seller/register"
               onClick={() => setMobileMenuOpen(false)}
               className="py-1 font-semibold text-slate-800 hover:text-[#ff7a1a]"
             >
@@ -231,11 +231,11 @@ export default function Navbar() {
                     Log In
                   </Link>
                   <Link
-                    href="/register?role=BUYER"
+                    href="/register"
                     onClick={() => setMobileMenuOpen(false)}
                     className="block rounded-md bg-accent px-3 py-2 text-center text-base font-bold text-white shadow-sm hover:opacity-90"
                   >
-                    Register as Buyer
+                    Register Business
                   </Link>
                 </>
               )}

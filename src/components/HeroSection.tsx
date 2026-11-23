@@ -32,10 +32,10 @@ export default function HeroSection() {
           {/* Action CTAs - Increased gap from heading */}
           <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
             <Link
-              href="/register?role=BUYER"
+              href="/register"
               className="inline-flex items-center justify-center rounded-xl bg-accent px-7 py-4 text-base font-bold text-white shadow-sm transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 font-quicksand"
             >
-              Register as Wholesale Buyer
+              Create Business Account
               <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>

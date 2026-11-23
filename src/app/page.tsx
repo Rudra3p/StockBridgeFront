@@ -156,10 +156,10 @@ export default function HomePage() {
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
-              href="/register?role=BUYER"
+              href="/register"
               className="w-full sm:w-auto rounded-xl bg-white px-8 py-3.5 text-base font-bold text-slate-900 shadow-sm transition hover:bg-slate-100 focus:outline-none font-quicksand"
             >
-              Register as Wholesale Buyer
+              Create Business Account
             </Link>
             <Link
               href="#marketplace"

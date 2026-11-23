@@ -1,0 +1,447 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { registerSchema, RegisterFormData } from '@/lib/validations';
+import { clientAuth } from '@/lib/client-api';
+import { OrgType } from '@/lib/types';
+
+export default function SellerRegisterPage() {
+  const router = useRouter();
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      role: 'SELLER',
+      orgType: 'MANUFACTURER',
+      legalName: '',
+      gstNumber: '',
+      addressLine: '',
+      city: '',
+      state: '',
+      pinCode: '',
+      fullName: '',
+      email: '',
+      phone: '',
+      password: '',
+    },
+  });
+
+  const onSubmit = async (data: RegisterFormData) => {
+    setServerError(null);
+    setIsSubmitting(true);
+
+    try {
+      const payload = {
+        organisation: {
+          legalName: data.legalName.trim(),
+          orgType: data.orgType as OrgType,
+          gstNumber: data.gstNumber.trim().toUpperCase(),
+          addressLine: data.addressLine.trim(),
+          city: data.city.trim(),
+          state: data.state.trim(),
+          pinCode: data.pinCode.trim(),
+        },
+        user: {
+          fullName: data.fullName.trim(),
+          email: data.email.trim().toLowerCase(),
+          phone: data.phone.trim(),
+          password: data.password,
+          role: 'SELLER' as const,
+        },
+      };
+
+      const result = await clientAuth.register(payload);
+
+      if (!result.success) {
+        setServerError(result.error || 'Registration failed. Please check your details.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Redirect to login page with success notification
+      router.push('/login?registered=true');
+    } catch {
+      setServerError('An unexpected error occurred. Please try again.');
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-2xl bg-white p-8 sm:p-10 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-xs font-bold text-[#ff7a1a] mb-3">
+            Enterprise Seller Onboarding
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-quicksand">
+            Register to Sell on StockBridge
+          </h1>
+          <p className="mt-2 text-sm text-slate-600 font-quicksand">
+            Liquidate surplus inventory, free up warehouse racks, and recover working capital without channel conflict.
+          </p>
+        </div>
+
+        {/* Server-side Error Alert */}
+        {serverError && (
+          <div
+            role="alert"
+            className="mb-6 rounded-lg bg-rose-50 p-4 border border-rose-200 text-sm text-rose-800 flex items-start gap-3"
+          >
+            <svg
+              className="h-5 w-5 text-rose-500 shrink-0 mt-0.5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <div>
+              <p className="font-semibold">Registration Notice</p>
+              <p>{serverError}</p>
+            </div>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8" noValidate>
+          {/* Hidden Role Input */}
+          <input type="hidden" value="SELLER" {...register('role')} />
+
+          {/* 1. Business Details */}
+          <fieldset>
+            <legend className="text-base font-semibold text-slate-900 mb-4 font-quicksand">
+              Company &amp; Manufacturing Information
+            </legend>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="sm:col-span-2">
+                <label
+                  htmlFor="legalName"
+                  className="block text-xs font-medium text-slate-700 mb-1"
+                >
+                  Company Legal Name *
+                </label>
+                <input
+                  id="legalName"
+                  type="text"
+                  autoComplete="organization"
+                  {...register('legalName')}
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff7a1a] ${
+                    errors.legalName ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
+                  }`}
+                  placeholder="e.g. Acme Manufacturing Ltd"
+                />
+                {errors.legalName && (
+                  <p className="mt-1 text-xs text-rose-600">{errors.legalName.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="orgType"
+                  className="block text-xs font-medium text-slate-700 mb-1"
+                >
+                  Organisation Type *
+                </label>
+                <select
+                  id="orgType"
+                  {...register('orgType')}
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#ff7a1a] ${
+                    errors.orgType ? 'border-rose-300' : 'border-slate-300'
+                  }`}
+                >
+                  <option value="MANUFACTURER">Manufacturer / OEM</option>
+                  <option value="DISTRIBUTOR">Authorised Distributor</option>
+                  <option value="WHOLESALER">Master Wholesaler</option>
+                  <option value="OTHER">Brand Owner / Importer</option>
+                </select>
+                {errors.orgType && (
+                  <p className="mt-1 text-xs text-rose-600">{errors.orgType.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="gstNumber"
+                  className="block text-xs font-medium text-slate-700 mb-1"
+                >
+                  GST Number (GSTIN) *
+                </label>
+                <input
+                  id="gstNumber"
+                  type="text"
+                  autoCapitalize="characters"
+                  {...register('gstNumber')}
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 uppercase placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff7a1a] ${
+                    errors.gstNumber ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
+                  }`}
+                  placeholder="e.g. 29ABCDE1234F1Z5"
+                />
+                {errors.gstNumber && (
+                  <p className="mt-1 text-xs text-rose-600">{errors.gstNumber.message}</p>
+                )}
+              </div>
+
+              <div className="sm:col-span-2">
+                <label
+                  htmlFor="addressLine"
+                  className="block text-xs font-medium text-slate-700 mb-1"
+                >
+                  Factory / Registered Office Address *
+                </label>
+                <input
+                  id="addressLine"
+                  type="text"
+                  autoComplete="address-line1"
+                  {...register('addressLine')}
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff7a1a] ${
+                    errors.addressLine ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
+                  }`}
+                  placeholder="Plot No., Industrial Zone, Facility"
+                />
+                {errors.addressLine && (
+                  <p className="mt-1 text-xs text-rose-600">{errors.addressLine.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="city"
+                  className="block text-xs font-medium text-slate-700 mb-1"
+                >
+                  City *
+                </label>
+                <input
+                  id="city"
+                  type="text"
+                  autoComplete="address-level2"
+                  {...register('city')}
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff7a1a] ${
+                    errors.city ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
+                  }`}
+                  placeholder="e.g. Pune"
+                />
+                {errors.city && (
+                  <p className="mt-1 text-xs text-rose-600">{errors.city.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="state"
+                  className="block text-xs font-medium text-slate-700 mb-1"
+                >
+                  State *
+                </label>
+                <input
+                  id="state"
+                  type="text"
+                  autoComplete="address-level1"
+                  {...register('state')}
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff7a1a] ${
+                    errors.state ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
+                  }`}
+                  placeholder="e.g. Maharashtra"
+                />
+                {errors.state && (
+                  <p className="mt-1 text-xs text-rose-600">{errors.state.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="pinCode"
+                  className="block text-xs font-medium text-slate-700 mb-1"
+                >
+                  PIN Code *
+                </label>
+                <input
+                  id="pinCode"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="postal-code"
+                  {...register('pinCode')}
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff7a1a] ${
+                    errors.pinCode ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
+                  }`}
+                  placeholder="e.g. 411001"
+                />
+                {errors.pinCode && (
+                  <p className="mt-1 text-xs text-rose-600">{errors.pinCode.message}</p>
+                )}
+              </div>
+            </div>
+          </fieldset>
+
+          {/* 2. Personal / User Account Details */}
+          <fieldset className="pt-4 border-t border-slate-200">
+            <legend className="text-base font-semibold text-slate-900 mb-4 font-quicksand">
+              Authorized Liquidator / Business Head
+            </legend>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="sm:col-span-2">
+                <label
+                  htmlFor="fullName"
+                  className="block text-xs font-medium text-slate-700 mb-1"
+                >
+                  Full Name *
+                </label>
+                <input
+                  id="fullName"
+                  type="text"
+                  autoComplete="name"
+                  {...register('fullName')}
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff7a1a] ${
+                    errors.fullName ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
+                  }`}
+                  placeholder="e.g. Sunil Kothari"
+                />
+                {errors.fullName && (
+                  <p className="mt-1 text-xs text-rose-600">{errors.fullName.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-xs font-medium text-slate-700 mb-1"
+                >
+                  Corporate Email *
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  autoComplete="username"
+                  spellCheck="false"
+                  {...register('email')}
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff7a1a] ${
+                    errors.email ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
+                  }`}
+                  placeholder="e.g. sunil@acme-mfg.com"
+                />
+                {errors.email && (
+                  <p className="mt-1 text-xs text-rose-600">{errors.email.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="phone"
+                  className="block text-xs font-medium text-slate-700 mb-1"
+                >
+                  Direct Phone / Mobile *
+                </label>
+                <input
+                  id="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  {...register('phone')}
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff7a1a] ${
+                    errors.phone ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
+                  }`}
+                  placeholder="e.g. +91 9822012345"
+                />
+                {errors.phone && (
+                  <p className="mt-1 text-xs text-rose-600">{errors.phone.message}</p>
+                )}
+              </div>
+
+              <div className="sm:col-span-2">
+                <label
+                  htmlFor="password"
+                  className="block text-xs font-medium text-slate-700 mb-1"
+                >
+                  Password (minimum 8 characters) *
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  autoComplete="new-password"
+                  {...register('password')}
+                  className={`w-full rounded-lg border px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff7a1a] ${
+                    errors.password ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
+                  }`}
+                  placeholder="••••••••"
+                />
+                {errors.password && (
+                  <p className="mt-1 text-xs text-rose-600">{errors.password.message}</p>
+                )}
+              </div>
+            </div>
+          </fieldset>
+
+          {/* Submit Button */}
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full flex items-center justify-center rounded-lg bg-[#ff7a1a] py-3 px-4 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#ff7a1a] focus:ring-offset-2 disabled:opacity-60"
+            >
+              {isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <svg
+                    className="animate-spin h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8H4z"
+                    />
+                  </svg>
+                  Submitting Seller Application...
+                </span>
+              ) : (
+                'Apply as Verified Seller'
+              )}
+            </button>
+          </div>
+
+          <div className="text-center text-xs text-slate-600 space-y-2">
+            <div>
+              Already registered as a seller?{' '}
+              <Link
+                href="/login"
+                className="font-semibold text-[#ff7a1a] hover:underline underline-offset-2"
+              >
+                Log In to Seller Portal
+              </Link>
+            </div>
+            <div className="pt-2 border-t border-slate-100 text-slate-500">
+              Looking to source factory surplus inventory?{' '}
+              <Link
+                href="/register"
+                className="font-semibold text-slate-800 hover:text-accent underline underline-offset-2"
+              >
+                Register your Business →
+              </Link>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
