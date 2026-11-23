@@ -50,7 +50,7 @@ export default function HomePage() {
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-8 pt-6 border-t border-slate-800">
             <div className="space-y-3">
               <div>
-                <div className="text-3xl sm:text-4xl font-black text-white font-quicksand leading-none mb-2">
+                <div className="text-3xl sm:text-4xl font-black text-[#ff7a1a] font-quicksand leading-none mb-2">
                   1.
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold font-quicksand text-white leading-snug">
@@ -63,7 +63,7 @@ export default function HomePage() {
             </div>
             <div className="space-y-3">
               <div>
-                <div className="text-3xl sm:text-4xl font-black text-white font-quicksand leading-none mb-2">
+                <div className="text-3xl sm:text-4xl font-black text-[#ff7a1a] font-quicksand leading-none mb-2">
                   2.
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold font-quicksand text-white leading-snug">
@@ -76,7 +76,7 @@ export default function HomePage() {
             </div>
             <div className="space-y-3">
               <div>
-                <div className="text-3xl sm:text-4xl font-black text-white font-quicksand leading-none mb-2">
+                <div className="text-3xl sm:text-4xl font-black text-[#ff7a1a] font-quicksand leading-none mb-2">
                   3.
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold font-quicksand text-white leading-snug">
