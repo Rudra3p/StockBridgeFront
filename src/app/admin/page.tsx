@@ -338,32 +338,13 @@ export default function AdminPage() {
     async function checkAuth() {
       const res = await clientAuth.getMe();
       if (isMounted) {
-        if (res.authenticated && res.user) {
+        if (res.authenticated && res.user && res.user.role === 'ADMIN') {
           setCurrentUser(res.user);
+          setAuthLoading(false);
         } else {
-          // If unauthenticated, allow preview with demo admin profile
-          setCurrentUser({
-            id: 'demo-admin-id',
-            fullName: 'Platform Operations Admin',
-            email: 'admin@stockbridge.local',
-            phone: '+91 98765 43210',
-            role: 'ADMIN',
-            enabled: true,
-            createdAt: '2026-11-01',
-            organisation: {
-              id: 'demo-org-id',
-              legalName: 'StockBridge Operations Control',
-              orgType: 'OTHER',
-              gstNumber: 'ADMIN0000000001',
-              addressLine: 'HQ Tech Center',
-              city: 'Bengaluru',
-              state: 'Karnataka',
-              pinCode: '560001',
-              verificationStatus: 'APPROVED',
-            },
-          });
+          // If not authenticated as ADMIN, redirect to /admin/login immediately
+          router.replace('/admin/login');
         }
-        setAuthLoading(false);
       }
     }
 
@@ -371,23 +352,12 @@ export default function AdminPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [router]);
 
-  // Quick Demo Login Action
-  const handleDemoLogin = async () => {
-    const res = await clientAuth.login({
-      email: 'admin@stockbridge.local',
-      password: 'admin123',
-    });
-    if (res.success) {
-      showToast('Logged in as Official Admin (admin@stockbridge.local)');
-      const me = await clientAuth.getMe();
-      if (me.authenticated && me.user) {
-        setCurrentUser(me.user);
-      }
-    } else {
-      showToast('Operating in Demo Admin Console Mode.');
-    }
+  const handleLogout = async () => {
+    await clientAuth.logout();
+    router.push('/admin/login');
+    router.refresh();
   };
 
   // 1. KYC Actions
@@ -506,19 +476,25 @@ export default function AdminPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={handleDemoLogin}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-xs font-mono font-semibold text-slate-300 hover:border-slate-600 hover:text-white transition"
+              <Link
+                href="/admin/profile"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-orange-500/40 bg-orange-500/10 px-3 py-1.5 text-xs font-mono font-bold text-[#ff7a1a] hover:bg-orange-500/20 transition"
               >
-                🔑 Demo Admin Login
-              </button>
+                ⚙️ Admin Profile
+              </Link>
               <Link
                 href="/"
                 className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-xs font-mono text-slate-300 hover:text-white transition"
               >
                 ↗ Buyer Site
               </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="inline-flex items-center gap-1 rounded-lg border border-rose-900/50 bg-rose-950/40 px-3 py-1.5 text-xs font-mono text-rose-300 hover:bg-rose-900 transition"
+              >
+                Logout
+              </button>
             </div>
           </div>
         </div>
