@@ -85,12 +85,6 @@ export default function Navbar() {
           >
             5-Grade Guide
           </Link>
-          <Link
-            href="/seller/register"
-            className="text-sm font-semibold text-slate-700 hover:text-[#ff7a1a] transition"
-          >
-            Sell on StockBridge
-          </Link>
 
           <div className="h-4 w-px bg-slate-200" />
 
@@ -184,13 +178,6 @@ export default function Navbar() {
               className="py-1 font-medium text-slate-700 hover:text-accent"
             >
               5-Grade Guide
-            </Link>
-            <Link
-              href="/seller/register"
-              onClick={() => setMobileMenuOpen(false)}
-              className="py-1 font-semibold text-slate-800 hover:text-[#ff7a1a]"
-            >
-              Sell on StockBridge
             </Link>
           </div>
 

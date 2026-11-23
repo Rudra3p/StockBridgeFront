@@ -431,10 +431,10 @@ export default function RegisterPage() {
             <div className="pt-2 border-t border-slate-100 text-slate-500">
               Want to liquidate surplus inventory?{' '}
               <Link
-                href="/seller/register"
+                href="/partner"
                 className="font-semibold text-slate-800 hover:text-accent underline underline-offset-2"
               >
-                Sell on StockBridge →
+                Partner with Us →
               </Link>
             </div>
           </div>
