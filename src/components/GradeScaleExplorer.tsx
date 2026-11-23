@@ -168,11 +168,7 @@ export default function GradeScaleExplorer() {
           </h2>
         </div>
 
-        <div className="flex flex-col items-start md:items-end gap-2 self-start md:self-auto shrink-0">
-          <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#e65c00] animate-pulse" />
-            <span>Scroll vertically to advance grades</span>
-          </div>
+        <div className="flex items-center self-start md:self-auto shrink-0">
           <Link
             href="/grade-guide"
             className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#e65c00] hover:text-[#c44e00] transition font-mono"
