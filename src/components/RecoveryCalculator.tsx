@@ -108,7 +108,7 @@ export default function RecoveryCalculator() {
               <span className="text-xs px-2 py-0.5 rounded bg-orange-100 text-[#e65c00] font-semibold font-mono">50%+ Margin</span>
             </div>
             <div className="mt-4">
-              <span className="text-3xl font-extrabold text-slate-950 font-quicksand">{formatCurrency(surplusProfit)}</span>
+              <span className="text-3xl font-extrabold text-[#e65c00] font-quicksand">{formatCurrency(surplusProfit)}</span>
               <span className="text-xs text-slate-500 block mt-1 font-quicksand">
                 Estimated profit on {formatCurrency(surplusTurnover)} retail turnover
               </span>
@@ -127,7 +127,7 @@ export default function RecoveryCalculator() {
           </div>
           <div className="mt-6 pt-4 border-t border-orange-200 flex items-center justify-between">
             <span className="text-xs font-bold text-slate-900 font-mono">
-              Net Gain: +{formatCurrency(extraProfit)}
+              Net Gain: <span className="text-[#e65c00]">+{formatCurrency(extraProfit)}</span>
             </span>
             <Link
               href="#marketplace"
