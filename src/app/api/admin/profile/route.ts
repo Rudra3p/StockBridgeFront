@@ -2,6 +2,48 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser, getSessionToken, setSessionCookies } from '@/lib/auth';
 import { AuthUser } from '@/lib/types';
 
+export async function GET() {
+  try {
+    const sessionUser = await getSessionUser();
+
+    if (!sessionUser || sessionUser.role !== 'ADMIN') {
+      return NextResponse.json(
+        { message: 'Forbidden: Administrator credentials required' },
+        { status: 403 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      user: {
+        id: sessionUser.id,
+        fullName: sessionUser.name,
+        email: sessionUser.email,
+        phone: sessionUser.phone || (sessionUser.email === 'rudra090207@gmail.com' ? '7016047658' : '+919876543210'),
+        role: 'ADMIN',
+        enabled: true,
+        passwordHash: '$2a$10$liyVwCsm6TUQxeu0yLtFqe40peB.DnLG4mZSucFOx.L6iNWjSl15O',
+        organisation: {
+          id: sessionUser.organisationId,
+          legalName: 'StockBridge Platform Admin Org',
+          orgType: 'OTHER',
+          gstNumber: 'ADMIN0000000001',
+          addressLine: 'StockBridge HQ, Tech Park',
+          city: 'Bengaluru',
+          state: 'Karnataka',
+          pinCode: '560001',
+          verificationStatus: 'APPROVED',
+        },
+      },
+    });
+  } catch {
+    return NextResponse.json(
+      { message: 'Failed to fetch administrator profile' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PUT(request: NextRequest) {
   try {
     const sessionUser = await getSessionUser();
@@ -39,6 +81,7 @@ export async function PUT(request: NextRequest) {
       ...sessionUser,
       name: updatedName,
       email: updatedEmail,
+      phone: updatedPhone,
     };
 
     const token = (await getSessionToken()) || 'mockAdminToken';
@@ -54,6 +97,7 @@ export async function PUT(request: NextRequest) {
         phone: updatedPhone,
         role: 'ADMIN',
         enabled: true,
+        passwordHash: '$2a$10$liyVwCsm6TUQxeu0yLtFqe40peB.DnLG4mZSucFOx.L6iNWjSl15O',
         organisation: {
           id: sessionUser.organisationId,
           legalName: 'StockBridge Platform Admin Org',

@@ -19,7 +19,7 @@ export async function GET() {
       id: sessionUser.id,
       fullName: sessionUser.name,
       email: sessionUser.email,
-      phone: sessionUser.email === 'rudra090207@gmail.com' ? '7016047658' : '+919876543210',
+      phone: sessionUser.phone || (sessionUser.email === 'rudra090207@gmail.com' ? '7016047658' : '+919876543210'),
       role: 'ADMIN',
       enabled: true,
       createdAt: '2026-11-23',

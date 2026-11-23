@@ -28,6 +28,25 @@ export default function AdminProfilePage() {
   useEffect(() => {
     let isMounted = true;
     async function loadUser() {
+      try {
+        const adminRes = await fetch('/api/admin/profile');
+        if (adminRes.ok) {
+          const adminJson = await adminRes.json();
+          if (adminJson.success && adminJson.user) {
+            if (isMounted) {
+              setCurrentUser(adminJson.user);
+              setFullName(adminJson.user.fullName || 'Rudra Admin');
+              setEmail(adminJson.user.email || 'rudra090207@gmail.com');
+              setPhone(adminJson.user.phone || '7016047658');
+              setLoading(false);
+            }
+            return;
+          }
+        }
+      } catch {
+        // fallback to clientAuth
+      }
+
       const res = await clientAuth.getMe();
       if (isMounted) {
         if (res.authenticated && res.user && res.user.role === 'ADMIN') {

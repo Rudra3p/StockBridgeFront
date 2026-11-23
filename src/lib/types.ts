@@ -40,6 +40,7 @@ export interface AuthUser {
   id: string;
   name: string;
   email: string;
+  phone?: string;
   role: Role;
   organisationId: string;
   verificationStatus: VerificationStatus;

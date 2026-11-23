@@ -18,18 +18,26 @@ export default function AdminLoginPage() {
     setSubmitting(true);
 
     try {
-      const res = await clientAuth.login({
-        email: email.trim().toLowerCase(),
-        password,
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password,
+        }),
       });
 
-      if (!res.success || !res.data) {
-        setErrorMessage(res.error || 'Invalid administrator email or password');
+      const res = await response.json();
+
+      if (!response.ok || !res.success || !res.user) {
+        setErrorMessage(res.message || 'Invalid administrator credentials');
         setSubmitting(false);
         return;
       }
 
-      if (res.data.user.role !== 'ADMIN') {
+      if (res.user.role !== 'ADMIN') {
         setErrorMessage('Access Denied: This gateway requires Master Administrator privileges.');
         setSubmitting(false);
         return;
@@ -66,18 +74,25 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Credentials Quick-Fill Hint */}
-        <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono flex items-center justify-between">
-          <div>
-            <span className="text-slate-500 block text-[10px] uppercase">Default Administrator</span>
-            <span className="text-[#ff7a1a] font-bold">rudra090207@gmail.com</span>
+        <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono space-y-2">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-slate-500 block text-[10px] uppercase">Default Administrator</span>
+              <span className="text-[#ff7a1a] font-bold">rudra090207@gmail.com</span>
+              <span className="text-slate-400 block text-[11px]">Phone: +91 7016047658</span>
+            </div>
+            <button
+              type="button"
+              onClick={handleFillDemo}
+              className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold transition"
+            >
+              Auto-Fill
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={handleFillDemo}
-            className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold transition"
-          >
-            Auto-Fill
-          </button>
+          <div className="pt-2 border-t border-slate-800/80 text-[11px] text-slate-400 flex items-center gap-1.5">
+            <span className="text-amber-400">🔒</span>
+            <span>Pre-seeded account. Administrator accounts cannot be registered publicly.</span>
+          </div>
         </div>
 
         {/* Error Alert */}

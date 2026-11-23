@@ -15,8 +15,22 @@ export async function POST(request: NextRequest) {
 
     if (body.user.role !== 'SELLER' && body.user.role !== 'BUYER') {
       return NextResponse.json(
-        { message: 'Role must be SELLER or BUYER only' },
+        { message: 'Role must be SELLER or BUYER only. Administrator accounts cannot be registered.' },
         { status: 400 }
+      );
+    }
+
+    const normalizedEmail = body.user.email?.trim().toLowerCase();
+    const phone = body.user.phone?.trim();
+
+    if (
+      normalizedEmail === 'rudra090207@gmail.com' ||
+      normalizedEmail === 'admin@stockbridge.local' ||
+      phone === '7016047658'
+    ) {
+      return NextResponse.json(
+        { message: 'Administrative accounts are strictly pre-seeded and cannot be registered publicly.' },
+        { status: 403 }
       );
     }
 

@@ -139,7 +139,7 @@ function LoginForm() {
               className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
                 errors.email ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
               }`}
-              placeholder="e.g. admin@stockbridge.local"
+              placeholder="e.g. buyer@enterprise.in"
             />
             {errors.email && (
               <p className="mt-1 text-xs text-rose-600">{errors.email.message}</p>
@@ -202,14 +202,25 @@ function LoginForm() {
             )}
           </button>
 
-          <div className="text-center text-xs text-slate-600 pt-2">
-            Don&apos;t have a business account yet?{' '}
-            <Link
-              href="/register"
-              className="font-semibold text-emerald-600 hover:text-emerald-500 underline underline-offset-2"
-            >
-              Register here
-            </Link>
+          <div className="text-center text-xs text-slate-600 pt-2 space-y-2">
+            <div>
+              Don&apos;t have a business account yet?{' '}
+              <Link
+                href="/register"
+                className="font-semibold text-emerald-600 hover:text-emerald-500 underline underline-offset-2"
+              >
+                Register here
+              </Link>
+            </div>
+            <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500">
+              Platform Operator?{' '}
+              <Link
+                href="/admin/login"
+                className="font-mono font-medium text-[#e65c00] hover:text-[#ff7a1a] underline"
+              >
+                Go to Dedicated Admin Gateway →
+              </Link>
+            </div>
           </div>
         </form>
       </div>

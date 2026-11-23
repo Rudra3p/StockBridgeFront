@@ -12,7 +12,7 @@ function getRoleDashboard(role: Role): string {
     case 'BUYER':
       return '/buyer/dashboard';
     case 'ADMIN':
-      return '/admin/dashboard';
+      return '/admin';
     default:
       return '/login';
   }
@@ -59,34 +59,61 @@ export function middleware(request: NextRequest) {
 
   const isAuthenticated = Boolean(token && role);
 
-  // 1. If user is already authenticated and visits /login or /register, redirect to their dashboard
+  // 1. Separate Admin Gateway Routing
+  const isAdminLogin = pathname === '/admin/login';
+  const isAdminRoute = pathname === '/admin' || (pathname.startsWith('/admin/') && !isAdminLogin);
+
+  if (isAdminLogin) {
+    // If already authenticated as ADMIN, redirect straight to operations console
+    if (isAuthenticated && role === 'ADMIN') {
+      return NextResponse.redirect(new URL('/admin', request.url));
+    }
+    // Allow unauthenticated access to the dedicated admin login gateway
+    return NextResponse.next();
+  }
+
+  if (isAdminRoute) {
+    // Strictly redirect unauthenticated users to /admin/login (never to general /login!)
+    if (!isAuthenticated) {
+      const adminLoginUrl = new URL('/admin/login', request.url);
+      if (pathname !== '/admin') {
+        adminLoginUrl.searchParams.set('redirect', pathname);
+      }
+      return NextResponse.redirect(adminLoginUrl);
+    }
+
+    // Role check: Only ADMIN role is permitted into /admin and /admin/*
+    if (role !== 'ADMIN') {
+      const adminLoginUrl = new URL('/admin/login', request.url);
+      adminLoginUrl.searchParams.set('error', 'forbidden');
+      return NextResponse.redirect(adminLoginUrl);
+    }
+
+    return NextResponse.next();
+  }
+
+  // 2. Regular Login & Register redirects
   if (isAuthenticated && (pathname === '/login' || pathname === '/register')) {
     const targetDashboard = getRoleDashboard(role!);
     return NextResponse.redirect(new URL(targetDashboard, request.url));
   }
 
-  // 2. Protected routes check: /seller/*, /buyer/*, /admin/*
+  // 3. Buyer & Seller protected routes
   const isSellerRoute = pathname.startsWith('/seller');
   const isBuyerRoute = pathname.startsWith('/buyer');
-  const isAdminRoute = pathname.startsWith('/admin');
 
-  if (isSellerRoute || isBuyerRoute || isAdminRoute) {
+  if (isSellerRoute || isBuyerRoute) {
     if (!isAuthenticated) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(loginUrl);
     }
 
-    // Role-based authorization
     if (isSellerRoute && role !== 'SELLER') {
       return NextResponse.redirect(new URL(getRoleDashboard(role!), request.url));
     }
 
     if (isBuyerRoute && role !== 'BUYER') {
-      return NextResponse.redirect(new URL(getRoleDashboard(role!), request.url));
-    }
-
-    if (isAdminRoute && role !== 'ADMIN') {
       return NextResponse.redirect(new URL(getRoleDashboard(role!), request.url));
     }
   }
@@ -96,9 +123,10 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    '/admin',
+    '/admin/:path*',
     '/seller/:path*',
     '/buyer/:path*',
-    '/admin/:path*',
     '/login',
     '/register',
   ],
