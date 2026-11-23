@@ -163,16 +163,9 @@ export default function GradeScaleExplorer() {
       {/* ── Section Header (Pinned Top Bar) ──────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-5 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-slate-500 mb-2">
-            <span className="h-2 w-2 rounded-full bg-[#e65c00]" />
-            Trust Architecture • Section 7.2
-          </div>
           <h2 className="type-sub text-slate-950 font-quicksand font-bold tracking-tight">
             The 5-Grade Standardized Lot Scale
           </h2>
-          <p className="type-body text-slate-600 mt-1 max-w-2xl font-quicksand text-sm sm:text-base">
-            Physical condition yardsticks. Every lot is verified against strict inspection criteria to eliminate WhatsApp surprises, lowball offers, and return disputes.
-          </p>
         </div>
 
         <div className="flex flex-col items-start md:items-end gap-2 self-start md:self-auto shrink-0">
