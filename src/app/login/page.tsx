@@ -49,7 +49,7 @@ function LoginForm() {
       } else if (role === 'BUYER') {
         router.push('/buyer/dashboard');
       } else if (role === 'ADMIN') {
-        router.push('/admin/dashboard');
+        router.push('/admin');
       } else {
         router.push('/');
       }

@@ -1,10 +1,5 @@
-import DashboardView from '@/components/DashboardView';
+import { redirect } from 'next/navigation';
 
 export default function AdminDashboardPage() {
-  return (
-    <DashboardView
-      expectedRole="ADMIN"
-      portalTitle="Administration Portal"
-    />
-  );
+  redirect('/admin');
 }
