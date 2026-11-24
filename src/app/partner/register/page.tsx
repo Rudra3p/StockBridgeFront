@@ -3,11 +3,27 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { MapPin, Loader2 } from 'lucide-react';
 import { registerSchema, RegisterFormData } from '@/lib/validations';
 import { clientAuth } from '@/lib/client-api';
 import { OrgType } from '@/lib/types';
+import type { SelectedLocationData } from '@/components/LocationPickerMap';
+
+// Dynamically load MapLibre GL JS + OpenFreeMap Location Picker (SSR safe)
+const LocationPickerMap = dynamic(() => import('@/components/LocationPickerMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[280px] sm:h-[320px] rounded-2xl border-2 border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-2">
+      <Loader2 className="w-6 h-6 animate-spin text-[#e65c00]" />
+      <span className="text-xs font-bold text-slate-500 font-quicksand">
+        Loading OpenFreeMap Vector Layer (MapLibre GL)...
+      </span>
+    </div>
+  ),
+});
 
 export default function PartnerRegisterPage() {
   const router = useRouter();
@@ -20,6 +36,7 @@ export default function PartnerRegisterPage() {
     handleSubmit,
     trigger,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -28,10 +45,10 @@ export default function PartnerRegisterPage() {
       orgType: 'MANUFACTURER',
       legalName: '',
       gstNumber: '',
-      addressLine: '',
-      city: '',
-      state: '',
-      pinCode: '',
+      addressLine: 'Plot 104, Sachin GIDC Industrial Area',
+      city: 'Surat',
+      state: 'Gujarat',
+      pinCode: '394230',
       fullName: '',
       email: '',
       phone: '',
@@ -42,6 +59,13 @@ export default function PartnerRegisterPage() {
   const legalNameWatch = watch('legalName');
   const gstNumberWatch = watch('gstNumber');
   const cityWatch = watch('city');
+
+  const handleMapLocationSelect = (loc: SelectedLocationData) => {
+    setValue('addressLine', loc.addressLine, { shouldValidate: true });
+    setValue('city', loc.city, { shouldValidate: true });
+    setValue('state', loc.state, { shouldValidate: true });
+    setValue('pinCode', loc.pinCode, { shouldValidate: true });
+  };
 
   const goToNextStep = async () => {
     setServerError(null);
@@ -93,8 +117,8 @@ export default function PartnerRegisterPage() {
         return;
       }
 
-      // Redirect to login page with success notification
-      router.push('/login?registered=partner');
+      // Redirect to partner login page with success notification
+      router.push('/partner/login?registered=true');
     } catch {
       setServerError('An unexpected error occurred during partner onboarding. Please try again.');
       setIsSubmitting(false);
@@ -105,17 +129,11 @@ export default function PartnerRegisterPage() {
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center py-10 px-4 sm:px-6 lg:px-8 bg-slate-50">
       <div className="w-full max-w-2xl bg-white p-6 sm:p-10 rounded-2xl border border-slate-200 shadow-sm">
         
-        {/* Header - Principles 5 (Tracking), 9 (Leading), 12 (Widow/Balance), 15 (Line Length 65ch) */}
+        {/* Header */}
         <div className="text-center mb-8">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold tracking-wider uppercase bg-orange-100 text-[#e65c00] mb-3">
-            ENTERPRISE PARTNER ONBOARDING
-          </span>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-quicksand text-balance tracking-tight">
             Register as a Business Partner
           </h1>
-          <p className="mt-2 text-sm text-slate-600 font-quicksand max-w-[65ch] mx-auto text-pretty leading-relaxed">
-            Direct liquidation portal for factories, mills, brand owners, and large distributors with 100% pre-funded escrow.
-          </p>
         </div>
 
         {/* ========================================================= */}
@@ -199,8 +217,8 @@ export default function PartnerRegisterPage() {
             <div className="flex items-center justify-between text-xs font-medium text-slate-500 mb-1.5 font-quicksand">
               <span>
                 {currentStep === 2
-                  ? 'Step 2 of 3: Manufacturing & Warehouse Information'
-                  : 'Step 3 of 3: Authorized Liquidation Signatory'}
+                  ? 'Manufacturing & Warehouse Information'
+                  : 'Authorized Liquidation Signatory'}
               </span>
               <span className="font-mono font-bold text-slate-700">
                 {currentStep === 2 ? '65% Complete' : '95% Complete — Final Step'}
@@ -263,19 +281,21 @@ export default function PartnerRegisterPage() {
           {/* Hidden Role: SELLER */}
           <input type="hidden" value="SELLER" {...register('role')} />
 
+          {/* Hidden Form Bindings for Location (Populated by Map) */}
+          <input type="hidden" {...register('addressLine')} />
+          <input type="hidden" {...register('city')} />
+          <input type="hidden" {...register('state')} />
+          <input type="hidden" {...register('pinCode')} />
+
           {/* ========================================================= */}
           {/* STEP 2: ENTERPRISE & DISPATCH WAREHOUSE DETAILS            */}
           {/* ========================================================= */}
           {currentStep === 2 && (
             <div className="space-y-6">
               <fieldset>
-                <legend className="text-base font-bold text-slate-900 mb-1 font-quicksand flex items-center justify-between">
-                  <span>Manufacturing &amp; Facility Profile</span>
-                  <span className="text-xs font-mono text-slate-500 font-normal">Step 2 of 3</span>
+                <legend className="text-base font-bold text-slate-900 mb-4 font-quicksand">
+                  Manufacturing &amp; Facility Profile
                 </legend>
-                <p className="text-xs text-slate-500 mb-4 font-quicksand">
-                  Provide your registered corporate legal name and primary dispatch hub for automated logistics calculation.
-                </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="sm:col-span-2">
@@ -341,91 +361,23 @@ export default function PartnerRegisterPage() {
                     )}
                   </div>
 
-                  <div className="sm:col-span-2">
-                    <label
-                      htmlFor="addressLine"
-                      className="block text-xs font-medium text-slate-700 mb-1"
-                    >
-                      Primary Warehouse / Dispatch Godown Address *
+                  {/* Interactive MapLibre GL JS + OpenFreeMap Location Picker */}
+                  <div className="sm:col-span-2 pt-1">
+                    <label className="block text-xs font-bold text-slate-800 mb-2 font-quicksand flex items-center gap-1.5">
+                      <MapPin className="w-4 h-4 text-[#e65c00]" />
+                      <span>Factory &amp; Primary Dispatch Godown Location (Interactive Map) *</span>
                     </label>
-                    <input
-                      id="addressLine"
-                      type="text"
-                      placeholder="e.g. Plot 42, GIDC Apparel Park, Industrial Area"
-                      autoComplete="street-address"
-                      {...register('addressLine')}
-                      className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#e65c00] ${
-                        errors.addressLine ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
-                      }`}
+                    
+                    <LocationPickerMap
+                      initialLat={21.1702} // Surat hub default for partner sellers
+                      initialLng={72.8311}
+                      onLocationSelect={handleMapLocationSelect}
                     />
-                    {errors.addressLine && (
-                      <p className="mt-1 text-xs text-rose-500">{errors.addressLine.message}</p>
-                    )}
-                  </div>
 
-                  <div>
-                    <label
-                      htmlFor="city"
-                      className="block text-xs font-medium text-slate-700 mb-1"
-                    >
-                      Dispatch Hub City *
-                    </label>
-                    <input
-                      id="city"
-                      type="text"
-                      placeholder="e.g. Surat, Tirupur, Agra, Bhiwandi"
-                      autoComplete="address-level2"
-                      {...register('city')}
-                      className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#e65c00] ${
-                        errors.city ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
-                      }`}
-                    />
-                    {errors.city && (
-                      <p className="mt-1 text-xs text-rose-500">{errors.city.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="state"
-                      className="block text-xs font-medium text-slate-700 mb-1"
-                    >
-                      State *
-                    </label>
-                    <input
-                      id="state"
-                      type="text"
-                      placeholder="e.g. Gujarat"
-                      autoComplete="address-level1"
-                      {...register('state')}
-                      className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#e65c00] ${
-                        errors.state ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
-                      }`}
-                    />
-                    {errors.state && (
-                      <p className="mt-1 text-xs text-rose-500">{errors.state.message}</p>
-                    )}
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label
-                      htmlFor="pinCode"
-                      className="block text-xs font-medium text-slate-700 mb-1"
-                    >
-                      Warehouse PIN Code *
-                    </label>
-                    <input
-                      id="pinCode"
-                      type="text"
-                      placeholder="e.g. 395002"
-                      autoComplete="postal-code"
-                      {...register('pinCode')}
-                      className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#e65c00] ${
-                        errors.pinCode ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
-                      }`}
-                    />
-                    {errors.pinCode && (
-                      <p className="mt-1 text-xs text-rose-500">{errors.pinCode.message}</p>
+                    {(errors.addressLine || errors.city || errors.state || errors.pinCode) && (
+                      <p className="mt-1.5 text-xs text-rose-600 font-quicksand">
+                        Please pin your factory or dispatch warehouse on the map to continue.
+                      </p>
                     )}
                   </div>
                 </div>
@@ -450,9 +402,8 @@ export default function PartnerRegisterPage() {
           {currentStep === 3 && (
             <div className="space-y-6">
               <fieldset>
-                <legend className="text-base font-bold text-slate-900 mb-1 font-quicksand flex items-center justify-between">
-                  <span>Authorized Representative Details</span>
-                  <span className="text-xs font-mono text-slate-500 font-normal">Step 3 of 3</span>
+                <legend className="text-base font-bold text-slate-900 mb-1 font-quicksand">
+                  Authorized Representative Details
                 </legend>
                 <p className="text-xs text-slate-500 mb-4 font-quicksand">
                   Designate the primary executive authorized to list surplus inventory, accept bids, and approve bank payouts.
@@ -486,14 +437,13 @@ export default function PartnerRegisterPage() {
                       htmlFor="email"
                       className="block text-xs font-medium text-slate-700 mb-1"
                     >
-                      Official Corporate Email *
+                      Corporate Business Email *
                     </label>
                     <input
                       id="email"
                       type="email"
-                      placeholder="e.g. ramesh@apexmills.com"
+                      placeholder="ramesh@apextextiles.com"
                       autoComplete="username"
-                      spellCheck="false"
                       {...register('email')}
                       className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#e65c00] ${
                         errors.email ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
@@ -509,12 +459,12 @@ export default function PartnerRegisterPage() {
                       htmlFor="phone"
                       className="block text-xs font-medium text-slate-700 mb-1"
                     >
-                      Mobile Phone (Dispatch &amp; WhatsApp Alerts) *
+                      Official Contact Phone *
                     </label>
                     <input
                       id="phone"
                       type="tel"
-                      placeholder="e.g. +91 98250 12345"
+                      placeholder="+91 98250 12345"
                       autoComplete="tel"
                       {...register('phone')}
                       className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#e65c00] ${
@@ -531,7 +481,7 @@ export default function PartnerRegisterPage() {
                       htmlFor="password"
                       className="block text-xs font-medium text-slate-700 mb-1"
                     >
-                      Account Password (minimum 8 characters) *
+                      Seller Portal Password (min 8 characters) *
                     </label>
                     <input
                       id="password"
