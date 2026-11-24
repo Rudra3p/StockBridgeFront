@@ -3,6 +3,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import {
+  MapPin,
+  Search,
+  Crosshair,
+  X,
+  ArrowRight,
+  ChevronDown,
+  Check,
+  Package,
+} from 'lucide-react';
 import { clientAuth } from '@/lib/client-api';
 import { UserProfileResponse } from '@/lib/types';
 import LogisticsDeliveryAnimation from './LogisticsDeliveryAnimation';
@@ -127,7 +137,7 @@ export default function HeroSection() {
     executeSearch(searchQuery);
   };
 
-  // Swiggy-style "Locate Me" GPS trigger
+  // Swiggy-style "Locate Me" GPS trigger using Lucide Crosshair icon
   const handleLocateMe = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsLocating(true);
@@ -163,7 +173,7 @@ export default function HeroSection() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[58%_42%] gap-10 lg:gap-8 items-center">
         
         {/* ====================================================== */}
-        {/* LEFT COLUMN: HERO CONTENT + SWIGGY-STYLE SEARCH BAR    */}
+        {/* LEFT COLUMN: HERO CONTENT + REFINED SEARCH BAR         */}
         {/* ====================================================== */}
         <div className="flex flex-col justify-center text-left lg:pr-4">
           
@@ -184,68 +194,60 @@ export default function HeroSection() {
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-[#e65c00] hover:underline font-quicksand"
               >
                 <span>Currently logged in as {user.fullName} • Go to Portal</span>
-                <span>→</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           )}
 
-          {/* ==================================================== */}
-          {/* SWIGGY-STYLE ELEVATED SEARCH BAR (HIGH VISIBILITY)   */}
-          {/* ==================================================== */}
+          {/* ========================================================================= */}
+          {/* REFINED SEARCH BAR: 20% LOCATION | 60% SEARCH QUERY | 20% ACTION BUTTON   */}
+          {/* ========================================================================= */}
           <div ref={searchContainerRef} className="mt-7 relative z-30">
             <form
               onSubmit={handleSearchSubmit}
-              className="relative flex flex-col sm:flex-row items-stretch bg-white rounded-2xl border-2 border-slate-300 shadow-xl hover:shadow-2xl focus-within:border-[#e65c00] focus-within:ring-4 focus-within:ring-orange-100 transition-all duration-300"
+              className="relative flex flex-col sm:flex-row items-stretch bg-white rounded-2xl border-2 border-slate-300 shadow-xl hover:shadow-2xl focus-within:border-[#e65c00] focus-within:ring-4 focus-within:ring-orange-100 transition-all duration-300 min-h-[56px] overflow-hidden"
             >
-              {/* 1. Location / Hub Segment (Swiggy Location Selector) */}
-              <div className="relative flex items-center px-4 py-3 sm:py-3.5 border-b sm:border-b-0 sm:border-r border-slate-200 sm:w-[240px] shrink-0 bg-slate-50/70 sm:rounded-l-2xl">
-                <span className="text-xl mr-2.5 text-[#e65c00] shrink-0" aria-hidden="true">
-                  📍
-                </span>
+              {/* 1. Location Segment (Exact 20% Width on Desktop) */}
+              <div className="relative flex items-center px-3.5 py-3 sm:py-0 border-b sm:border-b-0 sm:border-r border-slate-200 w-full sm:w-[20%] shrink-0 bg-slate-50/70">
+                <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-[#e65c00] shrink-0 mr-1.5" />
                 
-                <div className="flex-1 min-w-0">
-                  <label htmlFor="hubSelect" className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider font-mono">
-                    Dispatch Hub
-                  </label>
+                <div className="flex-1 min-w-0 relative flex items-center">
                   <select
                     id="hubSelect"
                     value={selectedHub}
                     onChange={(e) => setSelectedHub(e.target.value)}
-                    className="w-full bg-transparent text-xs sm:text-sm font-bold text-slate-900 font-quicksand focus:outline-none cursor-pointer truncate"
+                    aria-label="Location hub"
+                    className="w-full bg-transparent text-xs sm:text-sm font-bold text-slate-800 font-quicksand focus:outline-none cursor-pointer truncate appearance-none pr-4"
                   >
-                    <option value="All Hubs">All India Hubs</option>
-                    <option value="Surat">Surat (Textile Mills)</option>
-                    <option value="Bhiwandi">Bhiwandi (Logistics Hub)</option>
-                    <option value="Tirupur">Tirupur (Apparel Export)</option>
-                    <option value="Ahmedabad">Ahmedabad (Denim/Mfg)</option>
-                    <option value="Agra">Agra (Footwear Cluster)</option>
-                    <option value="Ludhiana">Ludhiana (Hardware &amp; Wool)</option>
+                    <option value="All Hubs">All India</option>
+                    <option value="Surat">Surat</option>
+                    <option value="Bhiwandi">Bhiwandi</option>
+                    <option value="Tirupur">Tirupur</option>
+                    <option value="Ahmedabad">Ahmedabad</option>
+                    <option value="Agra">Agra</option>
+                    <option value="Ludhiana">Ludhiana</option>
                   </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0 pointer-events-none -ml-3.5" />
                 </div>
 
-                {/* Swiggy-style "Locate Me" Button */}
+                {/* Lucide Crosshair "Locate Me" Button */}
                 <button
                   type="button"
                   onClick={handleLocateMe}
-                  title="Detect nearest industrial hub"
-                  className="ml-2 px-2 py-1 rounded-md bg-orange-50 text-[#e65c00] hover:bg-orange-100 transition shrink-0 flex items-center gap-1 text-xs font-bold font-quicksand"
+                  title="Detect nearest hub"
+                  className="ml-1 p-1 rounded-md text-slate-400 hover:text-[#e65c00] hover:bg-orange-50 transition shrink-0"
                 >
                   {isLocating ? (
-                    <span className="animate-spin text-xs">◷</span>
+                    <span className="animate-spin text-xs">...</span>
                   ) : (
-                    <>
-                      <span className="text-sm leading-none" aria-hidden="true">⌖</span>
-                      <span className="hidden sm:inline text-[10px] font-mono">Locate</span>
-                    </>
+                    <Crosshair className="w-3.5 h-3.5" />
                   )}
                 </button>
               </div>
 
-              {/* 2. Main Search Query Input (with Cycling Placeholder) */}
-              <div className="relative flex-1 flex items-center px-4 py-3 sm:py-3.5">
-                <span className="text-slate-400 mr-3 text-lg shrink-0" aria-hidden="true">
-                  🔍
-                </span>
+              {/* 2. Main Search Query Segment (Exact 60% Width on Desktop) */}
+              <div className="relative flex items-center px-4 py-3 sm:py-0 w-full sm:w-[60%] flex-1">
+                <Search className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 shrink-0 mr-3" />
                 
                 <input
                   type="text"
@@ -263,25 +265,26 @@ export default function HeroSection() {
                   <button
                     type="button"
                     onClick={() => setSearchQuery('')}
-                    className="text-xs text-slate-400 hover:text-slate-700 px-2 py-1 rounded-full hover:bg-slate-100 transition mr-2"
+                    className="p-1 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-100 transition mr-1"
+                    title="Clear search"
                   >
-                    ✕
+                    <X className="w-4 h-4" />
                   </button>
                 )}
               </div>
 
-              {/* 3. High-Impact Action Button (Swiggy "FIND FOOD" style) */}
+              {/* 3. High-Impact Action Button Segment (Exact 20% Width on Desktop) */}
               <button
                 type="submit"
-                className="flex items-center justify-center gap-2 px-7 sm:px-9 py-3.5 sm:py-0 bg-[#e65c00] hover:bg-[#c44e00] text-white text-sm sm:text-base font-extrabold font-quicksand transition rounded-b-xl sm:rounded-b-none sm:rounded-r-2xl shrink-0 shadow-md active:scale-[0.99] tracking-wide"
+                className="w-full sm:w-[20%] flex items-center justify-center gap-1.5 px-4 py-3.5 sm:py-0 bg-[#e65c00] hover:bg-[#c44e00] text-white text-sm sm:text-base font-extrabold font-quicksand transition shrink-0 shadow-md active:scale-[0.99] tracking-wide"
               >
-                <span>FIND SURPLUS</span>
-                <span className="text-lg leading-none" aria-hidden="true">→</span>
+                <span>SEARCH</span>
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
               </button>
             </form>
 
             {/* ==================================================== */}
-            {/* SWIGGY-STYLE AUTOCOMPLETE & SUGGESTIONS DROPDOWN     */}
+            {/* AUTOCOMPLETE & SUGGESTIONS DROPDOWN (LUCIDE ICONS)   */}
             {/* ==================================================== */}
             {isDropdownOpen && (
               <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl border border-slate-200 shadow-2xl p-4 sm:p-5 text-left divide-y divide-slate-100 animate-in fade-in slide-in-from-top-2 duration-200">
@@ -290,10 +293,12 @@ export default function HeroSection() {
                 <div className="pb-4">
                   <div className="flex items-center justify-between mb-2.5">
                     <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-slate-400 flex items-center gap-1.5">
-                      <span>📍</span> POPULAR DISPATCH HUBS
+                      <MapPin className="w-3.5 h-3.5 text-[#e65c00]" />
+                      <span>POPULAR DISPATCH HUBS</span>
                     </span>
-                    <span className="text-[10px] text-emerald-600 font-bold font-mono">
-                      ✓ Free OSM Transit Routing
+                    <span className="text-[10px] text-emerald-700 font-bold font-mono flex items-center gap-1">
+                      <Check className="w-3 h-3 text-emerald-600" />
+                      <span>Free OSM Transit Routing</span>
                     </span>
                   </div>
 
@@ -326,8 +331,9 @@ export default function HeroSection() {
 
                 {/* Section B: Trending Surplus Lots */}
                 <div className="pt-3.5">
-                  <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-slate-400 block mb-2.5">
-                    📦 TRENDING SURPLUS MANIFESTS
+                  <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-slate-400 flex items-center gap-1.5 mb-2.5">
+                    <Package className="w-3.5 h-3.5 text-[#e65c00]" />
+                    <span>TRENDING SURPLUS MANIFESTS</span>
                   </span>
 
                   <div className="space-y-1.5">
@@ -342,7 +348,7 @@ export default function HeroSection() {
                         className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 text-xs text-slate-700 font-quicksand transition text-left group"
                       >
                         <div className="flex items-center gap-2 truncate">
-                          <span className="text-slate-400 group-hover:text-[#e65c00]">↗</span>
+                          <ArrowRight className="w-3 h-3 text-slate-400 group-hover:text-[#e65c00]" />
                           <span className="font-semibold text-slate-900 group-hover:text-[#e65c00] truncate">
                             {cat.name}
                           </span>
@@ -363,7 +369,7 @@ export default function HeroSection() {
             )}
 
             {/* ==================================================== */}
-            {/* SWIGGY "POPULAR CITIES" ROW BELOW SEARCH BAR          */}
+            {/* POPULAR HUBS ROW BELOW SEARCH BAR                    */}
             {/* ==================================================== */}
             <div className="mt-3.5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-xs text-slate-500 font-quicksand">
               <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-slate-400 shrink-0">
@@ -402,7 +408,7 @@ export default function HeroSection() {
                 className="font-bold text-[#e65c00] hover:underline font-quicksand flex items-center gap-1"
               >
                 <span>Register Business Free</span>
-                <span>→</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           )}
