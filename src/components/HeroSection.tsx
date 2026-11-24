@@ -1,20 +1,70 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { clientAuth } from '@/lib/client-api';
 import { UserProfileResponse } from '@/lib/types';
 import LogisticsDeliveryAnimation from './LogisticsDeliveryAnimation';
 
+const POPULAR_HUBS = [
+  { name: 'Surat', state: 'Gujarat', tag: 'Textiles & Synthetics', fast: '1-Day Dispatch' },
+  { name: 'Bhiwandi', state: 'Maharashtra', tag: 'Mega Warehousing', fast: 'Western Hub' },
+  { name: 'Tirupur', state: 'Tamil Nadu', tag: 'Knitwear & Apparel', fast: 'Export Seconds' },
+  { name: 'Ahmedabad', state: 'Gujarat', tag: 'Chemicals & Denim', fast: 'High Volume' },
+  { name: 'Agra', state: 'Uttar Pradesh', tag: 'Footwear & Leather', fast: 'North Central' },
+  { name: 'Ludhiana', state: 'Punjab', tag: 'Woollens & Hardware', fast: 'Fast Clearance' },
+];
+
+const POPULAR_CATEGORIES = [
+  { name: 'Cotton Polo T-Shirts', grade: 'Grade A', count: '12,000 pcs' },
+  { name: 'Brass Ball Valves & Fittings', grade: 'Grade A OEM', count: '4,500 units' },
+  { name: 'LED High-Bay Industrial Fixtures', grade: 'Grade B Excess', count: '1,800 units' },
+  { name: 'Denim Fabric Rolls (Cancelled Export)', grade: 'Grade A', count: '8,000 meters' },
+];
+
+const ROTATING_PLACEHOLDERS = [
+  "Search 'Cotton Polo T-Shirts (Grade A)'",
+  "Search 'Surat Textile Mills (Export Excess)'",
+  "Search 'Brass Industrial Valves (5,000 pcs)'",
+  "Search 'Bhiwandi Electronics Logistics Hub'",
+  "Search 'Cancelled Export Apparel Lots'",
+  "Search 'Tirupur Knitwear Factory Seconds'",
+  "Search 'Automotive Wiring Harness Spares'",
+];
+
 export default function HeroSection() {
   const router = useRouter();
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
   const [user, setUser] = useState<UserProfileResponse | null>(null);
   const [_loadingUser, setLoadingUser] = useState(true);
 
-  // Direct action search state
-  const [searchMode, setSearchMode] = useState<'product' | 'hub'>('product');
+  // Search state
+  const [selectedHub, setSelectedHub] = useState('All Hubs');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+
+  // Cycling placeholder like Swiggy / Zepto
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % ROTATING_PLACEHOLDERS.length);
+    }, 2800);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -50,199 +100,323 @@ export default function HeroSection() {
     }
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const query = searchQuery.trim();
-    if (!query) return;
+  const executeSearch = (query: string, hub = selectedHub) => {
+    const cleanQuery = query.trim();
+    setIsDropdownOpen(false);
 
     if (!user) {
-      // Direct action if not logged in: route to register/login with search query
-      router.push(`/register?query=${encodeURIComponent(query)}&mode=${searchMode}`);
+      // Unauthenticated: Direct action redirects to registration / marketplace
+      const params = new URLSearchParams();
+      if (cleanQuery) params.set('search', cleanQuery);
+      if (hub && hub !== 'All Hubs') params.set('hub', hub);
+      router.push(`/register?${params.toString()}`);
       return;
     }
 
-    // Direct action if logged in: route to appropriate dashboard map or listings
-    if (searchMode === 'hub') {
-      if (user.role === 'SELLER') {
-        router.push(`/seller/dashboard?tab=overview&hub=${encodeURIComponent(query)}`);
-      } else {
-        router.push(`/buyer/dashboard?tab=overview&hub=${encodeURIComponent(query)}`);
-      }
-    } else {
-      if (user.role === 'SELLER') {
-        router.push(`/seller/dashboard?tab=listings&search=${encodeURIComponent(query)}`);
-      } else {
-        router.push(`/buyer/dashboard?tab=listings&search=${encodeURIComponent(query)}`);
-      }
-    }
+    // Authenticated: route to buyer dashboard listings or overview map
+    const targetDashboard = user.role === 'SELLER' ? '/seller/dashboard' : '/buyer/dashboard';
+    const params = new URLSearchParams();
+    params.set('tab', 'listings');
+    if (cleanQuery) params.set('search', cleanQuery);
+    if (hub && hub !== 'All Hubs') params.set('hub', hub);
+    router.push(`${targetDashboard}?${params.toString()}`);
   };
 
-  const handleQuickChipClick = (chipQuery: string, mode: 'product' | 'hub') => {
-    setSearchMode(mode);
-    setSearchQuery(chipQuery);
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    executeSearch(searchQuery);
+  };
 
-    if (!user) {
-      router.push(`/register?query=${encodeURIComponent(chipQuery)}&mode=${mode}`);
-      return;
-    }
+  // Swiggy-style "Locate Me" GPS trigger
+  const handleLocateMe = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsLocating(true);
 
-    if (mode === 'hub') {
-      router.push(user.role === 'SELLER' ? `/seller/dashboard?tab=overview&hub=${encodeURIComponent(chipQuery)}` : `/buyer/dashboard?tab=overview&hub=${encodeURIComponent(chipQuery)}`);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setIsLocating(false);
+          // Auto-select nearest major Indian liquidation hub
+          const lat = pos.coords.latitude;
+          if (lat > 23) {
+            setSelectedHub('Surat');
+          } else if (lat > 18) {
+            setSelectedHub('Bhiwandi');
+          } else {
+            setSelectedHub('Tirupur');
+          }
+        },
+        () => {
+          setIsLocating(false);
+          setSelectedHub('Bhiwandi');
+        },
+        { timeout: 4000 }
+      );
     } else {
-      router.push(user.role === 'SELLER' ? `/seller/dashboard?tab=listings&search=${encodeURIComponent(chipQuery)}` : `/buyer/dashboard?tab=listings&search=${encodeURIComponent(chipQuery)}`);
+      setIsLocating(false);
+      setSelectedHub('All Hubs');
     }
   };
 
   return (
     <section className="relative w-full border-b border-canvas bg-canvas py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
-      {/* ======================================================== */}
-      {/* 2-COLUMN HERO (60 : 40 RATIO ON DESKTOP, STACKED MOBILE) */}
-      {/* ======================================================== */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[60%_40%] gap-10 lg:gap-8 items-center">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[58%_42%] gap-10 lg:gap-8 items-center">
         
         {/* ====================================================== */}
-        {/* LEFT COLUMN: HEADING + DUAL REGISTRATION + SEARCH BAR   */}
+        {/* LEFT COLUMN: HERO CONTENT + SWIGGY-STYLE SEARCH BAR    */}
         {/* ====================================================== */}
         <div className="flex flex-col justify-center text-left lg:pr-4">
           
-          {/* MAIN HEADING - PRINCIPLE 12 (TEXT-BALANCE / NO WIDOWS) & PRINCIPLE 3 (TABULAR NUMS) */}
-          <h1 className="type-main text-main font-quicksand font-bold text-balance">
+          {/* Main Title - Principles 12 (Text-Balance) & 3 (Tabular Nums) */}
+          <h1 className="type-main text-main font-quicksand font-bold text-balance leading-tight">
             Source Verified{' '}
-            <span className="text-accent transition-colors duration-200">
+            <span className="text-[#e65c00] transition-colors duration-200">
               Factory Surplus
             </span>{' '}
             at <span className="tabular-nums font-mono font-bold">30% to 70%</span> Below Wholesale.
           </h1>
 
-          {/* Role-Specific Action CTAs - PRINCIPLE 8 (TOUCH TARGET >=44PX) & PRINCIPLE 16 (AFFORDANCE) */}
-          <div className="mt-6 flex flex-wrap items-center gap-3">
+          <p className="mt-4 text-sm sm:text-base text-slate-600 font-quicksand max-w-[65ch] text-pretty leading-relaxed">
+            Direct B2B surplus marketplace connecting verified manufacturers with retail buyers. 100% pre-funded escrow security with a 48-hour physical inspection window.
+          </p>
+
+          {/* User Auth Action Pill (Compact) */}
+          <div className="mt-4 flex items-center gap-3">
             {user ? (
               <Link
                 href={getDashboardLink()}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3.5 min-h-[44px] text-sm sm:text-base font-bold text-white shadow-md transition hover:opacity-90 active:scale-[0.98] font-quicksand"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#e65c00] hover:underline font-quicksand"
               >
-                <span>Go to Your {user.role === 'SELLER' ? 'Seller Central' : user.role === 'ADMIN' ? 'Admin Console' : 'Buyer Hub'}</span>
-                <span aria-hidden="true">→</span>
+                <span>Currently logged in as {user.fullName} • Go to Portal</span>
+                <span>→</span>
               </Link>
             ) : (
-              <Link
-                href="/register"
-                className="inline-flex items-center justify-center rounded-xl bg-slate-950 px-6 py-3.5 min-h-[44px] text-sm sm:text-base font-bold text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.98] font-quicksand"
-              >
-                <span>Register Business</span>
-                <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </Link>
+              <div className="flex items-center gap-2 text-xs text-slate-500 font-quicksand">
+                <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Free B2B Wholesale Access • Zero Broker Commissions</span>
+              </div>
             )}
           </div>
 
           {/* ==================================================== */}
-          {/* DIRECT ACTION SEARCH (AMAZON / SWIGGY STYLE)        */}
+          {/* SWIGGY-STYLE ELEVATED SEARCH BAR (ICONIC B2B VERSION) */}
           {/* ==================================================== */}
-          <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-lg">
-            {/* Search Type Switcher */}
-            <div className="flex items-center gap-2 mb-3">
-              <button
-                type="button"
-                onClick={() => setSearchMode('product')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold font-quicksand transition flex items-center gap-1.5 ${
-                  searchMode === 'product'
-                    ? 'bg-slate-950 text-white shadow-xs'
-                    : 'text-slate-600 hover:bg-slate-100'
-                }`}
-              >
-                <span>📦 Product / Overstock SKU</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setSearchMode('hub')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold font-quicksand transition flex items-center gap-1.5 ${
-                  searchMode === 'hub'
-                    ? 'bg-[#e65c00] text-white shadow-xs'
-                    : 'text-slate-600 hover:bg-slate-100'
-                }`}
-              >
-                <span>📍 Dispatch Hub / City Map</span>
-              </button>
-            </div>
-
-            {/* Direct Action Search Form */}
-            <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row items-stretch gap-2.5">
-              <div className="relative flex-1">
-                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  {searchMode === 'product' ? '🔍' : '📍'}
+          <div ref={searchContainerRef} className="mt-8 relative z-30">
+            <form
+              onSubmit={handleSearchSubmit}
+              className="relative flex flex-col sm:flex-row items-stretch bg-white rounded-2xl border-2 border-slate-200 shadow-xl hover:shadow-2xl focus-within:border-[#e65c00] focus-within:ring-4 focus-within:ring-orange-100 transition-all duration-300"
+            >
+              {/* 1. Location / Hub Segment (Swiggy Location Selector) */}
+              <div className="relative flex items-center px-4 py-3 sm:py-3.5 border-b sm:border-b-0 sm:border-r border-slate-200 sm:w-[220px] shrink-0 bg-slate-50/50 sm:rounded-l-2xl">
+                <span className="text-lg mr-2.5 text-[#e65c00] shrink-0" aria-hidden="true">
+                  📍
                 </span>
+                
+                <div className="flex-1 min-w-0">
+                  <label htmlFor="hubSelect" className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">
+                    Dispatch Hub
+                  </label>
+                  <select
+                    id="hubSelect"
+                    value={selectedHub}
+                    onChange={(e) => setSelectedHub(e.target.value)}
+                    className="w-full bg-transparent text-xs font-bold text-slate-800 font-quicksand focus:outline-none cursor-pointer truncate"
+                  >
+                    <option value="All Hubs">All India Hubs</option>
+                    <option value="Surat">Surat (Textiles)</option>
+                    <option value="Bhiwandi">Bhiwandi (Logistics)</option>
+                    <option value="Tirupur">Tirupur (Apparel)</option>
+                    <option value="Ahmedabad">Ahmedabad (Denim/Mfg)</option>
+                    <option value="Agra">Agra (Footwear)</option>
+                    <option value="Ludhiana">Ludhiana (Hardware)</option>
+                  </select>
+                </div>
+
+                {/* Swiggy-style "Locate Me" Button */}
+                <button
+                  type="button"
+                  onClick={handleLocateMe}
+                  title="Detect nearest industrial hub"
+                  className="ml-2 p-1.5 rounded-lg text-slate-400 hover:text-[#e65c00] hover:bg-orange-50 transition shrink-0 flex items-center justify-center text-xs font-bold"
+                >
+                  {isLocating ? (
+                    <span className="animate-spin text-xs">◷</span>
+                  ) : (
+                    <span className="text-sm leading-none" title="Locate Nearest Hub">⌖</span>
+                  )}
+                </button>
+              </div>
+
+              {/* 2. Main Search Query Input (with Cycling Placeholder) */}
+              <div className="relative flex-1 flex items-center px-4 py-3 sm:py-3.5">
+                <span className="text-slate-400 mr-2.5 text-base shrink-0" aria-hidden="true">
+                  🔍
+                </span>
+                
                 <input
                   type="text"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={
-                    searchMode === 'product'
-                      ? 'Search surplus lots (e.g. Polo T-Shirts, LED lights, Valves, Footwear)...'
-                      : 'Search dispatch hub (e.g. Surat, Bhiwandi, Tirupur, Agra, Ahmedabad)...'
-                  }
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 text-sm font-quicksand text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent bg-slate-50/50"
+                  onFocus={() => setIsDropdownOpen(true)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    if (!isDropdownOpen) setIsDropdownOpen(true);
+                  }}
+                  placeholder={ROTATING_PLACEHOLDERS[placeholderIndex]}
+                  className="w-full bg-transparent text-sm sm:text-base font-quicksand text-slate-900 placeholder:text-slate-400 focus:outline-none"
                 />
+
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="text-xs text-slate-400 hover:text-slate-600 px-1.5 py-0.5 rounded-full hover:bg-slate-100 transition mr-2"
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
 
+              {/* 3. High-Impact Action Button (Swiggy "FIND FOOD" style) */}
               <button
                 type="submit"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-accent hover:opacity-90 text-white text-sm font-bold font-quicksand shadow-sm transition shrink-0 active:scale-[0.98]"
+                className="flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-0 bg-[#e65c00] hover:bg-[#c44e00] text-white text-sm sm:text-base font-bold font-quicksand transition rounded-b-xl sm:rounded-b-none sm:rounded-r-2xl shrink-0 shadow-md active:scale-[0.99]"
               >
-                <span>{searchMode === 'product' ? 'Search Lots' : 'Locate Hub Map'}</span>
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                <span>FIND SURPLUS</span>
+                <span className="text-lg leading-none" aria-hidden="true">→</span>
               </button>
             </form>
 
-            {/* Trending Quick Search Chips */}
-            <div className="mt-3.5 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs font-quicksand">
-              <span className="text-slate-400 font-mono text-[11px]">Trending B2B:</span>
-              <button
-                type="button"
-                onClick={() => handleQuickChipClick('Tirupur', 'hub')}
-                className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-mono transition"
-              >
-                📍 Tirupur Hub
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickChipClick('Bhiwandi', 'hub')}
-                className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-mono transition"
-              >
-                📍 Bhiwandi Logistics
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickChipClick('Surat', 'hub')}
-                className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-mono transition"
-              >
-                📍 Surat Mills
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickChipClick('Cotton Polo T-Shirts', 'product')}
-                className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-mono transition"
-              >
-                📦 Polo T-Shirts
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickChipClick('Brass Valves', 'product')}
-                className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-mono transition"
-              >
-                📦 Brass Valves
-              </button>
+            {/* ==================================================== */}
+            {/* SWIGGY-STYLE AUTOCOMPLETE & SUGGESTIONS DROPDOWN     */}
+            {/* ==================================================== */}
+            {isDropdownOpen && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl border border-slate-200 shadow-2xl p-4 sm:p-5 text-left divide-y divide-slate-100 animate-in fade-in slide-in-from-top-2 duration-200">
+                
+                {/* Section A: Popular Hubs with Live Status */}
+                <div className="pb-4">
+                  <div className="flex items-center justify-between mb-2.5">
+                    <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-slate-400 flex items-center gap-1.5">
+                      <span>📍</span> POPULAR DISPATCH HUBS
+                    </span>
+                    <span className="text-[10px] text-emerald-600 font-bold font-mono">
+                      ✓ Free OSM Transit Routing
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {POPULAR_HUBS.map((hub) => (
+                      <button
+                        key={hub.name}
+                        type="button"
+                        onClick={() => {
+                          setSelectedHub(hub.name);
+                          executeSearch(searchQuery, hub.name);
+                        }}
+                        className="p-2.5 rounded-xl border border-slate-100 hover:border-orange-200 hover:bg-orange-50/60 transition text-left group"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-slate-800 font-quicksand group-hover:text-[#e65c00]">
+                            {hub.name}
+                          </span>
+                          <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded font-bold">
+                            {hub.fast}
+                          </span>
+                        </div>
+                        <span className="block text-[11px] text-slate-500 font-quicksand truncate">
+                          {hub.tag}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Section B: Trending Surplus Lots */}
+                <div className="pt-3.5">
+                  <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-slate-400 block mb-2.5">
+                    📦 TRENDING SURPLUS MANIFESTS
+                  </span>
+
+                  <div className="space-y-1.5">
+                    {POPULAR_CATEGORIES.map((cat) => (
+                      <button
+                        key={cat.name}
+                        type="button"
+                        onClick={() => {
+                          setSearchQuery(cat.name);
+                          executeSearch(cat.name);
+                        }}
+                        className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 text-xs text-slate-700 font-quicksand transition text-left group"
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <span className="text-slate-400 group-hover:text-[#e65c00]">↗</span>
+                          <span className="font-semibold text-slate-900 group-hover:text-[#e65c00] truncate">
+                            {cat.name}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0 font-mono text-[11px]">
+                          <span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
+                            {cat.grade}
+                          </span>
+                          <span className="text-slate-400 tabular-nums">
+                            {cat.count}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ==================================================== */}
+            {/* SWIGGY "POPULAR CITIES" ROW BELOW SEARCH BAR          */}
+            {/* ==================================================== */}
+            <div className="mt-3.5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-xs text-slate-500 font-quicksand">
+              <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-slate-400 shrink-0">
+                POPULAR HUBS:
+              </span>
+              {POPULAR_HUBS.map((hub, idx) => (
+                <React.Fragment key={hub.name}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedHub(hub.name);
+                      executeSearch('', hub.name);
+                    }}
+                    className="hover:text-[#e65c00] transition font-medium text-slate-600 hover:underline"
+                  >
+                    {hub.name}
+                  </button>
+                  {idx < POPULAR_HUBS.length - 1 && (
+                    <span className="text-slate-300 font-mono" aria-hidden="true">•</span>
+                  )}
+                </React.Fragment>
+              ))}
             </div>
+
           </div>
+
+          {/* Quick Register / Direct Action Banner Below Search */}
+          {!user && (
+            <div className="mt-6 pt-5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2 text-slate-600 font-quicksand">
+                <span className="font-bold text-slate-900">New to StockBridge?</span>
+                <span>Get verified in under 2 minutes for wholesale trade.</span>
+              </div>
+              <Link
+                href="/register"
+                className="font-bold text-[#e65c00] hover:underline font-quicksand flex items-center gap-1"
+              >
+                <span>Register Business Free</span>
+                <span>→</span>
+              </Link>
+            </div>
+          )}
 
         </div>
 
         {/* ====================================================== */}
-        {/* RIGHT COLUMN: SQUARE LOGISTICS ANIMATION (40% COL)    */}
+        {/* RIGHT COLUMN: SQUARE LOGISTICS ANIMATION (42% COL)    */}
         {/* ====================================================== */}
         <div className="w-full flex items-center justify-center">
           <LogisticsDeliveryAnimation />
