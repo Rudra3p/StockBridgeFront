@@ -346,7 +346,7 @@ const INITIAL_BANK_DETAILS: SettlementBankDetails = {
 };
 
 export default function DashboardView({
-  expectedRole: _expectedRole,
+  expectedRole,
   portalTitle,
 }: DashboardViewProps) {
   const router = useRouter();
@@ -405,13 +405,30 @@ export default function DashboardView({
     let isMounted = true;
     async function fetchProfile() {
       const result = await clientAuth.getMe();
-      if (isMounted) {
-        if (result.authenticated && result.user) {
-          setProfile(result.user);
-        } else {
-          router.push('/login');
+      if (!isMounted) return;
+
+      if (result.authenticated && result.user) {
+        // Enforce strict role isolation:
+        if (result.user.role !== expectedRole) {
+          // If expecting SELLER, route to partner login
+          if (expectedRole === 'SELLER') {
+            router.replace('/partner/login');
+            return;
+          }
+          // If expecting BUYER, route to buyer login
+          if (expectedRole === 'BUYER') {
+            router.replace('/login');
+            return;
+          }
+          if (expectedRole === 'ADMIN') {
+            router.replace('/admin/login');
+            return;
+          }
         }
+        setProfile(result.user);
         setLoading(false);
+      } else {
+        router.replace(expectedRole === 'SELLER' ? '/partner/login' : '/login');
       }
     }
 
@@ -419,7 +436,7 @@ export default function DashboardView({
     return () => {
       isMounted = false;
     };
-  }, [router]);
+  }, [expectedRole, router]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -429,7 +446,7 @@ export default function DashboardView({
   const handleLogout = async () => {
     setLoggingOut(true);
     await clientAuth.logout();
-    router.push('/login');
+    router.push(expectedRole === 'SELLER' ? '/partner/login' : '/login');
     router.refresh();
   };
 
@@ -660,7 +677,8 @@ export default function DashboardView({
     return null;
   }
 
-  const role = profile.role;
+  // Dashboard role is strictly bound to expectedRole to guarantee 100% role separation
+  const role = expectedRole;
   const isApproved = profile.organisation?.verificationStatus === 'APPROVED';
 
   // Calculate totals

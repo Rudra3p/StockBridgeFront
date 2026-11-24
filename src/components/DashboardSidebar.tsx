@@ -280,16 +280,15 @@ export default function DashboardSidebar({
   const handleNavClick = (item: { key: string; href?: string }) => {
     setMobileOpen(false);
     if (onTabChange) {
-      // If we are already on that route, just switch tab
-      if (item.href === pathname || !item.href) {
+      // In-page tab switching for dashboard tabs
+      if (item.href === pathname || !item.href || (item.key && item.key !== 'profile')) {
         onTabChange(item.key);
-        return;
+        if (item.href === pathname || !item.href || (item.key && item.key !== 'profile')) {
+          return;
+        }
       }
     }
-    if (item.href) {
-      if (item.key && item.key !== 'profile' && item.href.includes('admin')) {
-        onTabChange?.(item.key);
-      }
+    if (item.href && item.href !== pathname) {
       router.push(item.href);
     }
   };
