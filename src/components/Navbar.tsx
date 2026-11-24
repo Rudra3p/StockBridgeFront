@@ -57,6 +57,17 @@ export default function Navbar() {
     }
   };
 
+  // Hide public consumer navbar in authenticated dashboards & admin operations
+  const isDashboardRoute =
+    (pathname.startsWith('/admin') && pathname !== '/admin/login') ||
+    pathname.startsWith('/seller/dashboard') ||
+    pathname.startsWith('/buyer/dashboard') ||
+    pathname === '/dashboard';
+
+  if (isDashboardRoute) {
+    return null;
+  }
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -84,6 +95,16 @@ export default function Navbar() {
             className="text-sm font-medium text-slate-600 hover:text-main transition"
           >
             5-Grade Guide
+          </Link>
+          <Link
+            href="/partner"
+            className={`text-sm font-medium transition ${
+              pathname === '/partner'
+                ? 'text-[#e65c00] font-bold'
+                : 'text-slate-600 hover:text-main'
+            }`}
+          >
+            Sell Surplus (Partner)
           </Link>
 
           <div className="h-4 w-px bg-slate-200" />
@@ -178,6 +199,13 @@ export default function Navbar() {
               className="py-1 font-medium text-slate-700 hover:text-accent"
             >
               5-Grade Guide
+            </Link>
+            <Link
+              href="/partner"
+              onClick={() => setMobileMenuOpen(false)}
+              className="py-1 font-medium text-[#e65c00] font-bold hover:opacity-90"
+            >
+              Sell Surplus (Partner Portal)
             </Link>
           </div>
 

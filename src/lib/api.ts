@@ -106,4 +106,34 @@ export const backend = {
 
   getMe: (token?: string) =>
     backendFetch<UserProfileResponse>('/api/me', { method: 'GET' }, token),
+
+  getAdminHealth: () =>
+    backendFetch<Record<string, unknown>>('/api/admin/health', { method: 'GET' }),
+
+  getAdminOrganisations: () =>
+    backendFetch<Array<Record<string, unknown>>>('/api/admin/organisations', { method: 'GET' }),
+
+  updateAdminOrgStatus: (id: string, status: string) =>
+    backendFetch<Record<string, unknown>>(`/api/admin/organisations/${id}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    }),
+
+  getAdminUsers: () =>
+    backendFetch<Array<Record<string, unknown>>>('/api/admin/users', { method: 'GET' }),
+
+  toggleAdminUserStatus: (id: string, enabled?: boolean) =>
+    backendFetch<Record<string, unknown>>(`/api/admin/users/${id}/toggle-status`, {
+      method: 'PUT',
+      body: JSON.stringify({ enabled }),
+    }),
+
+  getAdminListings: () =>
+    backendFetch<Array<Record<string, unknown>>>('/api/admin/listings', { method: 'GET' }),
+
+  updateAdminListingStatus: (id: string, status: string) =>
+    backendFetch<Record<string, unknown>>(`/api/admin/listings/${id}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    }),
 };

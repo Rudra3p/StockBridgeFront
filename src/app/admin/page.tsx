@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { clientAuth } from '@/lib/client-api';
 import { UserProfileResponse, VerificationStatus, OrgType } from '@/lib/types';
+import DashboardSidebar from '@/components/DashboardSidebar';
 
 interface OrganisationItem {
   id: string;
@@ -328,9 +329,86 @@ export default function AdminPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Backend connection state
+  const [backendStatus, setBackendStatus] = useState<{
+    connected: boolean;
+    latencyMs?: number;
+    backendUrl?: string;
+    database?: string;
+    stats?: {
+      totalOrganisations: number;
+      totalUsers: number;
+      totalListings: number;
+    };
+  }>({ connected: false });
+  const [syncingBackend, setSyncingBackend] = useState<boolean>(false);
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 4000);
+  };
+
+  const syncBackend = async () => {
+    setSyncingBackend(true);
+    try {
+      // 1. Check health & connectivity
+      const healthRes = await fetch('/api/admin/backend-status');
+      if (healthRes.ok) {
+        const healthJson = await healthRes.json();
+        setBackendStatus(healthJson);
+      }
+
+      // 2. Fetch organisations from backend
+      const orgsRes = await fetch('/api/admin/organisations');
+      if (orgsRes.ok) {
+        const orgsJson = await orgsRes.json();
+        if (orgsJson.organisations && Array.isArray(orgsJson.organisations) && orgsJson.organisations.length > 0) {
+          setOrganisations(orgsJson.organisations);
+        }
+      }
+
+      // 3. Fetch users from backend
+      const usersRes = await fetch('/api/admin/users');
+      if (usersRes.ok) {
+        const usersJson = await usersRes.json();
+        if (usersJson.users && Array.isArray(usersJson.users) && usersJson.users.length > 0) {
+          setUsers(usersJson.users);
+        }
+      }
+
+      // 4. Fetch lots from backend
+      const lotsRes = await fetch('/api/admin/lots');
+      if (lotsRes.ok) {
+        const lotsJson = await lotsRes.json();
+        if (lotsJson.listings && Array.isArray(lotsJson.listings) && lotsJson.listings.length > 0) {
+          // Map backend listing documents to LotQAItem
+          const mapped = lotsJson.listings.map((l: any, idx: number) => ({
+            id: l.id || `qa-lot-${idx}`,
+            code: l.id ? `LOT-${l.id.substring(0, 8).toUpperCase()}` : `LOT-DB-${idx + 100}`,
+            title: l.title || 'Surplus Inventory Lot',
+            sellerName: l.sellerOrgName || 'Verified Enterprise Seller',
+            category: l.category || 'GENERAL',
+            grade: (l.condition === 'GRADE_A' ? 'A' : l.condition === 'GRADE_B' ? 'B' : l.condition === 'GRADE_C' ? 'C' : l.condition === 'GRADE_D' ? 'D' : 'A') as 'A' | 'B' | 'C' | 'D' | 'E',
+            units: l.quantity || 100,
+            askingPrice: l.askingPrice || 500,
+            originalPrice: l.originalPrice || 1000,
+            brandMasked: Boolean(l.brandMasked),
+            photoAnglesCount: (l.photos && l.photos.length) || 6,
+            cartonSealVerified: true,
+            barcodeVerified: true,
+            status: (l.status === 'ACTIVE' ? 'ACTIVE' : l.status === 'REJECTED' ? 'REJECTED' : 'PENDING_QA') as 'PENDING_QA' | 'ACTIVE' | 'REJECTED',
+            location: l.location || 'India Distribution Hub',
+          }));
+          setLotsQA(mapped);
+        }
+      }
+
+      showToast('Backend synchronization completed');
+    } catch {
+      showToast('Backend offline or connecting; local fallback active');
+    } finally {
+      setSyncingBackend(false);
+    }
   };
 
   useEffect(() => {
@@ -341,6 +419,8 @@ export default function AdminPage() {
         if (res.authenticated && res.user && res.user.role === 'ADMIN') {
           setCurrentUser(res.user);
           setAuthLoading(false);
+          // Initial background sync with backend
+          syncBackend();
         } else {
           // If not authenticated as ADMIN, redirect to /admin/login immediately
           router.replace('/admin/login');
@@ -361,26 +441,56 @@ export default function AdminPage() {
   };
 
   // 1. KYC Actions
-  const handleUpdateKycStatus = (orgId: string, status: VerificationStatus) => {
+  const handleUpdateKycStatus = async (orgId: string, status: VerificationStatus) => {
     setOrganisations((prev) =>
       prev.map((o) => (o.id === orgId ? { ...o, verificationStatus: status } : o))
     );
     showToast(`Organisation status updated to ${status}`);
+
+    try {
+      await fetch('/api/admin/organisations', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: orgId, status }),
+      });
+    } catch {
+      // Local state is already updated
+    }
   };
 
   // 2. Lot QA Actions
-  const handleApproveLot = (lotId: string) => {
+  const handleApproveLot = async (lotId: string) => {
     setLotsQA((prev) =>
       prev.map((l) => (l.id === lotId ? { ...l, status: 'ACTIVE' } : l))
     );
     showToast('Lot approved and published to Live Graded Marketplace!');
+
+    try {
+      await fetch('/api/admin/lots', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: lotId, status: 'ACTIVE' }),
+      });
+    } catch {
+      // Local state is already updated
+    }
   };
 
-  const handleRejectLot = (lotId: string) => {
+  const handleRejectLot = async (lotId: string) => {
     setLotsQA((prev) =>
       prev.map((l) => (l.id === lotId ? { ...l, status: 'REJECTED' } : l))
     );
     showToast('Lot rejected and returned to seller for revision.');
+
+    try {
+      await fetch('/api/admin/lots', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: lotId, status: 'REJECTED' }),
+      });
+    } catch {
+      // Local state is already updated
+    }
   };
 
   // 3. Escrow Actions
@@ -407,11 +517,28 @@ export default function AdminPage() {
   };
 
   // 5. User Account Actions
-  const handleToggleUser = (userId: string) => {
+  const handleToggleUser = async (userId: string) => {
+    let newEnabled = true;
     setUsers((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, enabled: !u.enabled } : u))
+      prev.map((u) => {
+        if (u.id === userId) {
+          newEnabled = !u.enabled;
+          return { ...u, enabled: newEnabled };
+        }
+        return u;
+      })
     );
     showToast('User account status updated.');
+
+    try {
+      await fetch('/api/admin/users', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: userId, enabled: newEnabled }),
+      });
+    } catch {
+      // Local state is already updated
+    }
   };
 
   if (authLoading) {
@@ -435,7 +562,7 @@ export default function AdminPage() {
   const activeDisputeCount = disputes.filter((d) => d.status === 'UNDER_ARBITRATION').length;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-orange-950 selection:text-orange-200">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row selection:bg-orange-950 selection:text-orange-200">
       
       {/* ── Toast Notification ─────────────────────────────────── */}
       {toastMessage && (
@@ -452,141 +579,76 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* ── Top Header / Admin Identity Bar ──────────────────────── */}
-      <header className="w-full bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#ff7a1a] text-white font-extrabold shadow-sm font-mono text-sm">
-                SB
-              </span>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="font-quicksand font-bold text-lg text-white">
-                    StockBridge Admin Console
-                  </h1>
-                  <span className="rounded-full bg-orange-500/10 border border-orange-500/30 px-2 py-0.5 text-[10px] font-mono font-bold text-[#ff7a1a]">
-                    MASTER ADMIN
-                  </span>
-                </div>
-                <p className="text-xs text-slate-400 font-mono">
-                  {currentUser?.fullName} ({currentUser?.email})
-                </p>
-              </div>
-            </div>
+      {/* ── Modern Left Sidebar Navigation (Swiggy / Amazon Seller Central standard) ── */}
+      <DashboardSidebar
+        role="ADMIN"
+        activeTab={activeTab}
+        onTabChange={(tab) => setActiveTab(tab as typeof activeTab)}
+        badges={{
+          kyc: pendingKycCount,
+          qa: pendingQACount,
+          disputes: activeDisputeCount,
+          users: users.length,
+        }}
+        backendStatus={backendStatus}
+        onSyncBackend={syncBackend}
+        syncingBackend={syncingBackend}
+        currentUser={currentUser}
+        onLogout={handleLogout}
+      />
 
-            <div className="flex items-center gap-3">
-              <Link
-                href="/admin/profile"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-orange-500/40 bg-orange-500/10 px-3 py-1.5 text-xs font-mono font-bold text-[#ff7a1a] hover:bg-orange-500/20 transition"
-              >
-                ⚙️ Admin Profile
-              </Link>
-              <Link
-                href="/"
-                className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-xs font-mono text-slate-300 hover:text-white transition"
-              >
-                ↗ Buyer Site
-              </Link>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="inline-flex items-center gap-1 rounded-lg border border-rose-900/50 bg-rose-950/40 px-3 py-1.5 text-xs font-mono text-rose-300 hover:bg-rose-900 transition"
-              >
-                Logout
-              </button>
+      {/* ── Operations Main Workspace ───────────────────────────── */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        {/* Top Control Bar with Quick Breadcrumb, Search, Refresh */}
+        <header className="sticky top-0 z-20 bg-slate-900/95 backdrop-blur border-b border-slate-800 px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div>
+              <h1 className="text-base sm:text-lg font-bold font-quicksand text-white">
+                {activeTab === 'overview' && 'Executive Overview & Platform Operations'}
+                {activeTab === 'kyc' && 'Enterprise KYC & GSTIN Verification'}
+                {activeTab === 'lots' && 'Lot Quality Assurance & Catalog Approval'}
+                {activeTab === 'escrow' && 'Escrow Vault & Dispatch Tracking Ledger'}
+                {activeTab === 'disputes' && 'Dispute Arbitration & Resolution Board'}
+                {activeTab === 'users' && 'Enterprise Account Administration'}
+              </h1>
+              <p className="text-xs font-mono text-slate-400">
+                Logged in: {currentUser?.fullName} ({currentUser?.email})
+              </p>
             </div>
           </div>
-        </div>
 
-        {/* ── Sub Navigation Tabs ─────────────────────────────────── */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-1 overflow-x-auto text-xs font-mono border-t border-slate-800/60">
-          <button
-            type="button"
-            onClick={() => setActiveTab('overview')}
-            className={`px-4 py-3 border-b-2 font-bold transition whitespace-nowrap ${
-              activeTab === 'overview'
-                ? 'border-[#ff7a1a] text-[#ff7a1a]'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            📊 Executive Overview
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('kyc')}
-            className={`px-4 py-3 border-b-2 font-bold transition whitespace-nowrap flex items-center gap-1.5 ${
-              activeTab === 'kyc'
-                ? 'border-[#ff7a1a] text-[#ff7a1a]'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            🏢 Enterprise KYC
-            {pendingKycCount > 0 && (
-              <span className="rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.2 text-[10px]">
-                {pendingKycCount}
+          <div className="flex items-center gap-2.5">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-lg border border-slate-800 bg-slate-950/80 text-xs font-mono">
+              <span className="text-slate-500">Live DB:</span>
+              <span className={backendStatus.connected ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold'}>
+                {backendStatus.connected ? 'Connected' : 'Standalone'}
               </span>
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('lots')}
-            className={`px-4 py-3 border-b-2 font-bold transition whitespace-nowrap flex items-center gap-1.5 ${
-              activeTab === 'lots'
-                ? 'border-[#ff7a1a] text-[#ff7a1a]'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            📦 Lot QA &amp; Grading
-            {pendingQACount > 0 && (
-              <span className="rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/40 px-1.5 py-0.2 text-[10px]">
-                {pendingQACount}
-              </span>
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('escrow')}
-            className={`px-4 py-3 border-b-2 font-bold transition whitespace-nowrap ${
-              activeTab === 'escrow'
-                ? 'border-[#ff7a1a] text-[#ff7a1a]'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            🔒 Escrow Ledger
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('disputes')}
-            className={`px-4 py-3 border-b-2 font-bold transition whitespace-nowrap flex items-center gap-1.5 ${
-              activeTab === 'disputes'
-                ? 'border-[#ff7a1a] text-[#ff7a1a]'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            ⚖️ Dispute Arbitration
-            {activeDisputeCount > 0 && (
-              <span className="rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 px-1.5 py-0.2 text-[10px]">
-                {activeDisputeCount}
-              </span>
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('users')}
-            className={`px-4 py-3 border-b-2 font-bold transition whitespace-nowrap ${
-              activeTab === 'users'
-                ? 'border-[#ff7a1a] text-[#ff7a1a]'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            👥 Accounts &amp; Roles
-          </button>
-        </div>
-      </header>
+              {backendStatus.latencyMs !== undefined && (
+                <span className="text-slate-500">({backendStatus.latencyMs}ms)</span>
+              )}
+            </div>
 
-      {/* ── Main Workspace Body ──────────────────────────────────── */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            <button
+              type="button"
+              onClick={syncBackend}
+              disabled={syncingBackend}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-mono font-bold text-slate-200 transition"
+              title="Force re-sync with Spring Boot backend"
+            >
+              🔄 {syncingBackend ? 'Syncing...' : 'Sync'}
+            </button>
+
+            <Link
+              href="/admin/profile"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-orange-500/30 bg-orange-500/10 hover:bg-orange-500/20 text-xs font-mono font-bold text-[#ff7a1a] transition"
+            >
+              ⚙️ Profile
+            </Link>
+          </div>
+        </header>
+
+        {/* ── Main Workspace Body ──────────────────────────────────── */}
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
         {/* ======================================================== */}
         {/* 1. EXECUTIVE OVERVIEW MODULE                             */}
@@ -1222,6 +1284,7 @@ export default function AdminPage() {
 
       </main>
 
+      </div>
     </div>
   );
 }

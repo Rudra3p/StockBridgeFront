@@ -1,7 +1,27 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  // Hide consumer footer on authenticated dashboards and auth screens
+  const isDashboardOrAuth =
+    (pathname.startsWith('/admin') && pathname !== '/admin/login') ||
+    pathname.startsWith('/seller/dashboard') ||
+    pathname.startsWith('/buyer/dashboard') ||
+    pathname === '/dashboard' ||
+    pathname === '/login' ||
+    pathname === '/register' ||
+    pathname === '/admin/login' ||
+    pathname === '/seller/register';
+
+  if (isDashboardOrAuth) {
+    return null;
+  }
+
   return (
     <footer className="w-full border-t border-slate-200 bg-slate-900 text-slate-400 text-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">

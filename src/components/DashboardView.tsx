@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { clientAuth } from '@/lib/client-api';
 import { UserProfileResponse, Role } from '@/lib/types';
+import DashboardSidebar from '@/components/DashboardSidebar';
 
 interface DashboardViewProps {
   expectedRole: Role;
@@ -343,7 +344,7 @@ export default function DashboardView({
   const totalEscrowAmount = escrowOrders.reduce((acc, o) => acc + o.totalAmount, 0);
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-[#f8fafc] text-slate-900 pb-16">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex flex-col md:flex-row">
       
       {/* ── Toast Notification ─────────────────────────────────── */}
       {toastMessage && (
@@ -360,20 +361,47 @@ export default function DashboardView({
         </div>
       )}
 
-      {/* ── Top Header / User Identity Bar ──────────────────────── */}
-      <header className="w-full bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* ── Modern Left Sidebar Navigation (Swiggy / Zepto / Amazon Seller Central standard) ── */}
+      <DashboardSidebar
+        role={role}
+        activeTab={activeTab}
+        onTabChange={(tab) => setActiveTab(tab as typeof activeTab)}
+        badges={{
+          offers: pendingOffersCount,
+          escrow: escrowOrders.length,
+          qa: lots.filter((l) => l.status === 'PENDING_QA').length,
+        }}
+        currentUser={{
+          fullName: profile.fullName,
+          email: profile.email,
+          organisation: {
+            legalName: profile.organisation?.legalName,
+            gstNumber: profile.organisation?.gstNumber,
+          },
+        }}
+        onLogout={handleLogout}
+        actionButton={
+          role === 'SELLER'
+            ? {
+                label: 'Create Surplus Lot',
+                onClick: () => setCreateLotOpen(true),
+              }
+            : undefined
+        }
+      />
+
+      {/* ── Operations Main Content ─────────────────────────────── */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        {/* Sleek Top Bar */}
+        <header className="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4 shadow-2xs">
+          <div className="flex items-center gap-3">
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#e65c00] bg-orange-50 px-2.5 py-0.5 rounded border border-orange-200">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#e65c00] bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
                   {portalTitle}
                 </span>
-                <span className="text-xs font-mono text-slate-400">
-                  GSTIN: {profile.organisation?.gstNumber || '27AABCS1429B1Z8'}
-                </span>
                 <span
-                  className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${
+                  className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
                     isApproved
                       ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                       : 'bg-amber-50 text-amber-700 border-amber-200'
@@ -381,126 +409,50 @@ export default function DashboardView({
                 >
                   {isApproved ? '✓ GST Verified' : '⏳ Verification In Progress'}
                 </span>
+                <span className="text-xs font-mono text-slate-400 hidden sm:inline">
+                  GSTIN: {profile.organisation?.gstNumber || '27AABCS1429B1Z8'}
+                </span>
               </div>
-
-              <h1 className="type-sub text-slate-950 font-quicksand font-bold tracking-tight">
+              <h1 className="text-base sm:text-lg font-bold font-quicksand text-slate-900 mt-0.5">
                 {profile.organisation?.legalName || profile.fullName}
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500 font-quicksand mt-0.5">
-                Authorized Representative: <strong className="text-slate-800">{profile.fullName}</strong> ({profile.email})
-              </p>
             </div>
+          </div>
 
-            <div className="flex items-center gap-3 self-start md:self-center">
-              {role === 'SELLER' && (
-                <button
-                  type="button"
-                  onClick={() => setCreateLotOpen(true)}
-                  className="inline-flex items-center gap-2 bg-[#e65c00] text-white text-xs sm:text-sm font-bold font-quicksand px-4 py-2.5 rounded-lg hover:bg-[#c44e00] transition shadow-sm"
-                >
-                  <span>+ Create Surplus Lot</span>
-                </button>
-              )}
-
-              {role === 'BUYER' && (
-                <Link
-                  href="/#marketplace"
-                  className="inline-flex items-center gap-2 bg-slate-950 text-white text-xs sm:text-sm font-bold font-quicksand px-4 py-2.5 rounded-lg hover:bg-slate-800 transition shadow-sm"
-                >
-                  <span>Browse Marketplace</span>
-                  <span aria-hidden="true">→</span>
-                </Link>
-              )}
-
+          <div className="flex items-center gap-3">
+            {role === 'SELLER' && (
               <button
                 type="button"
-                onClick={handleLogout}
-                disabled={loggingOut}
-                className="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:opacity-60 font-quicksand"
+                onClick={() => setCreateLotOpen(true)}
+                className="hidden sm:inline-flex items-center gap-1.5 bg-[#e65c00] text-white text-xs font-bold font-quicksand px-3.5 py-2 rounded-lg hover:bg-[#c44e00] transition shadow-xs"
               >
-                {loggingOut ? 'Signing out...' : 'Sign Out'}
+                <span>+ Create Lot</span>
               </button>
-            </div>
-          </div>
+            )}
 
-          {/* ── Tabbed Workspace Navigation ────────────────────── */}
-          <div className="mt-6 flex items-center gap-2 overflow-x-auto border-t border-slate-100 pt-4 text-xs sm:text-sm font-semibold font-quicksand">
-            <button
-              type="button"
-              onClick={() => setActiveTab('overview')}
-              className={`px-3.5 py-2 rounded-lg transition whitespace-nowrap ${
-                activeTab === 'overview'
-                  ? 'bg-slate-950 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              Overview & Analytics
-            </button>
+            {role === 'BUYER' && (
+              <Link
+                href="/#marketplace"
+                className="inline-flex items-center gap-1.5 bg-slate-900 text-white text-xs font-bold font-quicksand px-3.5 py-2 rounded-lg hover:bg-slate-800 transition shadow-xs"
+              >
+                <span>Marketplace</span>
+                <span>→</span>
+              </Link>
+            )}
 
             <button
               type="button"
-              onClick={() => setActiveTab('listings')}
-              className={`px-3.5 py-2 rounded-lg transition whitespace-nowrap flex items-center gap-2 ${
-                activeTab === 'listings'
-                  ? 'bg-slate-950 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-2xs hover:bg-slate-50 font-quicksand"
             >
-              <span>{role === 'SELLER' ? 'My Surplus Lots' : 'Surplus Catalog'}</span>
-              <span className={`px-1.5 py-0.2 rounded text-[10px] font-mono ${activeTab === 'listings' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700'}`}>
-                {lots.length}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('offers')}
-              className={`px-3.5 py-2 rounded-lg transition whitespace-nowrap flex items-center gap-2 ${
-                activeTab === 'offers'
-                  ? 'bg-slate-950 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <span>{role === 'SELLER' ? 'Inbound Buyer Offers' : 'My Active Bids'}</span>
-              {pendingOffersCount > 0 && (
-                <span className="px-1.5 py-0.2 rounded text-[10px] font-mono bg-[#e65c00] text-white">
-                  {pendingOffersCount}
-                </span>
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('escrow')}
-              className={`px-3.5 py-2 rounded-lg transition whitespace-nowrap flex items-center gap-2 ${
-                activeTab === 'escrow'
-                  ? 'bg-slate-950 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <span>Escrow & Deliveries</span>
-              <span className={`px-1.5 py-0.2 rounded text-[10px] font-mono ${activeTab === 'escrow' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700'}`}>
-                {escrowOrders.length}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('profile')}
-              className={`px-3.5 py-2 rounded-lg transition whitespace-nowrap ${
-                activeTab === 'profile'
-                  ? 'bg-slate-950 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              Entity & KYC Details
+              {loggingOut ? 'Signing out...' : 'Sign Out'}
             </button>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* ── Main Dashboard Workspace ───────────────────────────── */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8">
+        {/* ── Main Dashboard Workspace ───────────────────────────── */}
+        <main className="max-w-7xl w-full mx-auto p-4 sm:px-6 lg:px-8 mt-8 space-y-8">
         
         {/* Verification Status Callout (if pending) */}
         {isPending && (
@@ -1207,6 +1159,7 @@ export default function DashboardView({
         )}
 
       </main>
+      </div>
 
       {/* ── CREATE SURPLUS LOT MODAL / SLIDE-OVER ─────────────── */}
       {createLotOpen && (

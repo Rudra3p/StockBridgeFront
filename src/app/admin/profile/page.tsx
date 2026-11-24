@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { clientAuth } from '@/lib/client-api';
 import { UserProfileResponse } from '@/lib/types';
+import DashboardSidebar from '@/components/DashboardSidebar';
 
 export default function AdminProfilePage() {
   const router = useRouter();
@@ -170,28 +171,25 @@ export default function AdminProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-orange-950 selection:text-orange-200">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row selection:bg-orange-950 selection:text-orange-200">
       
-      {/* ── Top Header ─────────────────────────────────────────── */}
-      <header className="w-full bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-30">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+      {/* ── Left Sidebar Navigation (Desktop permanent / Mobile drawer) ── */}
+      <DashboardSidebar
+        role="ADMIN"
+        activeTab="profile"
+        currentUser={currentUser}
+        onLogout={handleLogout}
+      />
+
+      {/* ── Operations Main Workspace ───────────────────────────── */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <header className="sticky top-0 z-20 bg-slate-900/95 backdrop-blur border-b border-slate-800 px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Link
-              href="/admin"
-              className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#ff7a1a] text-white font-extrabold shadow-sm font-mono text-sm"
-            >
-              SB
-            </Link>
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="font-quicksand font-bold text-base sm:text-lg text-white">
-                  Administrator Profile &amp; Security
-                </h1>
-                <span className="rounded-full bg-orange-500/10 border border-orange-500/30 px-2 py-0.5 text-[10px] font-mono font-bold text-[#ff7a1a]">
-                  MASTER ADMIN
-                </span>
-              </div>
-              <p className="text-xs text-slate-400 font-mono">
+              <h1 className="text-base sm:text-lg font-bold font-quicksand text-white">
+                Administrator Profile &amp; Security Settings
+              </h1>
+              <p className="text-xs font-mono text-slate-400">
                 {currentUser?.email} • {currentUser?.phone}
               </p>
             </div>
@@ -202,21 +200,13 @@ export default function AdminProfilePage() {
               href="/admin"
               className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-xs font-mono font-bold text-slate-200 hover:text-white transition"
             >
-              ← Admin Console
+              ← Back to Admin Console
             </Link>
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="inline-flex items-center gap-1 rounded-lg border border-rose-900/50 bg-rose-950/40 px-3 py-1.5 text-xs font-mono text-rose-300 hover:bg-rose-900 transition"
-            >
-              Logout
-            </button>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* ── Main Container ─────────────────────────────────────── */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* ── Main Container ─────────────────────────────────────── */}
+        <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
         {/* Status Card */}
         <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -421,6 +411,7 @@ export default function AdminProfilePage() {
 
       </main>
 
+      </div>
     </div>
   );
 }
