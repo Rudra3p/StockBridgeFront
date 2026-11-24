@@ -68,6 +68,77 @@ export default function Navbar() {
     return null;
   }
 
+  const isPartnerRoute = pathname.startsWith('/partner');
+
+  // =========================================================================
+  // DEDICATED PARTNER NAVBAR (FOR /partner, /partner/register, /partner/login)
+  // Contains only: Logo, Log In button, and Register button
+  // =========================================================================
+  if (isPartnerRoute) {
+    return (
+      <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white shadow-2xs">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          {/* Partner Brand Logo */}
+          <Link
+            href="/partner"
+            className="flex items-center gap-2.5 text-xl font-bold tracking-tight text-slate-900 transition hover:text-[#e65c00]"
+          >
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#e65c00] text-white font-extrabold shadow-sm font-mono text-sm">
+              SB
+            </span>
+            <div className="flex items-center gap-1.5 font-quicksand">
+              <span className="font-bold text-slate-900 text-lg">StockBridge</span>
+              <span className="text-[11px] font-mono font-bold tracking-wider text-[#e65c00] bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-md">
+                PARTNER
+              </span>
+            </div>
+          </Link>
+
+          {/* Action Buttons: Just Register & Login */}
+          <div className="flex items-center gap-3">
+            {!loading && user && user.role === 'SELLER' ? (
+              <div className="flex items-center gap-2.5">
+                <Link
+                  href="/seller/dashboard"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-[#e65c00] px-4 py-2 text-xs sm:text-sm font-bold text-white shadow-sm transition hover:bg-[#c44e00] font-quicksand"
+                >
+                  <span>Partner Portal</span>
+                  <span>→</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  disabled={loggingOut}
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 font-quicksand"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Link
+                  href="/partner/login"
+                  className="rounded-lg px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold text-slate-700 transition hover:text-[#e65c00] hover:bg-orange-50 font-quicksand"
+                >
+                  Log In
+                </Link>
+                <Link
+                  href="/partner/register"
+                  className="inline-flex items-center rounded-lg bg-[#e65c00] px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-bold text-white shadow-sm transition hover:bg-[#c44e00] font-quicksand"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  // =========================================================================
+  // BUYER / PUBLIC CONSUMER NAVBAR (NO "Partner with Us" LINK)
+  // =========================================================================
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -95,16 +166,6 @@ export default function Navbar() {
             className="text-sm font-medium text-slate-600 hover:text-main transition"
           >
             5-Grade Guide
-          </Link>
-          <Link
-            href="/partner"
-            className={`text-sm font-medium transition ${
-              pathname === '/partner'
-                ? 'text-[#e65c00] font-bold'
-                : 'text-slate-600 hover:text-main'
-            }`}
-          >
-            Partner with Us
           </Link>
 
           <div className="h-4 w-px bg-slate-200" />
@@ -199,17 +260,10 @@ export default function Navbar() {
             >
               5-Grade Guide
             </Link>
-            <Link
-              href="/partner"
-              onClick={() => setMobileMenuOpen(false)}
-              className="py-1 font-medium text-slate-700 hover:text-[#e65c00]"
-            >
-              Partner with Us
-            </Link>
           </div>
 
           {!loading && (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 pt-3">
               {user ? (
                 <>
                   <div className="pb-2 border-b border-slate-100">
