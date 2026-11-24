@@ -59,10 +59,10 @@ export default function DashboardSidebar({
   const roleConfig = {
     ADMIN: {
       badge: 'MASTER ADMIN',
-      badgeColor: 'bg-orange-500/10 text-[#ff7a1a] border-orange-500/30',
+      badgeColor: 'bg-orange-50 text-[#e65c00] border-orange-200',
       portalTitle: 'Admin Console',
       subTitle: 'Platform Operations & Escrow',
-      themeBg: 'bg-slate-950 text-slate-100 border-slate-800',
+      themeBg: 'bg-white text-slate-900 border-slate-200',
       navItems: [
         {
           key: 'overview',
@@ -144,10 +144,10 @@ export default function DashboardSidebar({
     },
     SELLER: {
       badge: 'SELLER CENTRAL',
-      badgeColor: 'bg-orange-500/10 text-[#e65c00] border-orange-500/30',
+      badgeColor: 'bg-orange-50 text-[#e65c00] border-orange-200',
       portalTitle: 'StockBridge Partner',
       subTitle: 'Surplus Liquidation Desk',
-      themeBg: 'bg-slate-900 text-slate-100 border-slate-800',
+      themeBg: 'bg-white text-slate-900 border-slate-200',
       navItems: [
         {
           key: 'overview',
@@ -216,10 +216,10 @@ export default function DashboardSidebar({
     },
     BUYER: {
       badge: 'WHOLESALE BUYER',
-      badgeColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+      badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
       portalTitle: 'StockBridge Buyer',
       subTitle: 'Wholesale Procurement Desk',
-      themeBg: 'bg-slate-900 text-slate-100 border-slate-800',
+      themeBg: 'bg-white text-slate-900 border-slate-200',
       navItems: [
         {
           key: 'overview',
@@ -294,24 +294,24 @@ export default function DashboardSidebar({
   };
 
   const navContent = (
-    <div className="flex flex-col h-full justify-between">
+    <div className="flex flex-col h-full justify-between bg-white text-slate-800">
       <div>
         {/* Brand Header */}
-        <div className="p-5 border-b border-slate-800/80">
+        <div className="p-5 border-b border-slate-200">
           <Link href="/" className="flex items-center gap-2.5 group">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#ff7a1a] to-[#e65c00] text-white font-extrabold text-sm shadow-md group-hover:scale-105 transition-transform">
               SB
             </span>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-quicksand font-bold text-base text-white tracking-tight">
+                <span className="font-quicksand font-bold text-base text-slate-900 tracking-tight">
                   StockBridge
                 </span>
                 <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border ${roleConfig.badgeColor}`}>
                   {roleConfig.badge}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 font-mono truncate max-w-[170px]">
+              <p className="text-[11px] text-slate-500 font-mono truncate max-w-[170px]">
                 {roleConfig.portalTitle}
               </p>
             </div>
@@ -319,18 +319,18 @@ export default function DashboardSidebar({
 
           {/* Live Backend Connection Indicator */}
           {backendStatus && (
-            <div className="mt-3.5 flex items-center justify-between px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/90 text-[11px] font-mono">
+            <div className="mt-3.5 flex items-center justify-between px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-[11px] font-mono">
               <div className="flex items-center gap-2 truncate">
                 <span
                   className={`h-2 w-2 rounded-full shrink-0 ${
-                    backendStatus.connected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
+                    backendStatus.connected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
                   }`}
                 />
-                <span className={backendStatus.connected ? 'text-emerald-400 font-bold truncate' : 'text-amber-400 font-bold truncate'}>
+                <span className={backendStatus.connected ? 'text-emerald-700 font-bold truncate' : 'text-amber-700 font-bold truncate'}>
                   {backendStatus.connected ? 'Backend Live' : 'Standalone'}
                 </span>
                 {backendStatus.latencyMs !== undefined && (
-                  <span className="text-slate-400 text-[10px]">({backendStatus.latencyMs}ms)</span>
+                  <span className="text-slate-500 text-[10px]">({backendStatus.latencyMs}ms)</span>
                 )}
               </div>
               {onSyncBackend && (
@@ -338,7 +338,7 @@ export default function DashboardSidebar({
                   type="button"
                   onClick={onSyncBackend}
                   disabled={syncingBackend}
-                  className="text-[#ff7a1a] hover:text-orange-300 font-bold text-[10px] uppercase ml-1 transition"
+                  className="text-[#e65c00] hover:text-orange-700 font-bold text-[10px] uppercase ml-1 transition"
                   title="Sync data with Spring Boot backend"
                 >
                   {syncingBackend ? '...' : 'Sync'}
@@ -357,7 +357,7 @@ export default function DashboardSidebar({
                 setMobileOpen(false);
                 actionButton.onClick();
               }}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#ff7a1a] to-[#e65c00] py-2.5 px-4 text-xs font-bold text-white shadow-md hover:from-[#e65c00] hover:to-[#cc5200] transition active:scale-[0.98]"
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#e65c00] hover:bg-[#cc5200] py-2.5 px-4 text-xs font-bold text-white shadow-sm transition active:scale-[0.98]"
             >
               <span>+</span>
               <span>{actionButton.label}</span>
@@ -367,7 +367,7 @@ export default function DashboardSidebar({
 
         {/* Navigation Menu */}
         <div className="px-3 py-4">
-          <p className="px-3 pb-2 text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold">
+          <p className="px-3 pb-2 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">
             Navigation Menu
           </p>
           <nav className="space-y-1">
@@ -381,14 +381,14 @@ export default function DashboardSidebar({
                   key={item.key}
                   type="button"
                   onClick={() => handleNavClick(item)}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium font-quicksand transition group text-left ${
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold font-quicksand transition group text-left ${
                     isActive
-                      ? 'bg-orange-500/15 text-[#ff7a1a] font-bold border border-orange-500/30 shadow-sm'
-                      : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
+                      ? 'bg-orange-50 text-[#e65c00] font-bold border border-orange-200/90 shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 border border-transparent'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className={isActive ? 'text-[#ff7a1a]' : 'text-slate-400 group-hover:text-slate-200'}>
+                    <span className={isActive ? 'text-[#e65c00]' : 'text-slate-400 group-hover:text-slate-700'}>
                       {item.icon}
                     </span>
                     <span>{item.label}</span>
@@ -398,8 +398,8 @@ export default function DashboardSidebar({
                     <span
                       className={`text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-full border ${
                         isActive
-                          ? 'bg-[#ff7a1a] text-white border-transparent'
-                          : 'bg-slate-800 text-orange-400 border-slate-700'
+                          ? 'bg-[#e65c00] text-white border-transparent'
+                          : 'bg-slate-100 text-slate-700 border-slate-200'
                       }`}
                     >
                       {item.badge}
@@ -413,18 +413,18 @@ export default function DashboardSidebar({
       </div>
 
       {/* Footer Info & Sign Out */}
-      <div className="p-4 border-t border-slate-800/80 space-y-3">
+      <div className="p-4 border-t border-slate-200 space-y-3 bg-slate-50/60">
         {/* User Card */}
         {currentUser && (
-          <div className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-900/80 border border-slate-800">
-            <div className="h-8 w-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-mono font-bold text-white uppercase shrink-0">
+          <div className="flex items-center gap-2.5 p-2 rounded-xl bg-white border border-slate-200 shadow-2xs">
+            <div className="h-8 w-8 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center text-xs font-mono font-bold text-[#e65c00] uppercase shrink-0">
               {currentUser.fullName ? currentUser.fullName.slice(0, 2) : 'SB'}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-white truncate font-quicksand">
+              <p className="text-xs font-bold text-slate-900 truncate font-quicksand">
                 {currentUser.fullName || 'Admin User'}
               </p>
-              <p className="text-[10px] text-slate-400 truncate font-mono">
+              <p className="text-[10px] text-slate-500 truncate font-mono">
                 {currentUser.email || 'user@stockbridge.com'}
               </p>
             </div>
@@ -434,16 +434,16 @@ export default function DashboardSidebar({
         {/* Public marketplace link */}
         <Link
           href="/"
-          className="flex items-center justify-between px-3 py-2 rounded-lg text-[11px] font-mono text-slate-400 hover:text-white hover:bg-slate-800/60 transition"
+          className="flex items-center justify-between px-3 py-2 rounded-lg text-[11px] font-mono text-slate-600 hover:text-slate-900 hover:bg-white border border-transparent hover:border-slate-200 transition"
         >
           <span>↗ Public Marketplace</span>
-          <span className="text-slate-600">Site</span>
+          <span className="text-slate-400">Site</span>
         </Link>
 
         {role === 'SELLER' && (
           <Link
             href="/partner"
-            className="flex items-center justify-between px-3 py-2 rounded-lg text-[11px] font-mono text-orange-400 hover:text-orange-300 hover:bg-orange-500/10 transition"
+            className="flex items-center justify-between px-3 py-2 rounded-lg text-[11px] font-mono text-[#e65c00] hover:text-orange-700 hover:bg-orange-50 border border-transparent hover:border-orange-200 transition"
           >
             <span>🤝 Partner Program</span>
             <span className="text-[10px]">Info</span>
@@ -455,7 +455,7 @@ export default function DashboardSidebar({
           <button
             type="button"
             onClick={onLogout}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-bold font-mono text-rose-400 border border-rose-900/40 bg-rose-950/20 hover:bg-rose-950/60 transition"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-bold font-mono text-rose-600 border border-rose-200 bg-rose-50/60 hover:bg-rose-100/80 transition"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -470,7 +470,7 @@ export default function DashboardSidebar({
   return (
     <>
       {/* ── Mobile Top Header (Visible on screens < md) ────────── */}
-      <div className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-slate-950 border-b border-slate-800 text-white">
+      <div className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-white border-b border-slate-200 text-slate-900 shadow-2xs">
         <Link href="/" className="flex items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#ff7a1a] to-[#e65c00] text-white font-extrabold text-xs">
             SB
@@ -484,7 +484,7 @@ export default function DashboardSidebar({
         <button
           type="button"
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:text-white"
+          className="p-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 hover:text-slate-900"
           aria-label="Toggle navigation drawer"
         >
           {mobileOpen ? (
@@ -502,14 +502,14 @@ export default function DashboardSidebar({
       {/* ── Mobile Drawer Backdrop ─────────────────────────────── */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/70 backdrop-blur-xs md:hidden"
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs md:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
       {/* ── Mobile Drawer (Slide in) ────────────────────────────── */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-slate-950 border-r border-slate-800 transform transition-transform duration-200 ease-in-out md:hidden ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-white border-r border-slate-200 transform transition-transform duration-200 ease-in-out md:hidden shadow-xl ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -517,7 +517,7 @@ export default function DashboardSidebar({
       </aside>
 
       {/* ── Desktop Permanent Left Sidebar (md and up) ─────────── */}
-      <aside className="hidden md:flex flex-col w-64 lg:w-72 shrink-0 bg-slate-950 border-r border-slate-800/90 h-screen sticky top-0 z-30 select-none">
+      <aside className="hidden md:flex flex-col w-64 lg:w-72 shrink-0 bg-white border-r border-slate-200/90 h-screen sticky top-0 z-30 select-none shadow-2xs">
         {navContent}
       </aside>
     </>

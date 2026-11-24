@@ -4,6 +4,7 @@ import {
   RegisterRequest,
   RegisterResponse,
   UserProfileResponse,
+  Role,
 } from './types';
 
 /**
@@ -60,21 +61,26 @@ export const clientAuth = {
     }
   },
 
-  async logout(): Promise<boolean> {
+  async logout(role?: Role | string): Promise<boolean> {
     try {
-      const res = await fetch('/api/auth/logout', { method: 'POST' });
+      const res = await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role }),
+      });
       return res.ok;
     } catch {
       return false;
     }
   },
 
-  async getMe(): Promise<{
+  async getMe(role?: Role | string): Promise<{
     authenticated: boolean;
     user?: UserProfileResponse;
   }> {
     try {
-      const res = await fetch('/api/auth/me', { cache: 'no-store' });
+      const url = role ? `/api/auth/me?role=${role}` : '/api/auth/me';
+      const res = await fetch(url, { cache: 'no-store' });
       if (!res.ok) return { authenticated: false };
       const data = await res.json();
       if (!data || data.authenticated === false || !data.id) {

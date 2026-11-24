@@ -17,9 +17,10 @@ export default function Navbar() {
   useEffect(() => {
     let isMounted = true;
     async function checkAuth() {
-      const res = await clientAuth.getMe();
+      const targetRole = pathname.startsWith('/partner') ? 'SELLER' : 'BUYER';
+      const res = await clientAuth.getMe(targetRole);
       if (isMounted) {
-        if (res.authenticated && res.user) {
+        if (res.authenticated && res.user && res.user.role === targetRole) {
           setUser(res.user);
         } else {
           setUser(null);
@@ -36,10 +37,11 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     setLoggingOut(true);
-    await clientAuth.logout();
+    const targetRole = pathname.startsWith('/partner') ? 'SELLER' : 'BUYER';
+    await clientAuth.logout(targetRole);
     setUser(null);
     setLoggingOut(false);
-    router.push('/login');
+    router.push(targetRole === 'SELLER' ? '/partner/login' : '/login');
     router.refresh();
   };
 

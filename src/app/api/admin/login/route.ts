@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
         })
       ).toString('base64url')}.masterAdminSignature`;
 
-      await setSessionCookies(mockToken, adminUser);
+      await setSessionCookies(mockToken, adminUser, 'ADMIN');
 
       return NextResponse.json({
         success: true,
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await setSessionCookies(result.data.token, result.data.user);
+    await setSessionCookies(result.data.token, result.data.user, 'ADMIN');
 
     return NextResponse.json({
       success: true,

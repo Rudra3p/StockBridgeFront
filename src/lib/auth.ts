@@ -1,17 +1,42 @@
 import { cookies } from 'next/headers';
 import { AuthUser, Role } from './types';
 
-export const TOKEN_COOKIE_NAME = 'stockbridge_token';
-export const USER_COOKIE_NAME = 'stockbridge_user';
+// Distinct, non-colliding cookies for each user type
+export const BUYER_TOKEN_COOKIE = 'sb_buyer_token';
+export const BUYER_USER_COOKIE = 'sb_buyer_user';
 
-export async function getSessionToken(): Promise<string | undefined> {
-  const cookieStore = await cookies();
-  return cookieStore.get(TOKEN_COOKIE_NAME)?.value;
+export const SELLER_TOKEN_COOKIE = 'sb_seller_token';
+export const SELLER_USER_COOKIE = 'sb_seller_user';
+
+export const ADMIN_TOKEN_COOKIE = 'sb_admin_token';
+export const ADMIN_USER_COOKIE = 'sb_admin_user';
+
+// Legacy fallback constants for backward compatibility
+export const TOKEN_COOKIE_NAME = BUYER_TOKEN_COOKIE;
+export const USER_COOKIE_NAME = BUYER_USER_COOKIE;
+
+export function getTokenCookieName(role?: Role | string): string {
+  if (role === 'SELLER') return SELLER_TOKEN_COOKIE;
+  if (role === 'ADMIN') return ADMIN_TOKEN_COOKIE;
+  return BUYER_TOKEN_COOKIE;
 }
 
-export async function getSessionUser(): Promise<AuthUser | null> {
+export function getUserCookieName(role?: Role | string): string {
+  if (role === 'SELLER') return SELLER_USER_COOKIE;
+  if (role === 'ADMIN') return ADMIN_USER_COOKIE;
+  return BUYER_USER_COOKIE;
+}
+
+export async function getSessionToken(role?: Role | string): Promise<string | undefined> {
   const cookieStore = await cookies();
-  const userCookie = cookieStore.get(USER_COOKIE_NAME)?.value;
+  const cookieName = getTokenCookieName(role);
+  return cookieStore.get(cookieName)?.value;
+}
+
+export async function getSessionUser(role?: Role | string): Promise<AuthUser | null> {
+  const cookieStore = await cookies();
+  const cookieName = getUserCookieName(role);
+  const userCookie = cookieStore.get(cookieName)?.value;
   if (!userCookie) return null;
   try {
     return JSON.parse(userCookie) as AuthUser;
@@ -20,13 +45,17 @@ export async function getSessionUser(): Promise<AuthUser | null> {
   }
 }
 
-export async function setSessionCookies(token: string, user: AuthUser) {
+export async function setSessionCookies(token: string, user: AuthUser, explicitRole?: Role | string) {
   const cookieStore = await cookies();
   const maxAge = 60 * 60 * 24; // 24 hours
   const isProduction = process.env.NODE_ENV === 'production';
 
-  // Set JWT in httpOnly cookie
-  cookieStore.set(TOKEN_COOKIE_NAME, token, {
+  const roleToUse = explicitRole || user.role || 'BUYER';
+  const tokenCookie = getTokenCookieName(roleToUse);
+  const userCookie = getUserCookieName(roleToUse);
+
+  // Set JWT in isolated httpOnly cookie
+  cookieStore.set(tokenCookie, token, {
     httpOnly: true,
     secure: isProduction,
     sameSite: 'lax',
@@ -34,8 +63,8 @@ export async function setSessionCookies(token: string, user: AuthUser) {
     maxAge,
   });
 
-  // Store non-sensitive user profile info (accessible for fast layout display)
-  cookieStore.set(USER_COOKIE_NAME, JSON.stringify(user), {
+  // Store user profile info in isolated cookie
+  cookieStore.set(userCookie, JSON.stringify(user), {
     httpOnly: true,
     secure: isProduction,
     sameSite: 'lax',
@@ -44,10 +73,20 @@ export async function setSessionCookies(token: string, user: AuthUser) {
   });
 }
 
-export async function clearSessionCookies() {
+export async function clearSessionCookies(role?: Role | string) {
   const cookieStore = await cookies();
-  cookieStore.delete(TOKEN_COOKIE_NAME);
-  cookieStore.delete(USER_COOKIE_NAME);
+  if (role) {
+    cookieStore.delete(getTokenCookieName(role));
+    cookieStore.delete(getUserCookieName(role));
+  } else {
+    // Clear all if no role specified
+    cookieStore.delete(BUYER_TOKEN_COOKIE);
+    cookieStore.delete(BUYER_USER_COOKIE);
+    cookieStore.delete(SELLER_TOKEN_COOKIE);
+    cookieStore.delete(SELLER_USER_COOKIE);
+    cookieStore.delete(ADMIN_TOKEN_COOKIE);
+    cookieStore.delete(ADMIN_USER_COOKIE);
+  }
 }
 
 export function parseJwtPayload(token: string): { role?: Role; sub?: string } | null {

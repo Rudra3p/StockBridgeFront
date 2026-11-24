@@ -1,22 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const TOKEN_COOKIE_NAME = 'stockbridge_token';
-const USER_COOKIE_NAME = 'stockbridge_user';
+const BUYER_TOKEN_COOKIE = 'sb_buyer_token';
+const BUYER_USER_COOKIE = 'sb_buyer_user';
+
+const SELLER_TOKEN_COOKIE = 'sb_seller_token';
+const SELLER_USER_COOKIE = 'sb_seller_user';
+
+const ADMIN_TOKEN_COOKIE = 'sb_admin_token';
+const ADMIN_USER_COOKIE = 'sb_admin_user';
 
 type Role = 'SELLER' | 'BUYER' | 'ADMIN';
-
-function getRoleDashboard(role: Role): string {
-  switch (role) {
-    case 'SELLER':
-      return '/seller/dashboard';
-    case 'BUYER':
-      return '/buyer/dashboard';
-    case 'ADMIN':
-      return '/admin';
-    default:
-      return '/login';
-  }
-}
 
 function parseRoleFromToken(token: string): Role | null {
   try {
@@ -37,13 +30,22 @@ function parseRoleFromToken(token: string): Role | null {
   }
 }
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const token = request.cookies.get(TOKEN_COOKIE_NAME)?.value;
-  const userCookie = request.cookies.get(USER_COOKIE_NAME)?.value;
+function getSessionForRole(request: NextRequest, roleType: Role) {
+  let token: string | undefined;
+  let userCookie: string | undefined;
+
+  if (roleType === 'BUYER') {
+    token = request.cookies.get(BUYER_TOKEN_COOKIE)?.value;
+    userCookie = request.cookies.get(BUYER_USER_COOKIE)?.value;
+  } else if (roleType === 'SELLER') {
+    token = request.cookies.get(SELLER_TOKEN_COOKIE)?.value;
+    userCookie = request.cookies.get(SELLER_USER_COOKIE)?.value;
+  } else if (roleType === 'ADMIN') {
+    token = request.cookies.get(ADMIN_TOKEN_COOKIE)?.value;
+    userCookie = request.cookies.get(ADMIN_USER_COOKIE)?.value;
+  }
 
   let role: Role | null = null;
-
   if (userCookie) {
     try {
       const user = JSON.parse(userCookie);
@@ -57,65 +59,84 @@ export function middleware(request: NextRequest) {
     role = parseRoleFromToken(token);
   }
 
-  const isAuthenticated = Boolean(token && role);
+  const isValid = Boolean(token && role === roleType);
+  return { token, role, isValid };
+}
 
-  // 1. Separate Admin Gateway Routing
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // 1. NEVER redirect public registration pages!
+  // Anyone can always visit /register or /partner/register without being bounced
+  if (pathname === '/register' || pathname === '/partner/register') {
+    return NextResponse.next();
+  }
+
+  // 2. Separate Admin Gateway Routing
   const isAdminLogin = pathname === '/admin/login';
   const isAdminRoute = pathname === '/admin' || (pathname.startsWith('/admin/') && !isAdminLogin);
 
   if (isAdminLogin) {
-    // If already authenticated as ADMIN, redirect straight to operations console
-    if (isAuthenticated && role === 'ADMIN') {
+    const adminSession = getSessionForRole(request, 'ADMIN');
+    if (adminSession.isValid) {
       return NextResponse.redirect(new URL('/admin', request.url));
     }
-    // Allow unauthenticated access to the dedicated admin login gateway
     return NextResponse.next();
   }
 
   if (isAdminRoute) {
-    // Strictly redirect unauthenticated users to /admin/login (never to general /login!)
-    if (!isAuthenticated) {
+    const adminSession = getSessionForRole(request, 'ADMIN');
+    if (!adminSession.isValid) {
       const adminLoginUrl = new URL('/admin/login', request.url);
       if (pathname !== '/admin') {
         adminLoginUrl.searchParams.set('redirect', pathname);
       }
       return NextResponse.redirect(adminLoginUrl);
     }
-
-    // Role check: Only ADMIN role is permitted into /admin and /admin/*
-    if (role !== 'ADMIN') {
-      const adminLoginUrl = new URL('/admin/login', request.url);
-      adminLoginUrl.searchParams.set('error', 'forbidden');
-      return NextResponse.redirect(adminLoginUrl);
-    }
-
     return NextResponse.next();
   }
 
-  // 2. Regular Login & Register redirects
-  if (isAuthenticated && (pathname === '/login' || pathname === '/register')) {
-    const targetDashboard = getRoleDashboard(role!);
-    return NextResponse.redirect(new URL(targetDashboard, request.url));
+  // 3. Seller Portal Protected Routes (/seller and /seller/*)
+  const isSellerRoute = pathname.startsWith('/seller');
+  if (isSellerRoute) {
+    const sellerSession = getSessionForRole(request, 'SELLER');
+    if (!sellerSession.isValid) {
+      const partnerLoginUrl = new URL('/partner/login', request.url);
+      partnerLoginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(partnerLoginUrl);
+    }
+    return NextResponse.next();
   }
 
-  // 3. Buyer & Seller protected routes
-  const isSellerRoute = pathname.startsWith('/seller');
+  // 4. Buyer Portal Protected Routes (/buyer and /buyer/*)
   const isBuyerRoute = pathname.startsWith('/buyer');
-
-  if (isSellerRoute || isBuyerRoute) {
-    if (!isAuthenticated) {
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(loginUrl);
+  if (isBuyerRoute) {
+    const buyerSession = getSessionForRole(request, 'BUYER');
+    if (!buyerSession.isValid) {
+      const buyerLoginUrl = new URL('/login', request.url);
+      buyerLoginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(buyerLoginUrl);
     }
+    return NextResponse.next();
+  }
 
-    if (isSellerRoute && role !== 'SELLER') {
-      return NextResponse.redirect(new URL(getRoleDashboard(role!), request.url));
+  // 5. Login Page Auto-Redirects (STRICTLY role-specific)
+  // If already logged in as BUYER, bounce /login to /buyer/dashboard
+  if (pathname === '/login') {
+    const buyerSession = getSessionForRole(request, 'BUYER');
+    if (buyerSession.isValid) {
+      return NextResponse.redirect(new URL('/buyer/dashboard', request.url));
     }
+    return NextResponse.next();
+  }
 
-    if (isBuyerRoute && role !== 'BUYER') {
-      return NextResponse.redirect(new URL(getRoleDashboard(role!), request.url));
+  // If already logged in as SELLER, bounce /partner/login to /seller/dashboard
+  if (pathname === '/partner/login') {
+    const sellerSession = getSessionForRole(request, 'SELLER');
+    if (sellerSession.isValid) {
+      return NextResponse.redirect(new URL('/seller/dashboard', request.url));
     }
+    return NextResponse.next();
   }
 
   return NextResponse.next();
@@ -128,6 +149,6 @@ export const config = {
     '/seller/:path*',
     '/buyer/:path*',
     '/login',
-    '/register',
+    '/partner/login',
   ],
 };

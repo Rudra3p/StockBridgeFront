@@ -414,7 +414,7 @@ export default function AdminPage() {
   useEffect(() => {
     let isMounted = true;
     async function checkAuth() {
-      const res = await clientAuth.getMe();
+      const res = await clientAuth.getMe('ADMIN');
       if (isMounted) {
         if (res.authenticated && res.user && res.user.role === 'ADMIN') {
           setCurrentUser(res.user);
@@ -435,7 +435,7 @@ export default function AdminPage() {
   }, [router]);
 
   const handleLogout = async () => {
-    await clientAuth.logout();
+    await clientAuth.logout('ADMIN');
     router.push('/admin/login');
     router.refresh();
   };

@@ -48,7 +48,7 @@ export default function AdminProfilePage() {
         // fallback to clientAuth
       }
 
-      const res = await clientAuth.getMe();
+      const res = await clientAuth.getMe('ADMIN');
       if (isMounted) {
         if (res.authenticated && res.user && res.user.role === 'ADMIN') {
           setCurrentUser(res.user);
@@ -155,7 +155,7 @@ export default function AdminProfilePage() {
   };
 
   const handleLogout = async () => {
-    await clientAuth.logout();
+    await clientAuth.logout('ADMIN');
     router.push('/admin/login');
   };
 

@@ -119,8 +119,7 @@ export default function LocationPickerMap({
         rawAddress.hamlet ||
         rawAddress.road ||
         rawAddress.locality ||
-        rawAddress.city_district ||
-        displaySegments[0] ||
+        (displaySegments.length > 0 ? displaySegments[0] : '') ||
         '';
 
       const city =
@@ -133,7 +132,7 @@ export default function LocationPickerMap({
         rawAddress.state_district ||
         rawAddress.province ||
         rawAddress.district ||
-        (displaySegments.length > 2 ? displaySegments[1] : displaySegments[0]) ||
+        (displaySegments.length > 2 ? displaySegments[1] : '') ||
         '';
 
       const state =
@@ -530,18 +529,20 @@ export default function LocationPickerMap({
       markerRef.current.setLngLat([lng, lat]);
     }
 
-    // Immediate optimistic update
-    setSelectedLocation((prev) => ({
-      ...prev,
-      addressLine: result.name || result.displayName.split(',')[0],
-      city: result.city || prev.city,
-      state: result.state || prev.state,
-      pinCode: result.postcode || prev.pinCode,
+    // Set clean resolved location without carrying over previous values
+    const newLocation: SelectedLocationData = {
+      addressLine: result.name || (result.displayName ? result.displayName.split(',')[0] : 'Dispatch Hub'),
+      city: result.city || '',
+      state: result.state || '',
+      pinCode: result.postcode ? String(result.postcode).trim() : '',
       lat,
       lng,
-      displayName: result.displayName,
-      area: result.name || prev.area,
-    }));
+      displayName: result.displayName || result.name || 'Selected Dispatch Hub',
+      area: result.name || result.city || 'Dispatch Hub',
+    };
+
+    setSelectedLocation(newLocation);
+    onLocationSelectRef.current(newLocation);
 
     // Trigger detailed reverse geocode for complete verification
     triggerReverseGeocode(lat, lng);
@@ -673,7 +674,7 @@ export default function LocationPickerMap({
                 if (e.key === 'Enter') {
                   e.preventDefault();
                   e.stopPropagation();
-                  executeSearch();
+                  executeSearch(e);
                 } else if (e.key === 'Escape') {
                   setShowSearchResults(false);
                 }
@@ -687,7 +688,7 @@ export default function LocationPickerMap({
               <button
                 type="button"
                 onClick={handleClearSearch}
-                className="p-1 mr-1 text-slate-400 hover:text-slate-600 transition rounded-full hover:bg-slate-100"
+                className="p-1 mr-1 text-slate-400 hover:text-slate-600 transition rounded-full hover:bg-slate-100 cursor-pointer"
                 title="Clear search"
               >
                 <X className="w-3.5 h-3.5" />
@@ -701,8 +702,12 @@ export default function LocationPickerMap({
             {/* Search Action Button (STRICTLY type="button" - never triggers outer form submit) */}
             <button
               type="button"
-              onClick={executeSearch}
-              className="px-3.5 py-2.5 bg-slate-100 hover:bg-[#e65c00] hover:text-white text-slate-700 text-xs font-bold font-quicksand transition border-l border-slate-200 shrink-0"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                executeSearch(e);
+              }}
+              className="px-3.5 py-2.5 bg-slate-100 hover:bg-[#e65c00] hover:text-white text-slate-700 text-xs font-bold font-quicksand transition border-l border-slate-200 shrink-0 cursor-pointer"
             >
               Search
             </button>
@@ -711,9 +716,13 @@ export default function LocationPickerMap({
           {/* Quick Locate GPS Button (type="button") */}
           <button
             type="button"
-            onClick={handleLocateMe}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleLocateMe(e);
+            }}
             title="Use my current GPS location"
-            className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-[#e65c00] text-xs font-bold font-quicksand transition shadow-sm shrink-0"
+            className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-[#e65c00] text-xs font-bold font-quicksand transition shadow-sm shrink-0 cursor-pointer"
           >
             {isLocating ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -818,22 +827,22 @@ export default function LocationPickerMap({
 
         {/* Badges showing resolved address components (Only show if present) */}
         <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono">
-          {selectedLocation.area && (
+          {Boolean(selectedLocation.area && selectedLocation.area.trim()) && (
             <span className="px-2 py-0.5 rounded bg-white border border-orange-200 text-orange-950 font-bold">
               Area: {selectedLocation.area}
             </span>
           )}
-          {selectedLocation.city && (
+          {Boolean(selectedLocation.city && selectedLocation.city.trim()) && (
             <span className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 font-bold">
               City: {selectedLocation.city}
             </span>
           )}
-          {selectedLocation.state && (
+          {Boolean(selectedLocation.state && selectedLocation.state.trim()) && (
             <span className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 font-bold">
               State: {selectedLocation.state}
             </span>
           )}
-          {Boolean(selectedLocation.pinCode && selectedLocation.pinCode.trim()) && (
+          {Boolean(selectedLocation.pinCode && selectedLocation.pinCode.trim() && selectedLocation.pinCode !== '000000') && (
             <span className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 font-bold">
               PIN: {selectedLocation.pinCode}
             </span>

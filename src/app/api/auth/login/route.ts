@@ -30,8 +30,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Set httpOnly session cookies
-    await setSessionCookies(result.data.token, result.data.user);
+    // Set httpOnly session cookies isolated strictly by role
+    await setSessionCookies(result.data.token, result.data.user, targetRole);
 
     return NextResponse.json({
       success: true,

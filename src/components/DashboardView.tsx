@@ -404,7 +404,7 @@ export default function DashboardView({
   useEffect(() => {
     let isMounted = true;
     async function fetchProfile() {
-      const result = await clientAuth.getMe();
+      const result = await clientAuth.getMe(expectedRole);
       if (!isMounted) return;
 
       if (result.authenticated && result.user) {
@@ -445,7 +445,7 @@ export default function DashboardView({
 
   const handleLogout = async () => {
     setLoggingOut(true);
-    await clientAuth.logout();
+    await clientAuth.logout(expectedRole);
     router.push(expectedRole === 'SELLER' ? '/partner/login' : '/login');
     router.refresh();
   };

@@ -79,9 +79,9 @@ export default function HeroSection() {
   useEffect(() => {
     let isMounted = true;
     async function checkAuth() {
-      const res = await clientAuth.getMe();
+      const res = await clientAuth.getMe('BUYER');
       if (isMounted) {
-        if (res.authenticated && res.user) {
+        if (res.authenticated && res.user && res.user.role === 'BUYER') {
           setUser(res.user);
         } else {
           setUser(null);
