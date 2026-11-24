@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -58,12 +58,12 @@ export default function RegisterPage() {
   const gstNumberWatch = watch('gstNumber');
   const cityWatch = watch('city');
 
-  const handleMapLocationSelect = (loc: SelectedLocationData) => {
+  const handleMapLocationSelect = useCallback((loc: SelectedLocationData) => {
     setValue('addressLine', loc.addressLine, { shouldValidate: true });
     setValue('city', loc.city, { shouldValidate: true });
     setValue('state', loc.state, { shouldValidate: true });
     setValue('pinCode', loc.pinCode, { shouldValidate: true });
-  };
+  }, [setValue]);
 
   const goToNextStep = async () => {
     setServerError(null);

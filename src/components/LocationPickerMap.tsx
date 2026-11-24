@@ -55,6 +55,17 @@ export default function LocationPickerMap({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const markerRef = useRef<any>(null);
 
+  // Store stable callback ref to prevent infinite re-render loops
+  const onLocationSelectRef = useRef(onLocationSelect);
+  useEffect(() => {
+    onLocationSelectRef.current = onLocationSelect;
+  }, [onLocationSelect]);
+
+  // Network request de-duplication and cancellation refs
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const lastGeocodedCoordsRef = useRef<{ lat: number; lng: number } | null>(null);
+
   const [isLoadingMap, setIsLoadingMap] = useState(true);
   const [isLocating, setIsLocating] = useState(false);
   const [isGeocoding, setIsGeocoding] = useState(false);
@@ -125,48 +136,79 @@ export default function LocationPickerMap({
     []
   );
 
-  // Reverse Geocode using free OpenStreetMap Nominatim
-  const reverseGeocode = useCallback(
-    async (lat: number, lng: number) => {
-      setIsGeocoding(true);
-      try {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`,
-          {
-            headers: {
-              'Accept-Language': 'en-IN,en;q=0.9',
-            },
-          }
-        );
-        if (!response.ok) throw new Error('Geocoding service unavailable');
-        const data = await response.json();
-        const addressObj = data.address || {};
-        const parsed = parseNominatimAddress(addressObj, lat, lng, data.display_name || '');
-
-        setSelectedLocation(parsed);
-        onLocationSelect(parsed);
-      } catch (err) {
-        console.warn('Reverse geocode fallback:', err);
-        const fallback: SelectedLocationData = {
-          addressLine: `Industrial Area, Coordinate (${lat.toFixed(4)}, ${lng.toFixed(4)})`,
-          city: 'Ahmedabad',
-          state: 'Gujarat',
-          pinCode: '382445',
-          lat,
-          lng,
-          displayName: `Coordinate ${lat.toFixed(4)}, ${lng.toFixed(4)}`,
-          area: 'Industrial Area',
-        };
-        setSelectedLocation(fallback);
-        onLocationSelect(fallback);
-      } finally {
-        setIsGeocoding(false);
+  // Debounced, deduplicated reverse geocode with AbortController
+  const triggerReverseGeocode = useCallback(
+    (lat: number, lng: number) => {
+      // Check if coordinate is virtually identical to last fetched (less than ~20 meters)
+      if (lastGeocodedCoordsRef.current) {
+        const dLat = Math.abs(lat - lastGeocodedCoordsRef.current.lat);
+        const dLng = Math.abs(lng - lastGeocodedCoordsRef.current.lng);
+        if (dLat < 0.0002 && dLng < 0.0002) {
+          return; // Skip redundant request
+        }
       }
+
+      // Clear any pending debounced timer
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+
+      debounceTimerRef.current = setTimeout(async () => {
+        // Cancel any pending in-flight fetch
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort();
+        }
+
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+        setIsGeocoding(true);
+
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`,
+            {
+              signal: controller.signal,
+              headers: {
+                'Accept-Language': 'en-IN,en;q=0.9',
+              },
+            }
+          );
+
+          if (!response.ok) throw new Error('Geocoding rate limit or failure');
+          const data = await response.json();
+          const addressObj = data.address || {};
+          const parsed = parseNominatimAddress(addressObj, lat, lng, data.display_name || '');
+
+          lastGeocodedCoordsRef.current = { lat, lng };
+          setSelectedLocation(parsed);
+          onLocationSelectRef.current(parsed);
+        } catch (err: unknown) {
+          if (err instanceof Error && err.name === 'AbortError') {
+            return; // Normal cancellation
+          }
+          console.warn('Reverse geocode fallback:', err);
+          const fallback: SelectedLocationData = {
+            addressLine: `Industrial Hub, Coordinate (${lat.toFixed(4)}, ${lng.toFixed(4)})`,
+            city: 'Ahmedabad',
+            state: 'Gujarat',
+            pinCode: '382445',
+            lat,
+            lng,
+            displayName: `Coordinate ${lat.toFixed(4)}, ${lng.toFixed(4)}`,
+            area: 'Industrial Hub',
+          };
+          lastGeocodedCoordsRef.current = { lat, lng };
+          setSelectedLocation(fallback);
+          onLocationSelectRef.current(fallback);
+        } finally {
+          setIsGeocoding(false);
+        }
+      }, 350); // 350ms debounce
     },
-    [onLocationSelect, parseNominatimAddress]
+    [parseNominatimAddress]
   );
 
-  // Initialize MapLibre GL JS paired with OpenFreeMap Vector Tiles
+  // Initialize MapLibre GL JS paired with OpenFreeMap Vector Tiles (ONLY ON MOUNT)
   useEffect(() => {
     let isCancelled = false;
 
@@ -178,7 +220,7 @@ export default function LocationPickerMap({
 
       if (isCancelled || !mapContainerRef.current) return;
 
-      // Create Custom SVG Marker Element (Brand Orange with Pulsing Ring)
+      // Custom SVG Marker Element
       const markerEl = document.createElement('div');
       markerEl.className = 'custom-maplibre-pin';
       markerEl.style.cursor = 'grab';
@@ -192,7 +234,7 @@ export default function LocationPickerMap({
         </div>
       `;
 
-      // MapLibre GL JS Instance paired with OpenFreeMap Bright Style (100% Free Vector Tiles)
+      // MapLibre GL JS Instance paired with OpenFreeMap Bright Style
       const map = new maplibregl.Map({
         container: mapContainerRef.current,
         style: 'https://tiles.openfreemap.org/styles/bright',
@@ -202,10 +244,10 @@ export default function LocationPickerMap({
         bearing: 0,
       });
 
-      // Add Zoom and Rotation Controls
+      // Controls
       map.addControl(new maplibregl.NavigationControl({ showCompass: true }), 'top-right');
 
-      // Create Draggable Marker
+      // Marker
       const marker = new maplibregl.Marker({
         element: markerEl,
         draggable: true,
@@ -214,16 +256,16 @@ export default function LocationPickerMap({
         .setLngLat([initialLng, initialLat])
         .addTo(map);
 
-      // On Marker Drag End
+      // Trigger geocode only on Drag End
       marker.on('dragend', () => {
         const lngLat = marker.getLngLat();
-        reverseGeocode(lngLat.lat, lngLat.lng);
+        triggerReverseGeocode(lngLat.lat, lngLat.lng);
       });
 
-      // On Map Click (move marker to clicked coordinates)
+      // Trigger geocode on single Map Click
       map.on('click', (e: { lngLat: { lng: number; lat: number } }) => {
         marker.setLngLat(e.lngLat);
-        reverseGeocode(e.lngLat.lat, e.lngLat.lng);
+        triggerReverseGeocode(e.lngLat.lat, e.lngLat.lng);
       });
 
       map.on('load', () => {
@@ -236,20 +278,27 @@ export default function LocationPickerMap({
       mapInstanceRef.current = map;
       markerRef.current = marker;
 
-      // Trigger initial reverse geocode
-      reverseGeocode(initialLat, initialLng);
+      // Initial single reverse geocode
+      triggerReverseGeocode(initialLat, initialLng);
     }
 
     initMap();
 
     return () => {
       isCancelled = true;
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
     };
-  }, [initialLat, initialLng, reverseGeocode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run strictly ONCE on mount
 
   // Handle Search using Nominatim API
   const handleSearchSubmit = async (e: React.FormEvent) => {
@@ -289,14 +338,14 @@ export default function LocationPickerMap({
         center: [lng, lat],
         zoom: 15,
         speed: 1.4,
-        curve: 1.2,
       });
       markerRef.current.setLngLat([lng, lat]);
     }
 
     const parsed = parseNominatimAddress(result.address || {}, lat, lng, result.display_name);
+    lastGeocodedCoordsRef.current = { lat, lng };
     setSelectedLocation(parsed);
-    onLocationSelect(parsed);
+    onLocationSelectRef.current(parsed);
 
     setShowSearchResults(false);
     setSearchQuery(result.display_name.split(',').slice(0, 2).join(', '));
@@ -324,7 +373,7 @@ export default function LocationPickerMap({
           markerRef.current.setLngLat([longitude, latitude]);
         }
 
-        reverseGeocode(latitude, longitude);
+        triggerReverseGeocode(latitude, longitude);
       },
       (err) => {
         setIsLocating(false);
@@ -336,7 +385,7 @@ export default function LocationPickerMap({
           });
           markerRef.current.setLngLat([72.6315, 22.9984]);
         }
-        reverseGeocode(22.9984, 72.6315);
+        triggerReverseGeocode(22.9984, 72.6315);
       },
       { timeout: 7000, enableHighAccuracy: true }
     );
@@ -349,7 +398,7 @@ export default function LocationPickerMap({
       ? `${val.trim()}, ${selectedLocation.addressLine}`
       : selectedLocation.addressLine;
 
-    onLocationSelect({
+    onLocationSelectRef.current({
       ...selectedLocation,
       addressLine: finalAddress,
     });
@@ -425,7 +474,7 @@ export default function LocationPickerMap({
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-50/90 backdrop-blur-sm gap-2">
             <Loader2 className="w-6 h-6 animate-spin text-[#e65c00]" />
             <span className="text-xs font-bold text-slate-600 font-quicksand">
-              Loading OpenFreeMap Vector Engine (MapLibre GL)...
+              Loading OpenFreeMap Vector Layer...
             </span>
           </div>
         )}
