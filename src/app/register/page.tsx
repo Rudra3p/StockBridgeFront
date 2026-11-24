@@ -3,11 +3,25 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { MapPin, Loader2 } from 'lucide-react';
 import { registerSchema, RegisterFormData } from '@/lib/validations';
 import { clientAuth } from '@/lib/client-api';
 import { OrgType } from '@/lib/types';
+import type { SelectedLocationData } from '@/components/LocationPickerMap';
+
+// Dynamically load Google Maps-style Leaflet Location Picker to ensure 100% SSR safety
+const LocationPickerMap = dynamic(() => import('@/components/LocationPickerMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[280px] sm:h-[320px] rounded-2xl border-2 border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-2">
+      <Loader2 className="w-6 h-6 animate-spin text-[#e65c00]" />
+      <span className="text-xs font-bold text-slate-500 font-quicksand">Loading Map...</span>
+    </div>
+  ),
+});
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -20,6 +34,7 @@ export default function RegisterPage() {
     handleSubmit,
     trigger,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -28,10 +43,10 @@ export default function RegisterPage() {
       orgType: 'RETAILER',
       legalName: '',
       gstNumber: '',
-      addressLine: '',
-      city: '',
-      state: '',
-      pinCode: '',
+      addressLine: 'Phase 4, GIDC Vatva Industrial Estate',
+      city: 'Ahmedabad',
+      state: 'Gujarat',
+      pinCode: '382445',
       fullName: '',
       email: '',
       phone: '',
@@ -42,6 +57,13 @@ export default function RegisterPage() {
   const legalNameWatch = watch('legalName');
   const gstNumberWatch = watch('gstNumber');
   const cityWatch = watch('city');
+
+  const handleMapLocationSelect = (loc: SelectedLocationData) => {
+    setValue('addressLine', loc.addressLine, { shouldValidate: true });
+    setValue('city', loc.city, { shouldValidate: true });
+    setValue('state', loc.state, { shouldValidate: true });
+    setValue('pinCode', loc.pinCode, { shouldValidate: true });
+  };
 
   const goToNextStep = async () => {
     setServerError(null);
@@ -105,17 +127,11 @@ export default function RegisterPage() {
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center py-10 px-4 sm:px-6 lg:px-8 bg-slate-50">
       <div className="w-full max-w-2xl bg-white p-6 sm:p-10 rounded-2xl border border-slate-200 shadow-sm">
         
-        {/* Header - Principles 5 (Tracking), 9 (Leading), 12 (Widows/Balance), 15 (Line Length) */}
+        {/* Header */}
         <div className="text-center mb-8">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold tracking-wider uppercase bg-slate-100 text-slate-800 mb-3 border border-slate-200">
-            VERIFIED B2B ACCESS
-          </span>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-quicksand text-balance tracking-tight">
             Register Your Business
           </h1>
-          <p className="mt-2 text-sm text-slate-600 font-quicksand max-w-[65ch] mx-auto text-pretty leading-relaxed">
-            Direct access to verified factory surplus inventory with standardized grading and neutral escrow.
-          </p>
         </div>
 
         {/* ========================================================= */}
@@ -199,8 +215,8 @@ export default function RegisterPage() {
             <div className="flex items-center justify-between text-xs font-medium text-slate-500 mb-1.5 font-quicksand">
               <span>
                 {currentStep === 2
-                  ? 'Step 2 of 3: Business Information'
-                  : 'Step 3 of 3: Authorized Representative'}
+                  ? 'Business Information'
+                  : 'Authorized Representative'}
               </span>
               <span className="font-mono font-bold text-slate-700">
                 {currentStep === 2 ? '65% Complete' : '95% Complete — Final Step'}
@@ -270,8 +286,15 @@ export default function RegisterPage() {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="min-h-[540px] flex flex-col justify-between" noValidate>
-          {/* Hidden Role Input */}
+          {/* Hidden Role and OrgType Inputs */}
           <input type="hidden" value="BUYER" {...register('role')} />
+          <input type="hidden" value="RETAILER" {...register('orgType')} />
+
+          {/* Hidden Form Bindings for Location (Populated by Map) */}
+          <input type="hidden" {...register('addressLine')} />
+          <input type="hidden" {...register('city')} />
+          <input type="hidden" {...register('state')} />
+          <input type="hidden" {...register('pinCode')} />
 
           {/* ========================================================= */}
           {/* STEP 2: BUSINESS INFORMATION FORM                          */}
@@ -279,16 +302,13 @@ export default function RegisterPage() {
           {currentStep === 2 && (
             <div className="space-y-6">
               <fieldset>
-                <legend className="text-base font-bold text-slate-900 mb-1 font-quicksand flex items-center justify-between">
-                  <span>Organisation Information</span>
-                  <span className="text-xs font-mono text-slate-500 font-normal">Step 2 of 3</span>
+                <legend className="text-base font-bold text-slate-900 mb-4 font-quicksand">
+                  Organisation Information
                 </legend>
-                <p className="text-xs text-slate-500 mb-4 font-quicksand">
-                  Please provide your registered legal entity details for tax invoicing and freight billing.
-                </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="sm:col-span-2">
+                  {/* Legal Name */}
+                  <div>
                     <label
                       htmlFor="legalName"
                       className="block text-xs font-medium text-slate-700 mb-1"
@@ -310,32 +330,7 @@ export default function RegisterPage() {
                     )}
                   </div>
 
-                  <div>
-                    <label
-                      htmlFor="orgType"
-                      className="block text-xs font-medium text-slate-700 mb-1"
-                    >
-                      Organisation Category *
-                    </label>
-                    <select
-                      id="orgType"
-                      {...register('orgType')}
-                      className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-accent ${
-                        errors.orgType ? 'border-rose-300' : 'border-slate-300'
-                      }`}
-                    >
-                      <option value="RETAILER">Retail Store / Local Shop</option>
-                      <option value="WHOLESALER">Wholesale Trader / Stockist</option>
-                      <option value="DISTRIBUTOR">Master Distributor / C&amp;F Agent</option>
-                      <option value="MANUFACTURER">Manufacturer / Factory</option>
-                      <option value="ONLINE_RESELLER">Online Reseller / E-Commerce</option>
-                      <option value="OTHER">Other Institutional Enterprise</option>
-                    </select>
-                    {errors.orgType && (
-                      <p className="mt-1 text-xs text-rose-600">{errors.orgType.message}</p>
-                    )}
-                  </div>
-
+                  {/* GSTIN */}
                   <div>
                     <label
                       htmlFor="gstNumber"
@@ -358,92 +353,19 @@ export default function RegisterPage() {
                     )}
                   </div>
 
-                  <div className="sm:col-span-2">
-                    <label
-                      htmlFor="addressLine"
-                      className="block text-xs font-medium text-slate-700 mb-1"
-                    >
-                      Warehouse / Registered Address *
+                  {/* Interactive Google Map Alternative Location Picker */}
+                  <div className="sm:col-span-2 pt-1">
+                    <label className="block text-xs font-bold text-slate-800 mb-2 font-quicksand flex items-center gap-1.5">
+                      <MapPin className="w-4 h-4 text-[#e65c00]" />
+                      <span>Dispatch Location &amp; Warehouse Hub (Interactive Map) *</span>
                     </label>
-                    <input
-                      id="addressLine"
-                      type="text"
-                      autoComplete="address-line1"
-                      {...register('addressLine')}
-                      className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent ${
-                        errors.addressLine ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
-                      }`}
-                      placeholder="Street, Industrial Area, Building or Unit number"
-                    />
-                    {errors.addressLine && (
-                      <p className="mt-1 text-xs text-rose-600">{errors.addressLine.message}</p>
-                    )}
-                  </div>
+                    
+                    <LocationPickerMap onLocationSelect={handleMapLocationSelect} />
 
-                  <div>
-                    <label
-                      htmlFor="city"
-                      className="block text-xs font-medium text-slate-700 mb-1"
-                    >
-                      City *
-                    </label>
-                    <input
-                      id="city"
-                      type="text"
-                      autoComplete="address-level2"
-                      {...register('city')}
-                      className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent ${
-                        errors.city ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
-                      }`}
-                      placeholder="e.g. Bengaluru"
-                    />
-                    {errors.city && (
-                      <p className="mt-1 text-xs text-rose-600">{errors.city.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="state"
-                      className="block text-xs font-medium text-slate-700 mb-1"
-                    >
-                      State *
-                    </label>
-                    <input
-                      id="state"
-                      type="text"
-                      autoComplete="address-level1"
-                      {...register('state')}
-                      className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent ${
-                        errors.state ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
-                      }`}
-                      placeholder="e.g. Karnataka"
-                    />
-                    {errors.state && (
-                      <p className="mt-1 text-xs text-rose-600">{errors.state.message}</p>
-                    )}
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label
-                      htmlFor="pinCode"
-                      className="block text-xs font-medium text-slate-700 mb-1"
-                    >
-                      PIN Code *
-                    </label>
-                    <input
-                      id="pinCode"
-                      type="text"
-                      inputMode="numeric"
-                      autoComplete="postal-code"
-                      {...register('pinCode')}
-                      className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent ${
-                        errors.pinCode ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
-                      }`}
-                      placeholder="e.g. 560001"
-                    />
-                    {errors.pinCode && (
-                      <p className="mt-1 text-xs text-rose-600">{errors.pinCode.message}</p>
+                    {(errors.addressLine || errors.city || errors.state || errors.pinCode) && (
+                      <p className="mt-1.5 text-xs text-rose-600 font-quicksand">
+                        Please pin your location on the map to continue.
+                      </p>
                     )}
                   </div>
                 </div>
@@ -468,9 +390,8 @@ export default function RegisterPage() {
           {currentStep === 3 && (
             <div className="space-y-6">
               <fieldset>
-                <legend className="text-base font-bold text-slate-900 mb-1 font-quicksand flex items-center justify-between">
-                  <span>Authorized Representative Details</span>
-                  <span className="text-xs font-mono text-slate-500 font-normal">Step 3 of 3</span>
+                <legend className="text-base font-bold text-slate-900 mb-1 font-quicksand">
+                  Authorized Representative Details
                 </legend>
                 <p className="text-xs text-slate-500 mb-4 font-quicksand">
                   These credentials will be used to log in and authorize purchase bids, inspections, and escrow releases.
@@ -568,76 +489,41 @@ export default function RegisterPage() {
                 </div>
               </fieldset>
 
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-1 font-quicksand">
-                <p className="font-semibold text-slate-800 flex items-center gap-1.5">
-                  <span>🔒</span> Bank-Grade Data Security
-                </p>
-                <p className="text-[11px] text-slate-500">
-                  Your credentials and GSTIN filings are secured with 256-bit encryption. StockBridge never shares trade volumes or bidding limits with third parties.
-                </p>
-              </div>
-
-              {/* Action Buttons: Back + Submit */}
-              <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCurrentStep(2);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className="w-full sm:w-auto px-5 py-3.5 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-50 transition font-quicksand"
-                >
-                  ← Back to Business Details
-                </button>
-
+              <div className="space-y-3 pt-2">
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full flex-1 flex items-center justify-center gap-2 rounded-xl bg-accent py-3.5 px-6 text-sm font-bold text-white shadow-md transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 disabled:opacity-60 font-quicksand"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#e65c00] py-3.5 px-4 text-sm font-bold text-white shadow-md transition hover:bg-[#c44e00] focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50 font-quicksand"
                 >
                   {isSubmitting ? (
-                    <span className="flex items-center gap-2">
-                      <svg
-                        className="animate-spin h-4 w-4 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8v8H4z"
-                        />
-                      </svg>
-                      Creating Verified Account...
-                    </span>
+                    <span>Registering Organisation...</span>
                   ) : (
-                    <span>Complete Registration &amp; Activate Account →</span>
+                    <span>Complete Registration &amp; Access Dashboard →</span>
                   )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(2)}
+                  className="w-full text-center text-xs text-slate-500 hover:text-slate-800 transition py-1 font-quicksand"
+                >
+                  ← Back to Business Profile
                 </button>
               </div>
             </div>
           )}
-
-          {/* Footer note */}
-          <div className="text-center text-xs text-slate-600 mt-8 pt-4 border-t border-slate-100">
-            Already have an account?{' '}
-            <Link
-              href="/login"
-              className="font-semibold text-accent hover:underline underline-offset-2"
-            >
-              Log In here
-            </Link>
-          </div>
         </form>
+
+        {/* Existing Member Switcher */}
+        <div className="mt-8 border-t border-slate-100 pt-6 text-center text-xs text-slate-500 font-quicksand">
+          Already have an account?{' '}
+          <Link
+            href="/login"
+            className="font-bold text-[#e65c00] hover:text-[#c44e00] hover:underline"
+          >
+            Log in to your workspace
+          </Link>
+        </div>
       </div>
     </div>
   );

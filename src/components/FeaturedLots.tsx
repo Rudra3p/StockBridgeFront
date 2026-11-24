@@ -17,6 +17,7 @@ interface LotItem {
   location: string;
   brandHidden: boolean;
   reasonForSurplus: string;
+  imageUrl: string;
 }
 
 const SAMPLE_LOTS: LotItem[] = [
@@ -36,6 +37,7 @@ const SAMPLE_LOTS: LotItem[] = [
     location: 'Tirupur, Tamil Nadu',
     brandHidden: true,
     reasonForSurplus: 'Export Order Cancellation',
+    imageUrl: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80',
   },
   {
     id: 'lot-footwear-02',
@@ -53,6 +55,7 @@ const SAMPLE_LOTS: LotItem[] = [
     location: 'Agra, Uttar Pradesh',
     brandHidden: false,
     reasonForSurplus: 'Previous Season Colourway',
+    imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80',
   },
   {
     id: 'lot-hardware-03',
@@ -70,6 +73,7 @@ const SAMPLE_LOTS: LotItem[] = [
     location: 'Jamnagar, Gujarat',
     brandHidden: false,
     reasonForSurplus: 'Over-production Run',
+    imageUrl: 'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80',
   },
   {
     id: 'lot-elec-04',
@@ -87,6 +91,7 @@ const SAMPLE_LOTS: LotItem[] = [
     location: 'Bengaluru, Karnataka',
     brandHidden: true,
     reasonForSurplus: 'Transit Carton Crushed (Units Tested)',
+    imageUrl: 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&w=600&q=80',
   },
 ];
 
@@ -103,15 +108,9 @@ export default function FeaturedLots() {
     <div className="w-full">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-orange-950 bg-orange-100 px-2.5 py-1 rounded-md border border-orange-200 font-mono">
-            Live Verified Marketplace
-          </span>
-          <h3 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-quicksand">
+          <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-quicksand">
             Recently Listed Graded Lots
           </h3>
-          <p className="mt-1 text-sm text-slate-500 font-quicksand">
-            Real surplus inventories from verified manufacturers and distributors ready for bulk dispatch.
-          </p>
         </div>
 
         <Link
@@ -131,67 +130,84 @@ export default function FeaturedLots() {
           return (
             <div
               key={lot.id}
-              className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:shadow-md"
+              className="group flex flex-col justify-between rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm transition hover:border-slate-300 hover:shadow-md"
             >
               <div>
-                {/* Header tags */}
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded border ${lot.gradeBadgeBg} ${lot.gradeBadgeColor}`}>
-                    Grade {lot.grade} • {lot.gradeName}
-                  </span>
-                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                    {lot.category}
-                  </span>
-                </div>
-
-                {/* Title */}
-                <h4 className="text-sm font-bold text-slate-900 line-clamp-2 leading-snug min-h-[2.5rem]">
-                  {lot.title}
-                </h4>
-
-                {/* Reason tag */}
-                <div className="mt-2.5 text-[11px] text-slate-500 flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded border border-slate-100">
-                  <span className="text-slate-400">Reason:</span>
-                  <span className="font-medium text-slate-700 truncate">{lot.reasonForSurplus}</span>
-                </div>
-
-                {/* Pricing Box */}
-                <div className="mt-4 pt-3 border-t border-slate-100">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-xl font-extrabold text-slate-900">
-                      {formatINR(lot.discountedPrice)}
+                {/* Product Image Box with Badges */}
+                <div className="relative w-full h-44 bg-slate-100 overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={lot.imageUrl}
+                    alt={lot.title}
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition duration-500"
+                    loading="lazy"
+                  />
+                  
+                  {/* Floating Badges */}
+                  <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1.5 pointer-events-none">
+                    <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded shadow-sm backdrop-blur-md ${lot.gradeBadgeBg} ${lot.gradeBadgeColor}`}>
+                      Grade {lot.grade} • {lot.gradeName}
                     </span>
-                    <span className="text-xs text-slate-400 line-through">
-                      {formatINR(lot.originalPrice)}
-                    </span>
-                    <span className="ml-auto text-xs font-bold text-[#e65c00] bg-orange-50 border border-orange-200 px-1.5 py-0.5 rounded font-mono">
-                      -{discountPercent}%
+                    <span className="text-[10px] font-bold text-white bg-slate-900/80 backdrop-blur-md px-2 py-0.5 rounded shadow-sm uppercase tracking-wider font-mono">
+                      {lot.category}
                     </span>
                   </div>
-                  <span className="text-[11px] text-slate-400 block mt-0.5">
-                    Price per {lot.unit.toLowerCase()} • Excl. GST
-                  </span>
+
+                  <div className="absolute bottom-2.5 right-2.5 pointer-events-none">
+                    <span className="text-xs font-bold text-white bg-[#e65c00] px-2 py-0.5 rounded shadow-md font-mono">
+                      -{discountPercent}% OFF
+                    </span>
+                  </div>
                 </div>
 
-                {/* Lot Quantities & MOQ */}
-                <div className="mt-3.5 space-y-1 text-xs text-slate-600 bg-slate-50/60 p-2.5 rounded-lg border border-slate-100">
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Total Lot Volume:</span>
-                    <span className="font-semibold text-slate-800">{lot.totalQuantity.toLocaleString()} {lot.unit}</span>
+                {/* Content Box */}
+                <div className="p-4 sm:p-5">
+                  {/* Title */}
+                  <h4 className="text-sm font-bold text-slate-900 line-clamp-2 leading-snug min-h-[2.5rem]">
+                    {lot.title}
+                  </h4>
+
+                  {/* Reason tag */}
+                  <div className="mt-2.5 text-[11px] text-slate-500 flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded border border-slate-100">
+                    <span className="text-slate-400">Reason:</span>
+                    <span className="font-medium text-slate-700 truncate">{lot.reasonForSurplus}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Min. Order (MOQ):</span>
-                    <span className="font-semibold text-slate-800">{lot.moq} {lot.unit}</span>
+
+                  {/* Pricing Box */}
+                  <div className="mt-4 pt-3 border-t border-slate-100">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xl font-extrabold text-slate-900">
+                        {formatINR(lot.discountedPrice)}
+                      </span>
+                      <span className="text-xs text-slate-400 line-through">
+                        {formatINR(lot.originalPrice)}
+                      </span>
+                    </div>
+                    <span className="text-[11px] text-slate-400 block mt-0.5">
+                      Price per {lot.unit.toLowerCase()} • Excl. GST
+                    </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Location:</span>
-                    <span className="font-medium text-slate-700 truncate">{lot.location}</span>
+
+                  {/* Lot Quantities & MOQ */}
+                  <div className="mt-3.5 space-y-1 text-xs text-slate-600 bg-slate-50/60 p-2.5 rounded-lg border border-slate-100">
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Total Lot Volume:</span>
+                      <span className="font-semibold text-slate-800">{lot.totalQuantity.toLocaleString()} {lot.unit}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Min. Order (MOQ):</span>
+                      <span className="font-semibold text-slate-800">{lot.moq} {lot.unit}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Location:</span>
+                      <span className="font-medium text-slate-700 truncate">{lot.location}</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Card Footer / Action */}
-              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <div className="px-4 sm:px-5 pb-4 pt-2 border-t border-slate-100 flex items-center justify-between">
                 {lot.brandHidden ? (
                   <span className="inline-flex items-center gap-1 text-[11px] text-slate-500 font-medium" title="Brand protected by seller confidentiality rule">
                     🔒 Brand Discretion

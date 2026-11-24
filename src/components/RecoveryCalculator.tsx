@@ -31,15 +31,9 @@ export default function RecoveryCalculator() {
     <div className="w-full rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 pb-6 border-b border-slate-100">
         <div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-[#e65c00] border border-orange-200 font-mono">
-            Wholesale Economics Model
-          </span>
-          <h3 className="mt-2 text-xl sm:text-2xl font-bold tracking-tight text-slate-900 font-quicksand">
+          <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 font-quicksand">
             Calculate Your Retail Profit Margin
           </h3>
-          <p className="mt-1 text-sm text-slate-500 font-quicksand">
-            Compare sourcing margins through conventional wholesale distributors versus StockBridge&apos;s verified surplus lots.
-          </p>
         </div>
 
         {/* Input slider */}
