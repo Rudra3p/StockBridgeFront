@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
     const result = await backend.register(body);
 
     if (result.error || !result.data) {
+      console.error('Registration backend error response:', result.status, result.error);
       return NextResponse.json(
         {
           message: result.error?.message || 'Registration failed',
@@ -33,9 +34,11 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(result.data, { status: 201 });
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error('Registration route error:', error);
+    const message = error instanceof Error ? error.message : 'Internal server error during registration';
     return NextResponse.json(
-      { message: 'Internal server error during registration' },
+      { message },
       { status: 500 }
     );
   }
