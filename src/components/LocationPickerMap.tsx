@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { MapPin, Search, Crosshair, Check, Loader2 } from 'lucide-react';
+import { MapPin, Search, Crosshair, Check, Loader2, X } from 'lucide-react';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 export interface SelectedLocationData {
@@ -22,26 +22,16 @@ interface LocationPickerMapProps {
   defaultCity?: string;
 }
 
-interface SearchResult {
-  place_id: number;
-  lat: string;
-  lon: string;
-  display_name: string;
-  address?: {
-    suburb?: string;
-    neighbourhood?: string;
-    industrial?: string;
-    residential?: string;
-    road?: string;
-    city?: string;
-    town?: string;
-    village?: string;
-    county?: string;
-    state_district?: string;
-    state?: string;
-    postcode?: string;
-    country?: string;
-  };
+export interface LocationSuggestion {
+  id: string;
+  name: string;
+  city: string;
+  state: string;
+  postcode?: string;
+  lat: number;
+  lng: number;
+  displayName: string;
+  subText: string;
 }
 
 export default function LocationPickerMap({
@@ -54,6 +44,7 @@ export default function LocationPickerMap({
   const mapInstanceRef = useRef<any>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const markerRef = useRef<any>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
 
   // Store stable callback ref to prevent infinite re-render loops
   const onLocationSelectRef = useRef(onLocationSelect);
@@ -63,7 +54,9 @@ export default function LocationPickerMap({
 
   // Network request de-duplication and cancellation refs
   const abortControllerRef = useRef<AbortController | null>(null);
+  const searchAbortControllerRef = useRef<AbortController | null>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const searchDebounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const lastGeocodedCoordsRef = useRef<{ lat: number; lng: number } | null>(null);
 
   const [isLoadingMap, setIsLoadingMap] = useState(true);
@@ -72,9 +65,10 @@ export default function LocationPickerMap({
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searchResults, setSearchResults] = useState<LocationSuggestion[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [searchNotice, setSearchNotice] = useState<string | null>(null);
 
   // Selected state
   const [selectedLocation, setSelectedLocation] = useState<SelectedLocationData>({
@@ -89,6 +83,22 @@ export default function LocationPickerMap({
   });
 
   const [unitOrPlot, setUnitOrPlot] = useState('');
+
+  // Close search dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(e.target as Node)
+      ) {
+        setShowSearchResults(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Extract clean structured data from Nominatim reverse geocode response
   const parseNominatimAddress = useCallback(
@@ -301,6 +311,12 @@ export default function LocationPickerMap({
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
+      if (searchDebounceTimerRef.current) {
+        clearTimeout(searchDebounceTimerRef.current);
+      }
+      if (searchAbortControllerRef.current) {
+        searchAbortControllerRef.current.abort();
+      }
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
@@ -309,38 +325,178 @@ export default function LocationPickerMap({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run strictly ONCE on mount
 
-  // Handle Search using Nominatim API
-  const handleSearchSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
+  // Google-like typo-tolerant fuzzy search combining Photon + Nominatim
+  const performFuzzySearch = useCallback(
+    async (queryText: string): Promise<LocationSuggestion[]> => {
+      const trimmed = queryText.trim();
+      if (!trimmed || trimmed.length < 2) return [];
+
+      if (searchAbortControllerRef.current) {
+        searchAbortControllerRef.current.abort();
+      }
+      const controller = new AbortController();
+      searchAbortControllerRef.current = controller;
+
+      const results: LocationSuggestion[] = [];
+
+      // Current center for geographic proximity bias
+      const currentCenter = mapInstanceRef.current
+        ? mapInstanceRef.current.getCenter()
+        : { lng: initialLng, lat: initialLat };
+
+      // 1. Primary: Photon geocoder with Elasticsearch fuzzy matching & Levenshtein typo tolerance
+      try {
+        const photonUrl = new URL('https://photon.komoot.io/api/');
+        photonUrl.searchParams.set('q', trimmed);
+        photonUrl.searchParams.set('limit', '8');
+        photonUrl.searchParams.set('lat', currentCenter.lat.toString());
+        photonUrl.searchParams.set('lon', currentCenter.lng.toString());
+
+        const res = await fetch(photonUrl.toString(), {
+          signal: controller.signal,
+          headers: { Accept: 'application/json' },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.features && Array.isArray(data.features)) {
+            // Sort India results to top
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const sortedFeatures = data.features.sort((a: any, b: any) => {
+              const aIn = a.properties?.country === 'India' || a.properties?.countrycode === 'IN' ? 1 : 0;
+              const bIn = b.properties?.country === 'India' || b.properties?.countrycode === 'IN' ? 1 : 0;
+              return bIn - aIn;
+            });
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            for (const f of sortedFeatures) {
+              const props = f.properties || {};
+              const coords = f.geometry?.coordinates;
+              if (!coords || coords.length < 2) continue;
+
+              const lng = coords[0];
+              const lat = coords[1];
+              const name = props.name || props.street || props.district || props.city || trimmed;
+              const city = props.city || props.county || props.district || '';
+              const state = props.state || '';
+              const postcode = props.postcode || '';
+              const country = props.country || '';
+
+              const subParts = [props.street, props.district, city, state, postcode, country].filter(Boolean);
+              const uniqueSub = subParts.filter((item, index) => subParts.indexOf(item) === index);
+              const subText = uniqueSub.join(', ');
+              const displayName = `${name}${subText ? ', ' + subText : ''}`;
+
+              results.push({
+                id: `photon-${props.osm_id || Math.random()}`,
+                name,
+                city,
+                state,
+                postcode,
+                lat,
+                lng,
+                displayName,
+                subText,
+              });
+            }
+          }
+        }
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          return [];
+        }
+        console.warn('Photon fuzzy search error, fallbacking to Nominatim:', err);
+      }
+
+      // 2. Secondary fallback: Nominatim if Photon yielded no matches
+      if (results.length === 0) {
+        try {
+          const nomUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+            trimmed
+          )}&countrycodes=in&limit=6&addressdetails=1`;
+
+          const res = await fetch(nomUrl, {
+            signal: controller.signal,
+            headers: {
+              'Accept-Language': 'en-IN,en;q=0.9',
+            },
+          });
+
+          if (res.ok) {
+            const nomData = await res.json();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            for (const item of nomData) {
+              const lat = parseFloat(item.lat);
+              const lng = parseFloat(item.lon);
+              const addr = item.address || {};
+              const name = item.display_name.split(',')[0] || trimmed;
+              const city = addr.city || addr.town || addr.village || addr.state_district || '';
+              const state = addr.state || '';
+              const postcode = addr.postcode || '';
+              const subText = [addr.suburb || addr.industrial, city, state, postcode]
+                .filter(Boolean)
+                .join(', ');
+
+              results.push({
+                id: `nom-${item.place_id || Math.random()}`,
+                name,
+                city,
+                state,
+                postcode,
+                lat,
+                lng,
+                displayName: item.display_name,
+                subText,
+              });
+            }
+          }
+        } catch (err: unknown) {
+          if (err instanceof Error && err.name === 'AbortError') {
+            return [];
+          }
+          console.warn('Nominatim search error:', err);
+        }
+      }
+
+      return results;
+    },
+    [initialLat, initialLng]
+  );
+
+  // Live debounced suggestions as user types
+  const handleInputChange = (val: string) => {
+    setSearchQuery(val);
+    setSearchNotice(null);
+
+    if (searchDebounceTimerRef.current) {
+      clearTimeout(searchDebounceTimerRef.current);
+    }
+
+    if (!val.trim() || val.trim().length < 2) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      setIsSearching(false);
+      return;
+    }
 
     setIsSearching(true);
-    try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          searchQuery.trim()
-        )}&countrycodes=in&limit=5&addressdetails=1`,
-        {
-          headers: {
-            'Accept-Language': 'en-IN,en;q=0.9',
-          },
-        }
-      );
-      if (!res.ok) throw new Error('Search failed');
-      const data = await res.json();
-      setSearchResults(data);
+    searchDebounceTimerRef.current = setTimeout(async () => {
+      const results = await performFuzzySearch(val);
+      setSearchResults(results);
       setShowSearchResults(true);
-    } catch (err) {
-      console.error('Search failed:', err);
-    } finally {
       setIsSearching(false);
-    }
+      if (results.length === 0) {
+        setSearchNotice(`No match found for "${val}". Check spelling or drag pin on map.`);
+      } else {
+        setSearchNotice(null);
+      }
+    }, 280);
   };
 
-  // Select search result
-  const handleSelectSearchResult = (result: SearchResult) => {
-    const lat = parseFloat(result.lat);
-    const lng = parseFloat(result.lon);
+  // Select a suggestion and move map without any page reload
+  const handleSelectSearchResult = (result: LocationSuggestion) => {
+    const lat = result.lat;
+    const lng = result.lng;
 
     if (mapInstanceRef.current && markerRef.current) {
       mapInstanceRef.current.flyTo({
@@ -351,17 +507,78 @@ export default function LocationPickerMap({
       markerRef.current.setLngLat([lng, lat]);
     }
 
-    const parsed = parseNominatimAddress(result.address || {}, lat, lng, result.display_name);
-    lastGeocodedCoordsRef.current = { lat, lng };
-    setSelectedLocation(parsed);
-    onLocationSelectRef.current(parsed);
+    // Immediate optimistic update
+    setSelectedLocation((prev) => ({
+      ...prev,
+      addressLine: result.name || result.displayName.split(',')[0],
+      city: result.city || prev.city,
+      state: result.state || prev.state,
+      pinCode: result.postcode || prev.pinCode,
+      lat,
+      lng,
+      displayName: result.displayName,
+      area: result.name || prev.area,
+    }));
+
+    // Trigger detailed reverse geocode for complete verification
+    triggerReverseGeocode(lat, lng);
 
     setShowSearchResults(false);
-    setSearchQuery(result.display_name.split(',').slice(0, 2).join(', '));
+    setSearchQuery(result.name);
+    setSearchNotice(null);
+  };
+
+  // Direct search action triggered by Enter key or Search button (STRICTLY PREVENTS PAGE RELOAD)
+  const executeSearch = async (e?: React.SyntheticEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    const trimmed = searchQuery.trim();
+    if (!trimmed) return;
+
+    // If suggestions are already loaded, select the first match immediately
+    if (searchResults.length > 0) {
+      handleSelectSearchResult(searchResults[0]);
+      return;
+    }
+
+    setIsSearching(true);
+    setSearchNotice(null);
+
+    try {
+      const results = await performFuzzySearch(trimmed);
+      setSearchResults(results);
+
+      if (results.length > 0) {
+        handleSelectSearchResult(results[0]);
+      } else {
+        setShowSearchResults(true);
+        setSearchNotice(`No results found for "${trimmed}". Try searching by industrial area or city name.`);
+      }
+    } catch (err) {
+      console.error('Search execution failed:', err);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Clear search input
+  const handleClearSearch = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSearchQuery('');
+    setSearchResults([]);
+    setShowSearchResults(false);
+    setSearchNotice(null);
   };
 
   // Locate Me using Browser Geolocation
-  const handleLocateMe = () => {
+  const handleLocateMe = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     if (!navigator.geolocation) {
       alert('Geolocation is not supported by your browser');
       return;
@@ -415,38 +632,65 @@ export default function LocationPickerMap({
 
   return (
     <div className="w-full space-y-3">
-      {/* Search Header Bar overlaying map */}
-      <div className="relative z-20">
-        <form onSubmit={handleSearchSubmit} className="relative flex items-center">
-          <div className="relative flex-1 flex items-center bg-white rounded-xl border border-slate-300 shadow-sm focus-within:border-[#e65c00] focus-within:ring-2 focus-within:ring-orange-100 overflow-hidden">
+      {/* Search Header Bar overlaying map (DIV ONLY - NO FORM TO PREVENT NESTED SUBMIT RELOAD) */}
+      <div ref={searchContainerRef} className="relative z-20">
+        <div className="relative flex items-center gap-2">
+          <div className="relative flex-1 flex items-center bg-white rounded-xl border border-slate-300 shadow-sm focus-within:border-[#e65c00] focus-within:ring-2 focus-within:ring-orange-100 overflow-hidden transition-all">
             <Search className="w-4 h-4 text-slate-400 ml-3.5 shrink-0" />
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                if (!showSearchResults && searchResults.length > 0) setShowSearchResults(true);
+              onChange={(e) => handleInputChange(e.target.value)}
+              onFocus={() => {
+                if (searchResults.length > 0 || searchNotice) {
+                  setShowSearchResults(true);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  executeSearch();
+                } else if (e.key === 'Escape') {
+                  setShowSearchResults(false);
+                }
               }}
               placeholder="Search area, landmark or industrial estate (e.g. Vatva GIDC, Ahmedabad)..."
               className="w-full px-3 py-2.5 text-xs sm:text-sm font-quicksand font-semibold text-slate-800 placeholder-slate-400 focus:outline-none"
             />
+
+            {/* Clear Button */}
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="p-1 mr-1 text-slate-400 hover:text-slate-600 transition rounded-full hover:bg-slate-100"
+                title="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+
             {isSearching && (
               <Loader2 className="w-4 h-4 text-[#e65c00] animate-spin mr-3 shrink-0" />
             )}
+
+            {/* Search Action Button (STRICTLY type="button" - never triggers outer form submit) */}
             <button
-              type="submit"
-              className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold font-quicksand transition border-l border-slate-200"
+              type="button"
+              onClick={executeSearch}
+              className="px-3.5 py-2.5 bg-slate-100 hover:bg-[#e65c00] hover:text-white text-slate-700 text-xs font-bold font-quicksand transition border-l border-slate-200 shrink-0"
             >
               Search
             </button>
           </div>
 
-          {/* Quick Locate GPS Button */}
+          {/* Quick Locate GPS Button (type="button") */}
           <button
             type="button"
             onClick={handleLocateMe}
             title="Use my current GPS location"
-            className="ml-2 flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-[#e65c00] text-xs font-bold font-quicksand transition shadow-sm shrink-0"
+            className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-[#e65c00] text-xs font-bold font-quicksand transition shadow-sm shrink-0"
           >
             {isLocating ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -455,24 +699,44 @@ export default function LocationPickerMap({
             )}
             <span className="hidden sm:inline">Detect Location</span>
           </button>
-        </form>
+        </div>
 
-        {/* Autocomplete Suggestions Dropdown */}
-        {showSearchResults && searchResults.length > 0 && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl border border-slate-200 shadow-xl overflow-hidden z-30 max-h-56 overflow-y-auto divide-y divide-slate-100">
-            {searchResults.map((res) => (
-              <button
-                key={res.place_id}
-                type="button"
-                onClick={() => handleSelectSearchResult(res)}
-                className="w-full px-3.5 py-2.5 text-left text-xs font-quicksand hover:bg-orange-50/70 transition flex items-start gap-2 group"
-              >
-                <MapPin className="w-4 h-4 text-[#e65c00] mt-0.5 shrink-0" />
-                <span className="text-slate-800 group-hover:text-[#e65c00] font-medium leading-relaxed">
-                  {res.display_name}
-                </span>
-              </button>
-            ))}
+        {/* Autocomplete Google-like Suggestions Dropdown */}
+        {showSearchResults && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl border border-slate-200 shadow-2xl overflow-hidden z-30 max-h-64 overflow-y-auto divide-y divide-slate-100 animate-in fade-in slide-in-from-top-1 duration-150">
+            {searchResults.length > 0 ? (
+              searchResults.map((res) => (
+                <button
+                  key={res.id}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleSelectSearchResult(res);
+                  }}
+                  className="w-full px-3.5 py-2.5 text-left text-xs font-quicksand hover:bg-orange-50/80 transition flex items-start gap-2.5 group cursor-pointer"
+                >
+                  <div className="p-1 rounded bg-orange-100/60 text-[#e65c00] group-hover:bg-[#e65c00] group-hover:text-white transition mt-0.5 shrink-0">
+                    <MapPin className="w-3.5 h-3.5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-bold text-slate-900 group-hover:text-[#e65c00] transition truncate">
+                      {res.name}
+                    </div>
+                    {res.subText && (
+                      <div className="text-[11px] text-slate-500 font-normal truncate mt-0.5">
+                        {res.subText}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              ))
+            ) : searchNotice ? (
+              <div className="px-3.5 py-3 text-xs font-quicksand text-slate-500 bg-slate-50 flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-orange-400 shrink-0" />
+                <span>{searchNotice}</span>
+              </div>
+            ) : null}
           </div>
         )}
       </div>
@@ -555,6 +819,12 @@ export default function LocationPickerMap({
             type="text"
             value={unitOrPlot}
             onChange={(e) => handleUnitOrPlotChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                e.stopPropagation();
+              }
+            }}
             placeholder="e.g. Shed No. 42, Phase 4"
             className="flex-1 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-xs font-quicksand text-slate-900 focus:outline-none focus:border-[#e65c00]"
           />
