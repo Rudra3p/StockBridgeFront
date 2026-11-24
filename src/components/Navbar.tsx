@@ -50,10 +50,8 @@ export default function Navbar() {
         return '/seller/dashboard';
       case 'BUYER':
         return '/buyer/dashboard';
-      case 'ADMIN':
-        return '/admin';
       default:
-        return '/';
+        return '/buyer/dashboard';
     }
   };
 
@@ -172,22 +170,19 @@ export default function Navbar() {
 
           {!loading && (
             <>
-              {user ? (
+              {user && user.role === 'BUYER' ? (
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-slate-900 font-quicksand">
                       {user.fullName}
                     </span>
-                    <span className="inline-flex items-center rounded-full bg-orange-100 text-[#e65c00] px-2 py-0.5 text-[10px] font-mono font-bold border border-orange-200">
-                      {user.role}
-                    </span>
                   </div>
 
                   <Link
-                    href={getDashboardLink()}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-xs sm:text-sm font-bold text-white shadow-sm transition hover:opacity-90 font-quicksand"
+                    href="/buyer/dashboard"
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-[#e65c00] px-4 py-2 text-xs sm:text-sm font-bold text-white shadow-sm transition hover:bg-[#c44e00] font-quicksand"
                   >
-                    <span>Go to Dashboard</span>
+                    <span>Buyer Dashboard</span>
                     <span>→</span>
                   </Link>
 
@@ -204,7 +199,7 @@ export default function Navbar() {
                 <div className="flex items-center gap-3">
                   <Link
                     href="/login"
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:text-main hover:bg-slate-50"
+                    className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:text-[#e65c00] hover:bg-slate-50"
                   >
                     Log In
                   </Link>
@@ -264,18 +259,18 @@ export default function Navbar() {
 
           {!loading && (
             <div className="flex flex-col gap-3 pt-3">
-              {user ? (
+              {user && user.role === 'BUYER' ? (
                 <>
                   <div className="pb-2 border-b border-slate-100">
                     <p className="text-sm font-semibold text-slate-900">{user.fullName}</p>
-                    <p className="text-xs text-slate-500">{user.email} • {user.role}</p>
+                    <p className="text-xs text-slate-500">{user.email}</p>
                   </div>
                   <Link
-                    href={getDashboardLink()}
+                    href="/buyer/dashboard"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block rounded-lg bg-accent px-3 py-2 text-center text-sm font-bold text-white shadow-sm"
+                    className="block rounded-lg bg-[#e65c00] px-3 py-2 text-center text-sm font-bold text-white shadow-sm font-quicksand"
                   >
-                    Go to Dashboard →
+                    Buyer Dashboard →
                   </Link>
                   <button
                     type="button"

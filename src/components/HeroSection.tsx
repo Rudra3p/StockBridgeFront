@@ -103,10 +103,8 @@ export default function HeroSection() {
         return '/seller/dashboard';
       case 'BUYER':
         return '/buyer/dashboard';
-      case 'ADMIN':
-        return '/admin';
       default:
-        return '/';
+        return '/buyer/dashboard';
     }
   };
 
@@ -186,14 +184,14 @@ export default function HeroSection() {
             at <span className="tabular-nums font-mono font-bold">30% to 70%</span> Below Wholesale.
           </h1>
 
-          {/* User Auth Action Pill (Compact) if authenticated */}
-          {user && (
+          {/* User Auth Action Pill (Compact) ONLY if logged in as BUYER */}
+          {user && user.role === 'BUYER' && (
             <div className="mt-3 flex items-center gap-3">
               <Link
-                href={getDashboardLink()}
+                href="/buyer/dashboard"
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-[#e65c00] hover:underline font-quicksand"
               >
-                <span>Currently logged in as {user.fullName} • Go to Portal</span>
+                <span>Currently logged in as {user.fullName} • Go to Buyer Dashboard</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
