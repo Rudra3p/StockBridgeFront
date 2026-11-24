@@ -8,8 +8,8 @@ export async function GET() {
 
   if (!token && !sessionUser) {
     return NextResponse.json(
-      { message: 'Authentication required' },
-      { status: 401 }
+      { authenticated: false, message: 'Unauthenticated visitor' },
+      { status: 200 }
     );
   }
 
@@ -39,8 +39,8 @@ export async function GET() {
 
   if (!token) {
     return NextResponse.json(
-      { message: 'Authentication required' },
-      { status: 401 }
+      { authenticated: false, message: 'Unauthenticated visitor' },
+      { status: 200 }
     );
   }
 
@@ -52,8 +52,8 @@ export async function GET() {
       await clearSessionCookies();
     }
     return NextResponse.json(
-      { message: result.error?.message || 'Failed to fetch user session' },
-      { status: result.status || 401 }
+      { authenticated: false, message: result.error?.message || 'Failed to fetch user session' },
+      { status: 200 }
     );
   }
 

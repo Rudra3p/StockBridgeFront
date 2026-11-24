@@ -36,6 +36,15 @@ export default function TransitRouteMap({
 
       if (isCancelled || !mapContainerRef.current) return;
 
+      // Explicitly configure absolute workerUrl to eliminate Next.js Web Worker loading errors
+      if (typeof window !== 'undefined') {
+        try {
+          maplibregl.setWorkerUrl(`${window.location.origin}/maplibre-gl-worker.mjs`);
+        } catch (e) {
+          console.warn('MapLibre worker setup:', e);
+        }
+      }
+
       // Custom Pin Marker Element
       const el = document.createElement('div');
       el.className = 'buyer-maplibre-pin';

@@ -77,6 +77,9 @@ export const clientAuth = {
       const res = await fetch('/api/auth/me', { cache: 'no-store' });
       if (!res.ok) return { authenticated: false };
       const data = await res.json();
+      if (!data || data.authenticated === false || !data.id) {
+        return { authenticated: false };
+      }
       return { authenticated: true, user: data };
     } catch {
       return { authenticated: false };

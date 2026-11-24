@@ -220,6 +220,15 @@ export default function LocationPickerMap({
 
       if (isCancelled || !mapContainerRef.current) return;
 
+      // Explicitly configure absolute workerUrl to eliminate Next.js Web Worker loading errors
+      if (typeof window !== 'undefined') {
+        try {
+          maplibregl.setWorkerUrl(`${window.location.origin}/maplibre-gl-worker.mjs`);
+        } catch (e) {
+          console.warn('MapLibre worker setup:', e);
+        }
+      }
+
       // Custom SVG Marker Element
       const markerEl = document.createElement('div');
       markerEl.className = 'custom-maplibre-pin';
