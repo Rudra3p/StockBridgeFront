@@ -105,15 +105,15 @@ export default function PartnerRegisterPage() {
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center py-10 px-4 sm:px-6 lg:px-8 bg-slate-50">
       <div className="w-full max-w-2xl bg-white p-6 sm:p-10 rounded-2xl border border-slate-200 shadow-sm">
         
-        {/* Header */}
+        {/* Header - Principles 5 (Tracking), 9 (Leading), 12 (Widow/Balance), 15 (Line Length 65ch) */}
         <div className="text-center mb-8">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-orange-100 text-[#e65c00] mb-3">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold tracking-wider uppercase bg-orange-100 text-[#e65c00] mb-3">
             ENTERPRISE PARTNER ONBOARDING
           </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-quicksand">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-quicksand text-balance tracking-tight">
             Register as a Business Partner
           </h1>
-          <p className="mt-2 text-sm text-slate-600 font-quicksand max-w-md mx-auto">
+          <p className="mt-2 text-sm text-slate-600 font-quicksand max-w-[65ch] mx-auto text-pretty leading-relaxed">
             Direct liquidation portal for factories, mills, brand owners, and large distributors with 100% pre-funded escrow.
           </p>
         </div>
@@ -259,7 +259,7 @@ export default function PartnerRegisterPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <form onSubmit={handleSubmit(onSubmit)} className="min-h-[540px] flex flex-col justify-between" noValidate>
           {/* Hidden Role: SELLER */}
           <input type="hidden" value="SELLER" {...register('role')} />
 

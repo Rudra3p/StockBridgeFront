@@ -105,21 +105,21 @@ export default function HeroSection() {
         {/* ====================================================== */}
         <div className="flex flex-col justify-center text-left lg:pr-4">
           
-          {/* MAIN HEADING */}
-          <h1 className="type-main text-main font-quicksand font-bold">
+          {/* MAIN HEADING - PRINCIPLE 12 (TEXT-BALANCE / NO WIDOWS) & PRINCIPLE 3 (TABULAR NUMS) */}
+          <h1 className="type-main text-main font-quicksand font-bold text-balance">
             Source Verified{' '}
             <span className="text-accent transition-colors duration-200">
               Factory Surplus
             </span>{' '}
-            at 30% to 70% Below Wholesale.
+            at <span className="tabular-nums font-mono font-bold">30% to 70%</span> Below Wholesale.
           </h1>
 
-          {/* Role-Specific Action CTAs */}
+          {/* Role-Specific Action CTAs - PRINCIPLE 8 (TOUCH TARGET >=44PX) & PRINCIPLE 16 (AFFORDANCE) */}
           <div className="mt-6 flex flex-wrap items-center gap-3">
             {user ? (
               <Link
                 href={getDashboardLink()}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3.5 text-sm sm:text-base font-bold text-white shadow-md transition hover:opacity-90 font-quicksand"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3.5 min-h-[44px] text-sm sm:text-base font-bold text-white shadow-md transition hover:opacity-90 active:scale-[0.98] font-quicksand"
               >
                 <span>Go to Your {user.role === 'SELLER' ? 'Seller Central' : user.role === 'ADMIN' ? 'Admin Console' : 'Buyer Hub'}</span>
                 <span aria-hidden="true">→</span>
@@ -127,7 +127,7 @@ export default function HeroSection() {
             ) : (
               <Link
                 href="/register"
-                className="inline-flex items-center justify-center rounded-xl bg-slate-950 px-6 py-3.5 text-sm sm:text-base font-bold text-white shadow-sm transition hover:bg-slate-800 font-quicksand"
+                className="inline-flex items-center justify-center rounded-xl bg-slate-950 px-6 py-3.5 min-h-[44px] text-sm sm:text-base font-bold text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.98] font-quicksand"
               >
                 <span>Register Business</span>
                 <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

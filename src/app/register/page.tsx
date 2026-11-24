@@ -105,15 +105,15 @@ export default function RegisterPage() {
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center py-10 px-4 sm:px-6 lg:px-8 bg-slate-50">
       <div className="w-full max-w-2xl bg-white p-6 sm:p-10 rounded-2xl border border-slate-200 shadow-sm">
         
-        {/* Header */}
+        {/* Header - Principles 5 (Tracking), 9 (Leading), 12 (Widows/Balance), 15 (Line Length) */}
         <div className="text-center mb-8">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-slate-100 text-slate-800 mb-3 border border-slate-200">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold tracking-wider uppercase bg-slate-100 text-slate-800 mb-3 border border-slate-200">
             VERIFIED B2B ACCESS
           </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-quicksand">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-quicksand text-balance tracking-tight">
             Register Your Business
           </h1>
-          <p className="mt-2 text-sm text-slate-600 font-quicksand max-w-md mx-auto">
+          <p className="mt-2 text-sm text-slate-600 font-quicksand max-w-[65ch] mx-auto text-pretty leading-relaxed">
             Direct access to verified factory surplus inventory with standardized grading and neutral escrow.
           </p>
         </div>
@@ -269,7 +269,7 @@ export default function RegisterPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <form onSubmit={handleSubmit(onSubmit)} className="min-h-[540px] flex flex-col justify-between" noValidate>
           {/* Hidden Role Input */}
           <input type="hidden" value="BUYER" {...register('role')} />
 

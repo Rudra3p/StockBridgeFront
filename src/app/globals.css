@@ -37,22 +37,20 @@
   --font-quicksand: var(--font-quicksand);
 }
 
-html,
+html {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
 body {
   overflow-x: hidden;
   max-width: 100vw;
   width: 100%;
-}
-
-/* GSAP ScrollTrigger Pin Spacer containment - prevents any child horizontal track from leaking into document width */
-.pin-spacer {
-  max-width: 100vw !important;
-  width: 100% !important;
-  overflow: hidden !important;
-}
-
-/* Base Body with Quicksand Regular (400) Andrew Paglinawan */
-body {
   background: var(--color-canvas-subtle);
   color: var(--color-text-main);
   font-family: var(--font-quicksand), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -60,6 +58,72 @@ body {
   font-size: 1rem;
   line-height: 1.618; /* Golden Ratio Line Height */
   transition: background-color 0.2s ease, color 0.2s ease;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ======================================================== */
+/* 20 DESIGN PRINCIPLES: TYPOGRAPHY, STABILITY & ACCESSIBILITY */
+/* ======================================================== */
+
+/* 1. Kerning, Tracking & Optical Balance */
+h1, h2, h3, h4, h5, h6, .type-main, .type-sub, .type-little {
+  text-wrap: balance; /* Principle 12: Prevents lonely widows on headlines */
+  font-feature-settings: "kern" 1; /* Principle 1: Pair-level kerning */
+}
+
+/* 9. Leading & 15. Line Length (65ch optimal readability) */
+p, .type-body {
+  text-wrap: pretty; /* Prevents orphaned single words */
+  max-width: 68ch; /* Principle 15: ~65 characters per line reads best */
+}
+
+/* 3. Tabular Numbers (Currency, Quantities, Timers, Counters) */
+.tabular-nums,
+.font-mono,
+table td,
+[data-numeric="true"],
+.metric-value,
+.stat-number,
+.price-display {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* 4. Zero Layout Shift (CLS Protection) */
+img, video {
+  height: auto;
+  max-width: 100%;
+  content-visibility: auto;
+}
+
+/* 8. Touch Target Affordance (Min 44x44px clickable target) */
+@media (pointer: coarse) {
+  button, 
+  a[role="button"], 
+  input[type="button"], 
+  input[type="submit"], 
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* 16. Interactive Affordance & Focus Indicators */
+:focus-visible {
+  outline: 2px solid var(--color-accent-main);
+  outline-offset: 2px;
+}
+
+button:not(:disabled),
+a,
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+/* 18. Interruptible & Origin-Aware Animations */
+.origin-click {
+  transform-origin: center center;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ======================================================== */
