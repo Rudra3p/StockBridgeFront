@@ -15,34 +15,13 @@ export async function POST(request: NextRequest) {
     }
 
     const normalizedEmail = body.email.trim().toLowerCase();
+    const targetRole = body.role || 'BUYER';
 
-    // Check for configured Master Administrator credentials fallback
-    if (
-      (normalizedEmail === 'rudra090207@gmail.com' && body.password === '1234567890') ||
-      (normalizedEmail === 'admin@stockbridge.local' && body.password === 'admin123')
-    ) {
-      const adminUser = {
-        id: 'a0000000-0000-0000-0000-000000000003',
-        name: normalizedEmail === 'rudra090207@gmail.com' ? 'Rudra Admin' : 'StockBridge Administrator',
-        email: normalizedEmail,
-        role: 'ADMIN' as const,
-        organisationId: 'a0000000-0000-0000-0000-000000000001',
-        verificationStatus: 'APPROVED' as const,
-      };
-
-      const mockToken = `eyJhbGciOiJIUzI1NiJ9.${Buffer.from(
-        JSON.stringify({ sub: normalizedEmail, role: 'ADMIN', exp: Math.floor(Date.now() / 1000) + 86400 })
-      ).toString('base64url')}.mockAdminSig`;
-
-      await setSessionCookies(mockToken, adminUser);
-
-      return NextResponse.json({
-        success: true,
-        user: adminUser,
-      });
-    }
-
-    const result = await backend.login(body);
+    const result = await backend.login({
+      email: normalizedEmail,
+      password: body.password,
+      role: body.role,
+    });
 
     if (result.error || !result.data) {
       return NextResponse.json(

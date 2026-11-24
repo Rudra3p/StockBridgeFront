@@ -33,26 +33,19 @@ function LoginForm() {
     setIsSubmitting(true);
 
     try {
-      const result = await clientAuth.login(data);
+      const result = await clientAuth.login({
+        ...data,
+        role: 'BUYER',
+      });
 
       if (!result.success || !result.data) {
-        setServerError(result.error || 'Invalid email or password');
+        setServerError(result.error || 'Invalid buyer email or password');
         setIsSubmitting(false);
         return;
       }
 
-      const role = result.data.user.role;
-
-      // Redirect user by role as requested
-      if (role === 'SELLER') {
-        router.push('/seller/dashboard');
-      } else if (role === 'BUYER') {
-        router.push('/buyer/dashboard');
-      } else if (role === 'ADMIN') {
-        router.push('/admin');
-      } else {
-        router.push('/');
-      }
+      // Always send buyer login directly to buyer dashboard
+      router.push('/buyer/dashboard');
       router.refresh();
     } catch {
       setServerError('An unexpected error occurred during login. Please try again.');
@@ -219,15 +212,6 @@ function LoginForm() {
                 className="font-bold text-[#e65c00] hover:underline"
               >
                 Register here
-              </Link>
-            </div>
-            <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500">
-              Platform Operator?{' '}
-              <Link
-                href="/admin/login"
-                className="font-mono font-medium text-[#e65c00] hover:text-[#ff7a1a] underline"
-              >
-                Go to Dedicated Admin Gateway →
               </Link>
             </div>
           </div>

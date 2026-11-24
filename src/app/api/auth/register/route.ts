@@ -20,20 +20,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const normalizedEmail = body.user.email?.trim().toLowerCase();
-    const phone = body.user.phone?.trim();
-
-    if (
-      normalizedEmail === 'rudra090207@gmail.com' ||
-      normalizedEmail === 'admin@stockbridge.local' ||
-      phone === '7016047658'
-    ) {
-      return NextResponse.json(
-        { message: 'Administrative accounts are strictly pre-seeded and cannot be registered publicly.' },
-        { status: 403 }
-      );
-    }
-
     const result = await backend.register(body);
 
     if (result.error || !result.data) {

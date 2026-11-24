@@ -33,7 +33,10 @@ function PartnerLoginForm() {
     setIsSubmitting(true);
 
     try {
-      const result = await clientAuth.login(data);
+      const result = await clientAuth.login({
+        ...data,
+        role: 'SELLER',
+      });
 
       if (!result.success || !result.data) {
         setServerError(result.error || 'Invalid partner email or password');
@@ -41,18 +44,8 @@ function PartnerLoginForm() {
         return;
       }
 
-      const role = result.data.user.role;
-
-      // Prioritize partner seller dashboard
-      if (role === 'SELLER') {
-        router.push('/seller/dashboard');
-      } else if (role === 'ADMIN') {
-        router.push('/admin');
-      } else if (role === 'BUYER') {
-        router.push('/buyer/dashboard');
-      } else {
-        router.push('/');
-      }
+      // Always send partner login directly to seller dashboard
+      router.push('/seller/dashboard');
       router.refresh();
     } catch {
       setServerError('An unexpected error occurred during partner sign-in. Please try again.');
