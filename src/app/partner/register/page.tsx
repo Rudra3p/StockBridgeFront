@@ -76,7 +76,6 @@ export default function PartnerRegisterPage() {
       'addressLine',
       'city',
       'state',
-      'pinCode',
     ]);
 
     if (isValid) {
@@ -98,7 +97,7 @@ export default function PartnerRegisterPage() {
           addressLine: data.addressLine.trim(),
           city: data.city.trim(),
           state: data.state.trim(),
-          pinCode: data.pinCode.trim(),
+          pinCode: data.pinCode?.trim() || '000000',
         },
         user: {
           fullName: data.fullName.trim(),
@@ -374,7 +373,7 @@ export default function PartnerRegisterPage() {
                       onLocationSelect={handleMapLocationSelect}
                     />
 
-                    {(errors.addressLine || errors.city || errors.state || errors.pinCode) && (
+                    {(errors.addressLine || errors.city || errors.state) && (
                       <p className="mt-1.5 text-xs text-rose-600 font-quicksand">
                         Please pin your factory or dispatch warehouse on the map to continue.
                       </p>

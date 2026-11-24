@@ -74,7 +74,6 @@ export default function RegisterPage() {
       'addressLine',
       'city',
       'state',
-      'pinCode',
     ]);
 
     if (isValid) {
@@ -96,7 +95,7 @@ export default function RegisterPage() {
           addressLine: data.addressLine.trim(),
           city: data.city.trim(),
           state: data.state.trim(),
-          pinCode: data.pinCode.trim(),
+          pinCode: data.pinCode?.trim() || '000000',
         },
         user: {
           fullName: data.fullName.trim(),
@@ -362,7 +361,7 @@ export default function RegisterPage() {
                     
                     <LocationPickerMap onLocationSelect={handleMapLocationSelect} />
 
-                    {(errors.addressLine || errors.city || errors.state || errors.pinCode) && (
+                    {(errors.addressLine || errors.city || errors.state) && (
                       <p className="mt-1.5 text-xs text-rose-600 font-quicksand">
                         Please pin your location on the map to continue.
                       </p>

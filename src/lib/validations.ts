@@ -52,8 +52,8 @@ export const registerSchema = z.object({
   pinCode: z
     .string()
     .trim()
-    .min(4, 'PIN Code is required')
-    .max(10, 'Invalid PIN Code length'),
+    .max(10, 'Invalid PIN Code length')
+    .optional(),
 });
 
 export type RegisterFormData = z.infer<typeof registerSchema>;

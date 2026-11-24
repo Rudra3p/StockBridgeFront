@@ -104,33 +104,56 @@ export default function LocationPickerMap({
   const parseNominatimAddress = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (rawAddress: any, lat: number, lng: number, displayName: string): SelectedLocationData => {
+      // Split display name for fallback segments if raw fields are missing
+      const displaySegments = displayName
+        ? displayName.split(',').map((s) => s.trim()).filter(Boolean)
+        : [];
+
       const area =
         rawAddress.suburb ||
         rawAddress.industrial ||
         rawAddress.neighbourhood ||
         rawAddress.residential ||
+        rawAddress.commercial ||
+        rawAddress.quarter ||
+        rawAddress.hamlet ||
         rawAddress.road ||
-        'Industrial Zone';
+        rawAddress.locality ||
+        rawAddress.city_district ||
+        displaySegments[0] ||
+        '';
 
       const city =
         rawAddress.city ||
         rawAddress.town ||
         rawAddress.village ||
+        rawAddress.municipality ||
+        rawAddress.city_district ||
         rawAddress.county ||
         rawAddress.state_district ||
-        'Ahmedabad';
+        rawAddress.province ||
+        rawAddress.district ||
+        (displaySegments.length > 2 ? displaySegments[1] : displaySegments[0]) ||
+        '';
 
-      const state = rawAddress.state || 'Gujarat';
-      const pinCode = rawAddress.postcode || '380001';
+      const state =
+        rawAddress.state ||
+        rawAddress.region ||
+        rawAddress.province ||
+        rawAddress.state_district ||
+        (displaySegments.length > 2 ? displaySegments[displaySegments.length - 2] : '') ||
+        '';
+
+      const pinCode = rawAddress.postcode ? String(rawAddress.postcode).trim() : '';
 
       // Build clean business dispatch address
       const parts: string[] = [];
       if (rawAddress.road) parts.push(rawAddress.road);
-      if (area && area !== rawAddress.road) parts.push(area);
+      if (area && !parts.includes(area)) parts.push(area);
       if (rawAddress.industrial && !parts.includes(rawAddress.industrial)) {
         parts.push(rawAddress.industrial);
       }
-      const baseAddress = parts.length > 0 ? parts.join(', ') : displayName.split(',')[0] || area;
+      const baseAddress = parts.length > 0 ? parts.join(', ') : displaySegments[0] || area || `Hub at (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
 
       return {
         addressLine: baseAddress,
@@ -139,8 +162,8 @@ export default function LocationPickerMap({
         pinCode,
         lat,
         lng,
-        displayName,
-        area,
+        displayName: displayName || baseAddress,
+        area: area || city || 'Dispatch Hub',
       };
     },
     []
@@ -198,14 +221,14 @@ export default function LocationPickerMap({
           }
           console.warn('Reverse geocode fallback:', err);
           const fallback: SelectedLocationData = {
-            addressLine: `Industrial Hub, Coordinate (${lat.toFixed(4)}, ${lng.toFixed(4)})`,
-            city: 'Ahmedabad',
-            state: 'Gujarat',
-            pinCode: '382445',
+            addressLine: `Dispatch Hub (${lat.toFixed(4)}, ${lng.toFixed(4)})`,
+            city: '',
+            state: '',
+            pinCode: '',
             lat,
             lng,
-            displayName: `Coordinate ${lat.toFixed(4)}, ${lng.toFixed(4)}`,
-            area: 'Industrial Hub',
+            displayName: `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`,
+            area: `Hub (${lat.toFixed(4)}, ${lng.toFixed(4)})`,
           };
           lastGeocodedCoordsRef.current = { lat, lng };
           setSelectedLocation(fallback);
@@ -784,7 +807,7 @@ export default function LocationPickerMap({
             <div>
               <div className="text-xs font-bold text-slate-900 font-quicksand flex items-center gap-2 flex-wrap">
                 <span>Selected Dispatch Hub:</span>
-                <span className="text-[#e65c00] font-extrabold">{selectedLocation.area || selectedLocation.city}</span>
+                <span className="text-[#e65c00] font-extrabold">{selectedLocation.area || selectedLocation.city || selectedLocation.state || 'Selected Hub'}</span>
               </div>
               <p className="text-[11px] text-slate-600 font-quicksand mt-0.5 line-clamp-2">
                 {selectedLocation.displayName || selectedLocation.addressLine}
@@ -793,20 +816,28 @@ export default function LocationPickerMap({
           </div>
         </div>
 
-        {/* Badges showing resolved address components */}
+        {/* Badges showing resolved address components (Only show if present) */}
         <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono">
-          <span className="px-2 py-0.5 rounded bg-white border border-orange-200 text-orange-950 font-bold">
-            Area: {selectedLocation.area || 'Vatva'}
-          </span>
-          <span className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 font-bold">
-            City: {selectedLocation.city}
-          </span>
-          <span className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 font-bold">
-            State: {selectedLocation.state}
-          </span>
-          <span className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 font-bold">
-            PIN: {selectedLocation.pinCode}
-          </span>
+          {selectedLocation.area && (
+            <span className="px-2 py-0.5 rounded bg-white border border-orange-200 text-orange-950 font-bold">
+              Area: {selectedLocation.area}
+            </span>
+          )}
+          {selectedLocation.city && (
+            <span className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 font-bold">
+              City: {selectedLocation.city}
+            </span>
+          )}
+          {selectedLocation.state && (
+            <span className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 font-bold">
+              State: {selectedLocation.state}
+            </span>
+          )}
+          {Boolean(selectedLocation.pinCode && selectedLocation.pinCode.trim()) && (
+            <span className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 font-bold">
+              PIN: {selectedLocation.pinCode}
+            </span>
+          )}
         </div>
 
         {/* Single Optional Building/Plot input */}
