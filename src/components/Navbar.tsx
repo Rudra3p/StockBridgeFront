@@ -112,47 +112,52 @@ export default function Navbar() {
           {!loading && (
             <>
               {user ? (
-                <div className="flex items-center gap-4">
-                  <Link
-                    href={getDashboardLink()}
-                    className="text-sm font-medium text-slate-700 hover:text-accent transition"
-                  >
-                    Dashboard
-                  </Link>
-
-                  <div className="h-4 w-px bg-slate-200" />
-
+                <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-main">
+                    <span className="text-xs font-bold text-slate-900 font-quicksand">
                       {user.fullName}
                     </span>
-                    <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700 border border-slate-200">
+                    <span className="inline-flex items-center rounded-full bg-orange-100 text-[#e65c00] px-2 py-0.5 text-[10px] font-mono font-bold border border-orange-200">
                       {user.role}
                     </span>
                   </div>
+
+                  <Link
+                    href={getDashboardLink()}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-xs sm:text-sm font-bold text-white shadow-sm transition hover:opacity-90 font-quicksand"
+                  >
+                    <span>Go to Dashboard</span>
+                    <span>→</span>
+                  </Link>
 
                   <button
                     type="button"
                     onClick={handleLogout}
                     disabled={loggingOut}
-                    className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 disabled:opacity-60"
+                    className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-2xs transition hover:bg-slate-50 disabled:opacity-60 font-quicksand"
                   >
-                    {loggingOut ? 'Logging out...' : 'Logout'}
+                    {loggingOut ? '...' : 'Sign Out'}
                   </button>
                 </div>
               ) : (
                 <div className="flex items-center gap-3">
                   <Link
                     href="/login"
-                    className="rounded-md px-3.5 py-2 text-sm font-medium text-slate-700 transition hover:text-main hover:bg-slate-50"
+                    className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:text-main hover:bg-slate-50"
                   >
                     Log In
                   </Link>
                   <Link
                     href="/register"
-                    className="inline-flex items-center rounded-md bg-accent px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                    className="inline-flex items-center rounded-lg bg-slate-950 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-slate-800 font-quicksand"
                   >
-                    Register Business
+                    Register as Buyer
+                  </Link>
+                  <Link
+                    href="/partner/register"
+                    className="inline-flex items-center rounded-lg bg-[#e65c00] px-3.5 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-[#c44e00] font-quicksand"
+                  >
+                    Sell Surplus
                   </Link>
                 </div>
               )}
@@ -220,9 +225,9 @@ export default function Navbar() {
                   <Link
                     href={getDashboardLink()}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-sm font-medium text-slate-700 hover:text-accent py-1"
+                    className="block rounded-lg bg-accent px-3 py-2 text-center text-sm font-bold text-white shadow-sm"
                   >
-                    Dashboard
+                    Go to Dashboard →
                   </Link>
                   <button
                     type="button"
@@ -231,9 +236,9 @@ export default function Navbar() {
                       handleLogout();
                     }}
                     disabled={loggingOut}
-                    className="w-full text-left text-sm font-medium text-rose-600 py-1"
+                    className="w-full text-center text-sm font-medium text-rose-600 py-1"
                   >
-                    {loggingOut ? 'Logging out...' : 'Logout'}
+                    {loggingOut ? 'Signing out...' : 'Sign Out'}
                   </button>
                 </>
               ) : (
@@ -248,9 +253,16 @@ export default function Navbar() {
                   <Link
                     href="/register"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block rounded-md bg-accent px-3 py-2 text-center text-base font-bold text-white shadow-sm hover:opacity-90"
+                    className="block rounded-lg bg-slate-950 px-3 py-2 text-center text-sm font-bold text-white shadow-sm"
                   >
-                    Register Business
+                    Register as Buyer
+                  </Link>
+                  <Link
+                    href="/partner/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block rounded-lg bg-[#e65c00] px-3 py-2 text-center text-sm font-bold text-white shadow-sm"
+                  >
+                    Sell Surplus (Partner)
                   </Link>
                 </>
               )}

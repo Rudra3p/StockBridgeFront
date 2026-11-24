@@ -270,7 +270,7 @@ export default function PartnerPage() {
 
               {/* Direct Partner Registration Button (Amazon / Swiggy Style) */}
               <Link
-                href="/seller/register"
+                href="/partner/register"
                 className="h-13 px-7 rounded-xl bg-[#ff7a1a] hover:bg-[#e65c00] text-white font-quicksand font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg transition shrink-0"
               >
                 <span>Register as Partner</span>
@@ -361,7 +361,7 @@ export default function PartnerPage() {
               Showing <strong className="text-slate-900">{filteredRFQs.length}</strong> active demands
             </span>
             <Link
-              href="/seller/register"
+              href="/partner/register"
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#e65c00] hover:bg-[#cc5200] text-white text-xs font-bold font-quicksand shadow-sm transition"
             >
               Fulfill Surplus Stock →
@@ -434,7 +434,7 @@ export default function PartnerPage() {
                     </span>
                   </div>
                   <Link
-                    href={`/seller/register?ref=${rfq.id}&cat=${rfq.category}`}
+                    href={`/partner/register?ref=${rfq.id}&cat=${rfq.category}`}
                     className="inline-flex items-center gap-1 px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-[#e65c00] text-white text-xs font-bold font-quicksand transition"
                   >
                     Match Stock →
@@ -563,7 +563,7 @@ export default function PartnerPage() {
               </div>
 
               <Link
-                href="/seller/register"
+                href="/partner/register"
                 className="w-full inline-flex items-center justify-center rounded-xl bg-[#ff7a1a] hover:bg-[#e65c00] py-3.5 text-sm font-bold text-white shadow-lg transition font-quicksand"
               >
                 Liquidate This Lot Now →
@@ -923,7 +923,7 @@ export default function PartnerPage() {
 
           <div className="mt-12 text-center">
             <Link
-              href="/seller/register"
+              href="/partner/register"
               className="inline-flex items-center justify-center rounded-xl bg-[#ff7a1a] hover:bg-[#e65c00] px-8 py-4 text-base font-bold text-white shadow-lg transition font-quicksand"
             >
               Start Partner Onboarding Now →
@@ -1072,7 +1072,7 @@ export default function PartnerPage() {
           
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/seller/register"
+              href="/partner/register"
               className="w-full sm:w-auto rounded-xl bg-[#ff7a1a] hover:bg-[#e65c00] px-8 py-4 text-base font-bold text-white shadow-xl transition font-quicksand"
             >
               Register as Business Partner
