@@ -29,7 +29,7 @@ export default function Footer() {
           {/* Brand info */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 text-white font-extrabold text-xl">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white text-sm font-black">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#e65c00] text-white text-sm font-black">
                 SB
               </span>
               <span>StockBridge</span>

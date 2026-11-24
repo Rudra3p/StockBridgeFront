@@ -278,6 +278,15 @@ export default function PartnerPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </Link>
+
+              {/* Direct Partner Sign In Button */}
+              <Link
+                href="/partner/login"
+                className="h-13 px-5 rounded-xl border border-slate-700 bg-slate-900/90 hover:bg-slate-800 text-white font-quicksand font-bold text-sm flex items-center justify-center gap-1.5 transition shrink-0"
+              >
+                <span>Partner Sign In</span>
+                <span>→</span>
+              </Link>
             </div>
 
             {/* Quick Filter Pills */}

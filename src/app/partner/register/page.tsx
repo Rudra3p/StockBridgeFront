@@ -612,8 +612,8 @@ export default function PartnerRegisterPage() {
           {/* Footer link */}
           <div className="text-center text-xs text-slate-500 mt-8 pt-4 border-t border-slate-100 font-quicksand">
             Already registered?{' '}
-            <Link href="/login" className="font-bold text-[#e65c00] hover:underline">
-              Sign In to Seller Central
+            <Link href="/partner/login" className="font-bold text-[#e65c00] hover:underline">
+              Sign In to Seller Central →
             </Link>
           </div>
         </form>

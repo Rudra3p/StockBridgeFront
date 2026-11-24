@@ -63,15 +63,24 @@ function LoginForm() {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md bg-white p-8 sm:p-10 rounded-2xl border border-slate-200 shadow-sm">
+        
+        {/* Partner Sign In Switcher */}
+        <div className="mb-6 p-3 rounded-xl bg-orange-50/90 border border-orange-200 flex items-center justify-between text-xs font-quicksand">
+          <span className="text-orange-950 font-medium">Selling Surplus as a Partner?</span>
+          <Link href="/partner/login" className="font-bold text-[#e65c00] hover:underline">
+            Partner Sign In →
+          </Link>
+        </div>
+
         <div className="text-center mb-8">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-600 text-white font-extrabold text-xl shadow-sm mb-4">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[#e65c00] text-white font-extrabold text-xl shadow-sm mb-4">
             SB
           </div>
-          <h1 className="text-2xl font-extrabold text-slate-900">
+          <h1 className="text-2xl font-extrabold text-slate-900 font-quicksand">
             Sign In to StockBridge
           </h1>
-          <p className="mt-2 text-sm text-slate-600">
-            Access your B2B inventory liquidation and buying account
+          <p className="mt-2 text-sm text-slate-600 font-quicksand">
+            Access your B2B wholesale buying account
           </p>
         </div>
 
@@ -136,7 +145,7 @@ function LoginForm() {
               autoComplete="username"
               spellCheck="false"
               {...register('email')}
-              className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+              className={`w-full rounded-xl border px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#e65c00] min-h-[44px] ${
                 errors.email ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
               }`}
               placeholder="e.g. buyer@enterprise.in"
@@ -158,7 +167,7 @@ function LoginForm() {
               type="password"
               autoComplete="current-password"
               {...register('password')}
-              className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+              className={`w-full rounded-xl border px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#e65c00] min-h-[44px] ${
                 errors.password ? 'border-rose-300 bg-rose-50/20' : 'border-slate-300'
               }`}
               placeholder="••••••••"
@@ -171,7 +180,7 @@ function LoginForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full flex items-center justify-center rounded-lg bg-emerald-600 py-2.5 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-60"
+            className="w-full flex items-center justify-center rounded-xl bg-[#e65c00] py-3.5 px-4 text-sm font-bold text-white shadow-md transition hover:bg-[#c44e00] focus:outline-none focus:ring-2 focus:ring-[#e65c00] focus:ring-offset-2 disabled:opacity-60 min-h-[44px] active:scale-[0.98] font-quicksand"
           >
             {isSubmitting ? (
               <span className="flex items-center gap-2">
@@ -198,16 +207,16 @@ function LoginForm() {
                 Signing In...
               </span>
             ) : (
-              'Sign In'
+              'Sign In →'
             )}
           </button>
 
-          <div className="text-center text-xs text-slate-600 pt-2 space-y-2">
+          <div className="text-center text-xs text-slate-600 pt-2 space-y-2 font-quicksand">
             <div>
               Don&apos;t have a business account yet?{' '}
               <Link
                 href="/register"
-                className="font-semibold text-emerald-600 hover:text-emerald-500 underline underline-offset-2"
+                className="font-bold text-[#e65c00] hover:underline"
               >
                 Register here
               </Link>

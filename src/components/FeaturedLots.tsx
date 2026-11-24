@@ -103,20 +103,20 @@ export default function FeaturedLots() {
     <div className="w-full">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+          <span className="text-xs font-bold uppercase tracking-wider text-orange-950 bg-orange-100 px-2.5 py-1 rounded-md border border-orange-200 font-mono">
             Live Verified Marketplace
           </span>
-          <h3 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+          <h3 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-quicksand">
             Recently Listed Graded Lots
           </h3>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-500 font-quicksand">
             Real surplus inventories from verified manufacturers and distributors ready for bulk dispatch.
           </p>
         </div>
 
         <Link
           href="/register"
-          className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-700 hover:text-emerald-800 transition"
+          className="inline-flex items-center gap-1.5 text-sm font-bold text-[#e65c00] hover:text-[#c44e00] transition font-quicksand"
         >
           View all active lots & filter by MOQ →
         </Link>
@@ -164,7 +164,7 @@ export default function FeaturedLots() {
                     <span className="text-xs text-slate-400 line-through">
                       {formatINR(lot.originalPrice)}
                     </span>
-                    <span className="ml-auto text-xs font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                    <span className="ml-auto text-xs font-bold text-[#e65c00] bg-orange-50 border border-orange-200 px-1.5 py-0.5 rounded font-mono">
                       -{discountPercent}%
                     </span>
                   </div>
@@ -204,7 +204,7 @@ export default function FeaturedLots() {
 
                 <Link
                   href="/register"
-                  className="inline-flex items-center text-xs font-bold text-slate-900 hover:text-emerald-700 transition"
+                  className="inline-flex items-center text-xs font-bold text-slate-900 hover:text-[#e65c00] transition font-quicksand"
                 >
                   Make Offer →
                 </Link>

@@ -126,19 +126,19 @@ export default function RegisterPage() {
           <div className="flex items-center justify-between relative">
             {/* Step 1: Pre-Qualification (Always Complete - Psychological Boost) */}
             <div className="flex flex-col items-center flex-1 relative z-10">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-white shadow-sm ring-4 ring-emerald-50 text-xs font-bold">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#e65c00] text-white shadow-sm ring-4 ring-orange-50 text-xs font-bold">
                 ✓
               </div>
-              <span className="mt-2 text-[11px] font-bold text-emerald-700 font-quicksand text-center">
+              <span className="mt-2 text-[11px] font-bold text-orange-950 font-quicksand text-center">
                 1. Eligibility
               </span>
-              <span className="text-[10px] text-emerald-600 font-mono hidden sm:inline">
+              <span className="text-[10px] text-[#e65c00] font-mono hidden sm:inline">
                 Verified Free Tier
               </span>
             </div>
 
-            {/* Connecting Line 1 (Green) */}
-            <div className="h-0.5 flex-1 bg-emerald-500 -mt-6"></div>
+            {/* Connecting Line 1 */}
+            <div className="h-0.5 flex-1 bg-[#e65c00] -mt-6"></div>
 
             {/* Step 2: Business Profile */}
             <div className="flex flex-col items-center flex-1 relative z-10">
@@ -146,14 +146,14 @@ export default function RegisterPage() {
                 className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold transition-all ${
                   currentStep === 2
                     ? 'bg-slate-900 text-white ring-4 ring-slate-100 shadow-sm'
-                    : 'bg-emerald-600 text-white ring-4 ring-emerald-50'
+                    : 'bg-[#e65c00] text-white ring-4 ring-orange-50'
                 }`}
               >
                 {currentStep > 2 ? '✓' : '2'}
               </div>
               <span
                 className={`mt-2 text-[11px] font-bold font-quicksand text-center ${
-                  currentStep === 2 ? 'text-slate-900' : 'text-emerald-700'
+                  currentStep === 2 ? 'text-slate-900' : 'text-orange-950'
                 }`}
               >
                 2. Business Profile
@@ -166,7 +166,7 @@ export default function RegisterPage() {
             {/* Connecting Line 2 */}
             <div
               className={`h-0.5 flex-1 -mt-6 transition-all ${
-                currentStep === 3 ? 'bg-emerald-500' : 'bg-slate-200'
+                currentStep === 3 ? 'bg-[#e65c00]' : 'bg-slate-200'
               }`}
             ></div>
 
@@ -208,7 +208,7 @@ export default function RegisterPage() {
             </div>
             <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
               <div
-                className="bg-emerald-600 h-full transition-all duration-500 rounded-full"
+                className="bg-[#e65c00] h-full transition-all duration-500 rounded-full"
                 style={{ width: currentStep === 2 ? '65%' : '95%' }}
               ></div>
             </div>
@@ -216,8 +216,8 @@ export default function RegisterPage() {
 
           {/* Psychological Momentum Banner */}
           {currentStep === 2 ? (
-            <div className="mt-4 p-3 rounded-xl bg-emerald-50/70 border border-emerald-200/80 flex items-center gap-2.5 text-xs text-emerald-900">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white font-bold text-[10px]">
+            <div className="mt-4 p-3 rounded-xl bg-orange-50/70 border border-orange-200/80 flex items-center gap-2.5 text-xs text-orange-950">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#e65c00] text-white font-bold text-[10px]">
                 ✓
               </span>
               <p className="font-quicksand">
@@ -237,7 +237,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setCurrentStep(2)}
-                className="text-xs text-[#00a86b] font-bold hover:underline shrink-0 font-quicksand"
+                className="text-xs text-[#e65c00] font-bold hover:underline shrink-0 font-quicksand"
               >
                 Edit Details
               </button>
