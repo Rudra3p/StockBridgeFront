@@ -187,16 +187,6 @@ export default function PartnerPage() {
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           
-          {/* Eyebrow badge */}
-          <div className="flex flex-wrap items-center gap-2 mb-6">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-500/30 bg-orange-500/10 px-3.5 py-1 text-xs font-mono font-bold text-[#ff7a1a]">
-              🏭 B2B SURPLUS LIQUIDATION // AHMEDABAD • SURAT • TIRUPUR • AGRA • NOIDA
-            </span>
-            <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-400 font-mono">
-              • Verified GSTIN Supply Chain Network
-            </span>
-          </div>
-
           {/* Main Hero Header */}
           <div className="max-w-4xl">
             <h1 className="font-quicksand font-extrabold text-3xl sm:text-5xl lg:text-6xl tracking-tight leading-[1.12] text-white">
@@ -354,15 +344,9 @@ export default function PartnerPage() {
       <section id="live-demand" className="w-full py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-[#e65c00] text-xs font-mono font-bold mb-2">
-              🔥 ACTIVE PRE-FUNDED ORDERS // READY TO TRANSACT
-            </div>
             <h2 className="text-2xl sm:text-4xl font-extrabold font-quicksand text-slate-900 tracking-tight">
               Verified Buyers Currently Seeking Surplus Inventory
             </h2>
-            <p className="mt-2 text-slate-600 font-quicksand text-sm sm:text-base max-w-2xl">
-              Unlike public classifieds, these buyers have already verified their GSTIN and have purchasing capital ready to deposit into StockBridge Escrow.
-            </p>
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
@@ -596,9 +580,6 @@ export default function PartnerPage() {
           <h2 className="text-2xl sm:text-4xl font-extrabold font-quicksand text-slate-900 mt-2">
             Why Top Brands Sell on StockBridge Without Hurting Retail Dealers
           </h2>
-          <p className="mt-3 text-slate-600 font-quicksand text-sm sm:text-base">
-            Listing discounts on public websites causes dealers to complain and cancel orders. StockBridge enforces three proprietary enterprise guardrails:
-          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -688,9 +669,6 @@ export default function PartnerPage() {
             <h2 className="text-2xl sm:text-4xl font-extrabold font-quicksand text-slate-900 mt-2">
               The 5-Grade Standardized Lot Scale
             </h2>
-            <p className="mt-3 text-slate-600 font-quicksand text-sm sm:text-base">
-              The secret to getting higher bids is eliminating buyer uncertainty. Every lot on StockBridge is certified against strict, standardized inspection yardsticks:
-            </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -789,9 +767,6 @@ export default function PartnerPage() {
       {/* ======================================================== */}
       <section className="w-full py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#e65c00]">
-            B2B PILOT CASE STUDY // JG UNIVERSITY AHMEDABAD INCUBATION
-          </span>
           <h2 className="text-2xl sm:text-4xl font-extrabold font-quicksand text-slate-900 mt-2">
             Built for Real Sellers. Trusted by Real Buyers.
           </h2>
@@ -876,15 +851,9 @@ export default function PartnerPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#ff7a1a]">
-              FRICTIONLESS ONBOARDING IN 3 SIMPLE STEPS
-            </span>
             <h2 className="text-2xl sm:text-4xl font-extrabold font-quicksand text-white mt-2">
               How Enterprise Liquidation Works
             </h2>
-            <p className="mt-2 text-slate-400 font-quicksand text-sm sm:text-base">
-              Built for supply chain managers, warehouse directors, and CFOs.
-            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
