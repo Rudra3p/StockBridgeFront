@@ -104,7 +104,7 @@ export default function Navbar() {
                 : 'text-slate-600 hover:text-main'
             }`}
           >
-            Sell Surplus (Partner)
+            Partner with Us
           </Link>
 
           <div className="h-4 w-px bg-slate-200" />
@@ -151,13 +151,7 @@ export default function Navbar() {
                     href="/register"
                     className="inline-flex items-center rounded-lg bg-slate-950 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-slate-800 font-quicksand"
                   >
-                    Register as Buyer
-                  </Link>
-                  <Link
-                    href="/partner/register"
-                    className="inline-flex items-center rounded-lg bg-[#e65c00] px-3.5 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-[#c44e00] font-quicksand"
-                  >
-                    Sell Surplus
+                    Register
                   </Link>
                 </div>
               )}
@@ -208,9 +202,9 @@ export default function Navbar() {
             <Link
               href="/partner"
               onClick={() => setMobileMenuOpen(false)}
-              className="py-1 font-medium text-[#e65c00] font-bold hover:opacity-90"
+              className="py-1 font-medium text-slate-700 hover:text-[#e65c00]"
             >
-              Sell Surplus (Partner Portal)
+              Partner with Us
             </Link>
           </div>
 
@@ -253,16 +247,9 @@ export default function Navbar() {
                   <Link
                     href="/register"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block rounded-lg bg-slate-950 px-3 py-2 text-center text-sm font-bold text-white shadow-sm"
+                    className="block rounded-lg bg-slate-950 px-3 py-2 text-center text-sm font-bold text-white shadow-sm font-quicksand"
                   >
-                    Register as Buyer
-                  </Link>
-                  <Link
-                    href="/partner/register"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="block rounded-lg bg-[#e65c00] px-3 py-2 text-center text-sm font-bold text-white shadow-sm"
-                  >
-                    Sell Surplus (Partner)
+                    Register
                   </Link>
                 </>
               )}

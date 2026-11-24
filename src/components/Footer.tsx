@@ -99,16 +99,13 @@ export default function Footer() {
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">Portals &amp; Legal</h4>
             <ul className="mt-4 space-y-2 text-xs">
               <li>
-                <Link href="/partner" className="hover:text-white transition font-semibold text-slate-300">Partner with Us (Sellers)</Link>
+                <Link href="/partner" className="hover:text-white transition font-semibold text-slate-300">Partner with Us</Link>
               </li>
               <li>
                 <Link href="/register" className="hover:text-white transition font-semibold text-slate-300">Register Business</Link>
               </li>
               <li>
-                <Link href="/login" className="hover:text-white transition">Seller / Partner Login</Link>
-              </li>
-              <li>
-                <Link href="/login" className="hover:text-white transition">Buyer Portal (Login)</Link>
+                <Link href="/login" className="hover:text-white transition">Business Account Login</Link>
               </li>
               <li>
                 <span className="text-slate-500 cursor-not-allowed">Trading Rules &amp; Policy</span>

@@ -80,33 +80,15 @@ export default function RegisterPage() {
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
       <div className="w-full max-w-2xl bg-white p-8 sm:p-10 rounded-2xl border border-slate-200 shadow-sm">
         
-        {/* Switcher Banner: Buyer vs Partner */}
-        <div className="mb-6 p-3.5 rounded-xl bg-slate-100 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-900 text-white font-bold text-[10px]">
-              🛒
-            </span>
-            <span className="font-bold text-slate-900 font-quicksand">
-              Wholesale Buyer Registration
-            </span>
-          </div>
-          <Link
-            href="/partner/register"
-            className="text-[#e65c00] font-bold hover:underline font-mono"
-          >
-            Selling Surplus? Register as Partner →
-          </Link>
-        </div>
-
         <div className="text-center mb-8">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-slate-100 text-slate-800 mb-3 border border-slate-200">
-            WHOLESALE BUYER & RETAILER ACCESS
+            VERIFIED B2B ACCESS
           </span>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-quicksand">
-            Register as a Wholesale Buyer
+            Register Your Business
           </h1>
           <p className="mt-2 text-sm text-slate-600 font-quicksand max-w-md mx-auto">
-            Source authentic surplus lots at 30% to 70% below wholesale with 48-hour inspection and escrow protection.
+            Source authentic surplus lots at 30% to 70% below wholesale with 48-hour inspection and neutral escrow protection.
           </p>
         </div>
 
@@ -181,11 +163,12 @@ export default function RegisterPage() {
                     errors.orgType ? 'border-rose-300' : 'border-slate-300'
                   }`}
                 >
-                  <option value="RETAILER">Retailer</option>
-                  <option value="WHOLESALER">Wholesaler</option>
-                  <option value="DISTRIBUTOR">Distributor</option>
-                  <option value="ONLINE_RESELLER">Online Reseller</option>
-                  <option value="OTHER">Other</option>
+                  <option value="RETAILER">Retail Store / Local Shop</option>
+                  <option value="WHOLESALER">Wholesale Trader / Stockist</option>
+                  <option value="DISTRIBUTOR">Master Distributor / C&amp;F Agent</option>
+                  <option value="MANUFACTURER">Manufacturer / Factory</option>
+                  <option value="ONLINE_RESELLER">Online Reseller / E-Commerce</option>
+                  <option value="OTHER">Other Institutional Enterprise</option>
                 </select>
                 {errors.orgType && (
                   <p className="mt-1 text-xs text-rose-600">{errors.orgType.message}</p>
@@ -440,7 +423,7 @@ export default function RegisterPage() {
             </button>
           </div>
 
-          <div className="text-center text-xs text-slate-600 space-y-2">
+          <div className="text-center text-xs text-slate-600">
             <div>
               Already have an account?{' '}
               <Link
@@ -448,15 +431,6 @@ export default function RegisterPage() {
                 className="font-semibold text-accent hover:underline underline-offset-2"
               >
                 Log In here
-              </Link>
-            </div>
-            <div className="pt-2 border-t border-slate-100 text-slate-500">
-              Want to liquidate surplus inventory?{' '}
-              <Link
-                href="/partner"
-                className="font-semibold text-slate-800 hover:text-accent underline underline-offset-2"
-              >
-                Partner with Us →
               </Link>
             </div>
           </div>

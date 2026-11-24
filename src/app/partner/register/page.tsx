@@ -80,33 +80,15 @@ export default function PartnerRegisterPage() {
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
       <div className="w-full max-w-2xl bg-white p-8 sm:p-10 rounded-2xl border border-slate-200 shadow-sm">
         
-        {/* Switcher Banner: Buyer vs Seller */}
-        <div className="mb-6 p-3.5 rounded-xl bg-orange-50/80 border border-orange-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#e65c00] text-white font-bold text-[10px]">
-              🤝
-            </span>
-            <span className="font-bold text-orange-950 font-quicksand">
-              Partner Liquidation Account (Selling Surplus)
-            </span>
-          </div>
-          <Link
-            href="/register"
-            className="text-[#e65c00] font-bold hover:underline font-mono"
-          >
-            Looking to Buy Wholesale? Register as Buyer →
-          </Link>
-        </div>
-
         <div className="text-center mb-8">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-orange-100 text-[#e65c00] mb-3">
-            FACTORY / MILL / BRAND PARTNER
+            ENTERPRISE PARTNER ONBOARDING
           </span>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-quicksand">
             Register as a Business Partner
           </h1>
           <p className="mt-2 text-sm text-slate-600 font-quicksand max-w-md mx-auto">
-            Liquidate aging stock, factory seconds, and cancelled export lots with 100% pre-funded escrow and confidential brand masking.
+            Direct liquidation portal for factories, mills, brand owners, and large distributors. Liquidate surplus with 100% pre-funded escrow and confidential brand masking.
           </p>
         </div>
 

@@ -125,27 +125,15 @@ export default function HeroSection() {
                 <span aria-hidden="true">→</span>
               </Link>
             ) : (
-              <>
-                <Link
-                  href="/register"
-                  className="inline-flex items-center justify-center rounded-xl bg-slate-950 px-6 py-3.5 text-sm sm:text-base font-bold text-white shadow-sm transition hover:bg-slate-800 font-quicksand"
-                >
-                  <span>Register as Buyer</span>
-                  <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </Link>
-
-                <Link
-                  href="/partner/register"
-                  className="inline-flex items-center justify-center rounded-xl bg-[#e65c00] px-6 py-3.5 text-sm sm:text-base font-bold text-white shadow-sm transition hover:bg-[#c44e00] font-quicksand"
-                >
-                  <span>Sell Surplus (Partner)</span>
-                  <span className="ml-2 font-mono text-xs bg-white/20 px-1.5 py-0.5 rounded">
-                    Factory/Mill
-                  </span>
-                </Link>
-              </>
+              <Link
+                href="/register"
+                className="inline-flex items-center justify-center rounded-xl bg-slate-950 px-6 py-3.5 text-sm sm:text-base font-bold text-white shadow-sm transition hover:bg-slate-800 font-quicksand"
+              >
+                <span>Register Business</span>
+                <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </Link>
             )}
           </div>
 
