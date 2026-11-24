@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { MapPin, Search, Crosshair, Check, Loader2 } from 'lucide-react';
-import 'leaflet/dist/leaflet.css';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
 export interface SelectedLocationData {
   addressLine: string;
@@ -147,7 +147,6 @@ export default function LocationPickerMap({
         onLocationSelect(parsed);
       } catch (err) {
         console.warn('Reverse geocode fallback:', err);
-        // Fallback with clean coordinates
         const fallback: SelectedLocationData = {
           addressLine: `Industrial Area, Coordinate (${lat.toFixed(4)}, ${lng.toFixed(4)})`,
           city: 'Ahmedabad',
@@ -167,7 +166,7 @@ export default function LocationPickerMap({
     [onLocationSelect, parseNominatimAddress]
   );
 
-  // Initialize Leaflet Map (Free Google Maps Alternative with CartoDB Voyager Tiles)
+  // Initialize MapLibre GL JS paired with OpenFreeMap Vector Tiles
   useEffect(() => {
     let isCancelled = false;
 
@@ -175,61 +174,67 @@ export default function LocationPickerMap({
       if (!mapContainerRef.current) return;
       if (mapInstanceRef.current) return;
 
-      const L = await import('leaflet');
+      const maplibregl = await import('maplibre-gl');
 
       if (isCancelled || !mapContainerRef.current) return;
 
-      // Custom Google-Maps-style SVG Pin in Brand Orange
-      const customPinIcon = L.divIcon({
-        className: 'custom-leaflet-marker',
-        html: `
-          <div style="position: relative; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
-            <div style="position: absolute; width: 36px; height: 36px; border-radius: 50%; background-color: rgba(230, 92, 0, 0.25); animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
-            <svg viewBox="0 0 24 24" width="32" height="32" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); position: relative; z-index: 10;">
-              <path fill="#e65c00" stroke="#ffffff" stroke-width="1.5" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-              <circle cx="12" cy="9" r="2.8" fill="#ffffff" />
-            </svg>
-          </div>
-        `,
-        iconSize: [36, 36],
-        iconAnchor: [18, 36],
-      });
+      // Create Custom SVG Marker Element (Brand Orange with Pulsing Ring)
+      const markerEl = document.createElement('div');
+      markerEl.className = 'custom-maplibre-pin';
+      markerEl.style.cursor = 'grab';
+      markerEl.innerHTML = `
+        <div style="position: relative; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+          <div style="position: absolute; width: 36px; height: 36px; border-radius: 50%; background-color: rgba(230, 92, 0, 0.3); animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+          <svg viewBox="0 0 24 24" width="34" height="34" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.35)); position: relative; z-index: 10;">
+            <path fill="#e65c00" stroke="#ffffff" stroke-width="1.5" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+            <circle cx="12" cy="9" r="2.8" fill="#ffffff" />
+          </svg>
+        </div>
+      `;
 
-      // Create Leaflet Map Instance
-      const map = L.map(mapContainerRef.current, {
-        center: [initialLat, initialLng],
+      // MapLibre GL JS Instance paired with OpenFreeMap Bright Style (100% Free Vector Tiles)
+      const map = new maplibregl.Map({
+        container: mapContainerRef.current,
+        style: 'https://tiles.openfreemap.org/styles/bright',
+        center: [initialLng, initialLat],
         zoom: 14,
-        zoomControl: true,
+        pitch: 0,
+        bearing: 0,
       });
 
-      // CartoDB Voyager: Crisp, pastel roads and landmarks identical to Google Maps, 100% free
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 19,
-      }).addTo(map);
+      // Add Zoom and Rotation Controls
+      map.addControl(new maplibregl.NavigationControl({ showCompass: true }), 'top-right');
 
-      // Add Draggable Marker
-      const marker = L.marker([initialLat, initialLng], {
-        icon: customPinIcon,
+      // Create Draggable Marker
+      const marker = new maplibregl.Marker({
+        element: markerEl,
         draggable: true,
-      }).addTo(map);
+        anchor: 'bottom',
+      })
+        .setLngLat([initialLng, initialLat])
+        .addTo(map);
 
       // On Marker Drag End
       marker.on('dragend', () => {
-        const position = marker.getLatLng();
-        reverseGeocode(position.lat, position.lng);
+        const lngLat = marker.getLngLat();
+        reverseGeocode(lngLat.lat, lngLat.lng);
       });
 
-      // On Map Click (move marker to clicked spot)
-      map.on('click', (e: { latlng: { lat: number; lng: number } }) => {
-        marker.setLatLng(e.latlng);
-        reverseGeocode(e.latlng.lat, e.latlng.lng);
+      // On Map Click (move marker to clicked coordinates)
+      map.on('click', (e: { lngLat: { lng: number; lat: number } }) => {
+        marker.setLngLat(e.lngLat);
+        reverseGeocode(e.lngLat.lat, e.lngLat.lng);
+      });
+
+      map.on('load', () => {
+        if (!isCancelled) {
+          setIsLoadingMap(false);
+          map.resize();
+        }
       });
 
       mapInstanceRef.current = map;
       markerRef.current = marker;
-      setIsLoadingMap(false);
 
       // Trigger initial reverse geocode
       reverseGeocode(initialLat, initialLng);
@@ -280,8 +285,13 @@ export default function LocationPickerMap({
     const lng = parseFloat(result.lon);
 
     if (mapInstanceRef.current && markerRef.current) {
-      mapInstanceRef.current.flyTo([lat, lng], 15, { duration: 1.2 });
-      markerRef.current.setLatLng([lat, lng]);
+      mapInstanceRef.current.flyTo({
+        center: [lng, lat],
+        zoom: 15,
+        speed: 1.4,
+        curve: 1.2,
+      });
+      markerRef.current.setLngLat([lng, lat]);
     }
 
     const parsed = parseNominatimAddress(result.address || {}, lat, lng, result.display_name);
@@ -306,8 +316,12 @@ export default function LocationPickerMap({
         const { latitude, longitude } = pos.coords;
 
         if (mapInstanceRef.current && markerRef.current) {
-          mapInstanceRef.current.flyTo([latitude, longitude], 16, { duration: 1.2 });
-          markerRef.current.setLatLng([latitude, longitude]);
+          mapInstanceRef.current.flyTo({
+            center: [longitude, latitude],
+            zoom: 16,
+            speed: 1.5,
+          });
+          markerRef.current.setLngLat([longitude, latitude]);
         }
 
         reverseGeocode(latitude, longitude);
@@ -315,10 +329,12 @@ export default function LocationPickerMap({
       (err) => {
         setIsLocating(false);
         console.warn('GPS location error:', err.message);
-        // Fallback default: Ahmedabad Vatva GIDC
         if (mapInstanceRef.current && markerRef.current) {
-          mapInstanceRef.current.flyTo([22.9984, 72.6315], 15);
-          markerRef.current.setLatLng([22.9984, 72.6315]);
+          mapInstanceRef.current.flyTo({
+            center: [72.6315, 22.9984],
+            zoom: 15,
+          });
+          markerRef.current.setLngLat([72.6315, 22.9984]);
         }
         reverseGeocode(22.9984, 72.6315);
       },
@@ -403,35 +419,40 @@ export default function LocationPickerMap({
         )}
       </div>
 
-      {/* Interactive Map Box */}
+      {/* Interactive MapLibre GL JS Box with OpenFreeMap Vector Tiles */}
       <div className="relative w-full h-[280px] sm:h-[320px] rounded-2xl border-2 border-slate-200 overflow-hidden shadow-inner bg-slate-100">
         {isLoadingMap && (
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-50/90 backdrop-blur-sm gap-2">
             <Loader2 className="w-6 h-6 animate-spin text-[#e65c00]" />
             <span className="text-xs font-bold text-slate-600 font-quicksand">
-              Loading Google Map Alternative...
+              Loading OpenFreeMap Vector Engine (MapLibre GL)...
             </span>
           </div>
         )}
 
-        {/* Leaflet DOM container */}
+        {/* MapLibre WebGL DOM Container */}
         <div ref={mapContainerRef} className="w-full h-full z-10" />
+
+        {/* Vector Engine Badge */}
+        <div className="absolute bottom-2.5 right-2.5 z-20 pointer-events-none bg-slate-900/80 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-mono text-slate-300">
+          OpenFreeMap • MapLibre GL
+        </div>
 
         {/* Floating Instruction Pill on Map */}
         <div className="absolute bottom-2.5 left-2.5 z-20 pointer-events-none bg-slate-900/85 backdrop-blur-md px-3 py-1.5 rounded-lg shadow-md text-white text-[11px] font-quicksand flex items-center gap-1.5">
           <MapPin className="w-3.5 h-3.5 text-[#ff7a1a]" />
-          <span>Click anywhere or drag the orange pin to set exact dispatch hub</span>
+          <span>Click anywhere or drag orange pin to set dispatch hub</span>
         </div>
 
         {isGeocoding && (
-          <div className="absolute top-2.5 right-2.5 z-20 bg-white/90 backdrop-blur-md px-3 py-1 rounded-md shadow text-[11px] font-mono font-bold text-[#e65c00] flex items-center gap-1.5">
+          <div className="absolute top-2.5 right-12 z-20 bg-white/95 backdrop-blur-md px-3 py-1 rounded-md shadow text-[11px] font-mono font-bold text-[#e65c00] flex items-center gap-1.5">
             <Loader2 className="w-3 h-3 animate-spin" />
             <span>Resolving Address...</span>
           </div>
         )}
       </div>
 
-      {/* Auto-Structured Location Card (No manual typing of 5 fields needed!) */}
+      {/* Auto-Structured Location Card */}
       <div className="p-3.5 rounded-xl bg-orange-50/50 border border-orange-200/80 space-y-2.5">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-start gap-2">

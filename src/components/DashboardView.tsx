@@ -3,9 +3,19 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { clientAuth } from '@/lib/client-api';
 import { UserProfileResponse, Role } from '@/lib/types';
 import DashboardSidebar from '@/components/DashboardSidebar';
+
+const TransitRouteMap = dynamic(() => import('@/components/TransitRouteMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-72 rounded-xl overflow-hidden border border-slate-300 bg-slate-100 flex items-center justify-center">
+      <span className="text-xs text-slate-500 font-quicksand">Loading OpenFreeMap Vector Layer...</span>
+    </div>
+  ),
+});
 
 interface DashboardViewProps {
   expectedRole: Role;
@@ -992,8 +1002,8 @@ export default function DashboardView({
                           View verified buyer destinations and freight transit routes across India
                         </p>
                       </div>
-                      <span className="text-[11px] font-mono text-emerald-600 font-bold bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
-                        🗺️ OpenStreetMap Powered (Free)
+                      <span className="text-[11px] font-mono text-[#e65c00] font-bold bg-orange-50 border border-orange-200 px-2.5 py-1 rounded-full">
+                        MapLibre GL • OpenFreeMap
                       </span>
                     </div>
 
@@ -2198,16 +2208,15 @@ export default function DashboardView({
                 </p>
               </div>
 
-              {/* Free OpenStreetMap Interactive Frame */}
-              <div className="w-full h-72 rounded-xl overflow-hidden border border-slate-300 relative shadow-inner">
-                <iframe
-                  title="Buyer Location OpenStreetMap"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${selectedBuyerLocation.lon - 0.035}%2C${selectedBuyerLocation.lat - 0.025}%2C${selectedBuyerLocation.lon + 0.035}%2C${selectedBuyerLocation.lat + 0.025}&layer=mapnik&marker=${selectedBuyerLocation.lat}%2C${selectedBuyerLocation.lon}`}
-                />
-              </div>
+              {/* MapLibre GL JS + OpenFreeMap Vector Interactive Map */}
+              <TransitRouteMap
+                lat={selectedBuyerLocation.lat}
+                lon={selectedBuyerLocation.lon}
+                city={selectedBuyerLocation.city}
+                state={selectedBuyerLocation.state}
+                address={selectedBuyerLocation.address}
+                buyerName={selectedBuyerLocation.buyerName}
+              />
 
               {/* Freight Logistics & Tax Intel */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-quicksand">
