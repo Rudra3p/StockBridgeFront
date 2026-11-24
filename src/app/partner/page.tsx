@@ -198,176 +198,167 @@ export default function PartnerPage() {
     <div className="flex flex-col w-full max-w-full overflow-x-hidden bg-white text-slate-900 selection:bg-orange-100 selection:text-orange-950 font-quicksand">
 
       {/* ======================================================== */}
-      {/* 1. HERO SECTION: MINIMALIST B2B EDITORIAL SPLIT          */}
+      {/* 1. HERO SECTION: FULL-WIDTH B2B SHOWCASE                */}
       {/* ======================================================== */}
-      <section className="relative overflow-hidden bg-slate-950 text-white pt-14 pb-20 lg:pt-20 lg:pb-28 border-b border-slate-800">
+      <section className="relative overflow-hidden bg-slate-950 text-white pt-12 pb-16 lg:pt-16 lg:pb-24 border-b border-slate-800">
         <div className="absolute inset-0 bg-[radial-gradient(#e65c00_1px,transparent_1px)] [background-size:32px_32px] opacity-10" />
 
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-            
-            {/* Left Content Column (7 cols) */}
-            <div className="lg:col-span-7 space-y-6">
-              
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-xs font-mono font-bold text-[#ff7a1a]">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>B2B ENTERPRISE SURPLUS LIQUIDATION</span>
-              </div>
-
-              <h1 className="font-extrabold text-3xl sm:text-5xl lg:text-6xl tracking-tight leading-[1.12] text-white">
-                Turn Aging Factory Surplus Into{' '}
-                <span className="text-[#ff7a1a]">Liquid Capital</span>. Zero Channel Conflict.
-              </h1>
-
-              <p className="text-sm sm:text-base lg:text-lg text-slate-300 leading-relaxed max-w-2xl">
-                A verified recovery-value network connecting manufacturers, mills, and master distributors directly with pre-funded bulk buyers. Recover <strong>30% to 70%</strong> of inventory value without cannibalizing your retail dealer network.
-              </p>
-
-              {/* Action Bar */}
-              <div className="pt-2">
-                <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-3 sm:p-4 shadow-2xl backdrop-blur-md space-y-3">
-                  <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
-                    
-                    {/* Category Select */}
-                    <div className="shrink-0 sm:w-48">
-                      <select
-                        value={selectedCategory}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
-                        className="w-full h-12 rounded-xl border border-slate-700 bg-slate-950 px-3 text-xs sm:text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-[#ff7a1a]"
-                      >
-                        {CATEGORIES.map((cat) => (
-                          <option key={cat.id} value={cat.id}>
-                            {cat.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Search Input */}
-                    <div className="relative flex-1">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                        <Search className="w-4 h-4" />
-                      </div>
-                      <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search surplus inventory or industrial lot..."
-                        className="w-full h-12 pl-10 pr-4 rounded-xl border border-slate-700 bg-slate-950 text-xs sm:text-sm font-semibold text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff7a1a]"
-                      />
-                    </div>
-
-                    {/* Check Bids */}
-                    <a
-                      href="#live-demand"
-                      className="h-12 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition shrink-0"
-                    >
-                      <span>Check Bids</span>
-                      <span className="text-xs bg-[#ff7a1a] text-white px-2 py-0.5 rounded font-mono font-bold">
-                        {filteredRFQs.length}
-                      </span>
-                    </a>
-                  </div>
-
-                  {/* Primary Registration / Login Row */}
-                  <div className="flex flex-col sm:flex-row items-center gap-3 pt-1">
-                    <Link
-                      href="/partner/register"
-                      className="w-full sm:flex-1 h-12 rounded-xl bg-[#e65c00] hover:bg-[#cc5200] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-orange-950/40 transition"
-                    >
-                      <span>Register as Business Partner</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                    <Link
-                      href="/partner/login"
-                      className="w-full sm:w-auto px-6 h-12 rounded-xl border border-slate-700 bg-slate-950 hover:bg-slate-800 text-slate-200 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition"
-                    >
-                      <span>Partner Sign In</span>
-                      <span>→</span>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-
-              {/* Trust Checkmarks */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono text-slate-300 pt-2">
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>100% Brand Masking</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Territory Geo-Fencing</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Escrow Pre-Funded</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>7% Success-Only Fee</span>
-                </div>
-              </div>
-
-            </div>
-
-            {/* Right Photography Column (5 cols) */}
-            <div className="lg:col-span-5 relative">
-              <div className="relative rounded-3xl overflow-hidden border border-slate-800 shadow-2xl group bg-slate-900">
-                <img
-                  src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=85"
-                  alt="StockBridge Modern Distribution Warehouse"
-                  className="w-full h-[360px] sm:h-[420px] lg:h-[460px] object-cover filter brightness-90 contrast-105 group-hover:scale-102 transition duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
-
-                {/* Floating Top Badge */}
-                <div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 px-3.5 py-2 rounded-xl flex items-center gap-2.5 shadow-xl">
-                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-xs font-mono font-bold text-white">
-                    ₹4.8 Cr+ Verified Bids Active
-                  </span>
-                </div>
-
-                {/* Floating Bottom Card */}
-                <div className="absolute bottom-4 left-4 right-4 bg-slate-900/95 backdrop-blur-md border border-slate-700/90 p-4 rounded-2xl flex items-center justify-between shadow-2xl">
-                  <div>
-                    <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">
-                      Active Dispatch Hubs
-                    </span>
-                    <span className="text-xs sm:text-sm font-bold text-white">
-                      Ahmedabad • Surat • Tirupur • Agra • Noida
-                    </span>
-                  </div>
-                  <span className="px-2.5 py-1 rounded-lg bg-orange-500/20 border border-orange-500/40 text-[#ff7a1a] text-xs font-mono font-bold shrink-0">
-                    80+ Mills Connected
-                  </span>
-                </div>
-              </div>
-            </div>
-
+        {/* Top Header & Action Container */}
+        <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-6">
+          
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/30 text-xs font-mono font-bold text-[#ff7a1a]">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>B2B ENTERPRISE SURPLUS LIQUIDATION</span>
           </div>
 
-          {/* Quick Metrics Bar */}
-          <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-6 pt-8 border-t border-slate-800/80">
-            <div>
-              <div className="text-2xl sm:text-3xl font-extrabold text-[#ff7a1a] font-mono">3x Higher</div>
-              <div className="text-xs sm:text-sm text-slate-400 mt-1">Recovery than scrap brokers</div>
-            </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-extrabold text-white font-mono">7 to 14 Days</div>
-              <div className="text-xs sm:text-sm text-slate-400 mt-1">Average liquidation cycle</div>
-            </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-extrabold text-white font-mono">₹0 Upfront</div>
-              <div className="text-xs sm:text-sm text-slate-400 mt-1">Zero listing or monthly fee</div>
-            </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono">&lt; 4%</div>
-              <div className="text-xs sm:text-sm text-slate-400 mt-1">Dispute rate (5-grade standard)</div>
+          <h1 className="font-extrabold text-3xl sm:text-5xl lg:text-6xl tracking-tight leading-[1.12] text-white">
+            Turn Aging Factory Surplus Into{' '}
+            <span className="text-[#ff7a1a]">Liquid Capital</span>. Zero Channel Conflict.
+          </h1>
+
+          <p className="text-sm sm:text-base lg:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto">
+            A verified recovery-value network connecting manufacturers, mills, and master distributors directly with pre-funded bulk buyers. Recover <strong>30% to 70%</strong> of inventory value without cannibalizing your retail dealer network.
+          </p>
+
+          {/* Centered Action Bar */}
+          <div className="pt-2 max-w-3xl mx-auto text-left">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-3 sm:p-4 shadow-2xl backdrop-blur-md space-y-3">
+              <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
+                
+                {/* Category Select */}
+                <div className="shrink-0 sm:w-48">
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="w-full h-12 rounded-xl border border-slate-700 bg-slate-950 px-3 text-xs sm:text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-[#ff7a1a]"
+                  >
+                    {CATEGORIES.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Search Input */}
+                <div className="relative flex-1">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <Search className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search surplus inventory or industrial lot..."
+                    className="w-full h-12 pl-10 pr-4 rounded-xl border border-slate-700 bg-slate-950 text-xs sm:text-sm font-semibold text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff7a1a]"
+                  />
+                </div>
+
+                {/* Check Bids */}
+                <a
+                  href="#live-demand"
+                  className="h-12 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition shrink-0"
+                >
+                  <span>Check Bids</span>
+                  <span className="text-xs bg-[#ff7a1a] text-white px-2 py-0.5 rounded font-mono font-bold">
+                    {filteredRFQs.length}
+                  </span>
+                </a>
+              </div>
+
+              {/* Primary Registration / Login Row */}
+              <div className="flex flex-col sm:flex-row items-center gap-3 pt-1">
+                <Link
+                  href="/partner/register"
+                  className="w-full sm:flex-1 h-12 rounded-xl bg-[#e65c00] hover:bg-[#cc5200] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-orange-950/40 transition"
+                >
+                  <span>Register as Business Partner</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/partner/login"
+                  className="w-full sm:w-auto px-6 h-12 rounded-xl border border-slate-700 bg-slate-950 hover:bg-slate-800 text-slate-200 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition"
+                >
+                  <span>Partner Sign In</span>
+                  <span>→</span>
+                </Link>
+              </div>
             </div>
           </div>
 
+          {/* Trust Checkmarks */}
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs font-mono text-slate-300 pt-2">
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>100% Brand Masking</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>Territory Geo-Fencing</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>Escrow Pre-Funded</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>7% Success-Only Fee</span>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Full-Width Warehouse Image Showcase Touching Lines */}
+        <div className="w-full relative mt-12 sm:mt-16 border-y border-slate-800 bg-slate-900 overflow-hidden group">
+          <img
+            src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=2000&q=85"
+            alt="StockBridge Modern Distribution Warehouse"
+            className="w-full h-[360px] sm:h-[460px] lg:h-[540px] object-cover filter brightness-90 contrast-105 group-hover:scale-101 transition duration-700"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/25 to-slate-950/15 pointer-events-none" />
+
+          {/* Floating Top Badge */}
+          <div className="absolute top-4 sm:top-6 left-4 sm:left-8 lg:left-12 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 px-4 py-2 rounded-xl flex items-center gap-2.5 shadow-xl">
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-xs sm:text-sm font-mono font-bold text-white">
+              ₹4.8 Cr+ Verified Bids Active
+            </span>
+          </div>
+
+          {/* Full-Width Bottom Dispatch Hub Bar Touching Line */}
+          <div className="absolute bottom-0 inset-x-0 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 px-4 sm:px-8 lg:px-12 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xl">
+            <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+              <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">
+                Active Dispatch Hubs:
+              </span>
+              <span className="font-bold text-white">
+                Ahmedabad • Surat • Tirupur • Agra • Noida • Bengaluru • Mumbai
+              </span>
+            </div>
+            <span className="px-3 py-1 rounded-lg bg-orange-500/20 border border-orange-500/40 text-[#ff7a1a] text-xs font-mono font-bold shrink-0">
+              80+ Mills Connected
+            </span>
+          </div>
+        </div>
+
+        {/* Quick Metrics Bar */}
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-12 grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div>
+            <div className="text-2xl sm:text-3xl font-extrabold text-[#ff7a1a] font-mono">3x Higher</div>
+            <div className="text-xs sm:text-sm text-slate-400 mt-1">Recovery than scrap brokers</div>
+          </div>
+          <div>
+            <div className="text-2xl sm:text-3xl font-extrabold text-white font-mono">7 to 14 Days</div>
+            <div className="text-xs sm:text-sm text-slate-400 mt-1">Average liquidation cycle</div>
+          </div>
+          <div>
+            <div className="text-2xl sm:text-3xl font-extrabold text-white font-mono">₹0 Upfront</div>
+            <div className="text-xs sm:text-sm text-slate-400 mt-1">Zero listing or monthly fee</div>
+          </div>
+          <div>
+            <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono">&lt; 4%</div>
+            <div className="text-xs sm:text-sm text-slate-400 mt-1">Dispute rate (5-grade standard)</div>
+          </div>
         </div>
       </section>
 
