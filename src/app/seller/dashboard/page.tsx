@@ -1,10 +1,5 @@
-import DashboardView from '@/components/DashboardView';
+import { redirect } from 'next/navigation';
 
-export default function SellerDashboardPage() {
-  return (
-    <DashboardView
-      expectedRole="SELLER"
-      portalTitle="Seller Portal"
-    />
-  );
+export default function SellerDashboardRedirect() {
+  redirect('/partner/dashboard');
 }

@@ -96,9 +96,14 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 3. Seller Portal Protected Routes (/seller and /seller/*)
-  const isSellerRoute = pathname.startsWith('/seller');
-  if (isSellerRoute) {
+  // 3. Legacy /seller routes redirect to /partner/dashboard
+  if (pathname.startsWith('/seller')) {
+    return NextResponse.redirect(new URL('/partner/dashboard', request.url));
+  }
+
+  // 4. Partner Dashboard Protected Routes (/partner/dashboard and /partner/dashboard/*)
+  const isPartnerDashboard = pathname === '/partner/dashboard' || pathname.startsWith('/partner/dashboard/');
+  if (isPartnerDashboard) {
     const sellerSession = getSessionForRole(request, 'SELLER');
     if (!sellerSession.isValid) {
       const partnerLoginUrl = new URL('/partner/login', request.url);
@@ -108,7 +113,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 4. Buyer Portal Protected Routes (/buyer and /buyer/*)
+  // 5. Buyer Portal Protected Routes (/buyer and /buyer/*)
   const isBuyerRoute = pathname.startsWith('/buyer');
   if (isBuyerRoute) {
     const buyerSession = getSessionForRole(request, 'BUYER');
@@ -120,7 +125,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 5. Login Page Auto-Redirects (STRICTLY role-specific)
+  // 6. Login Page Auto-Redirects (STRICTLY role-specific)
   // If already logged in as BUYER, bounce /login to /buyer/dashboard
   if (pathname === '/login') {
     const buyerSession = getSessionForRole(request, 'BUYER');
@@ -130,11 +135,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // If already logged in as SELLER, bounce /partner/login to /seller/dashboard
+  // If already logged in as SELLER, bounce /partner/login to /partner/dashboard
   if (pathname === '/partner/login') {
     const sellerSession = getSessionForRole(request, 'SELLER');
     if (sellerSession.isValid) {
-      return NextResponse.redirect(new URL('/seller/dashboard', request.url));
+      return NextResponse.redirect(new URL('/partner/dashboard', request.url));
     }
     return NextResponse.next();
   }
@@ -146,7 +151,10 @@ export const config = {
   matcher: [
     '/admin',
     '/admin/:path*',
+    '/seller',
     '/seller/:path*',
+    '/partner/dashboard',
+    '/partner/dashboard/:path*',
     '/buyer/:path*',
     '/login',
     '/partner/login',

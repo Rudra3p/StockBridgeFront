@@ -10,12 +10,15 @@ export default function Footer() {
   // Hide consumer footer on authenticated dashboards and auth screens
   const isDashboardOrAuth =
     (pathname.startsWith('/admin') && pathname !== '/admin/login') ||
+    pathname.startsWith('/partner/dashboard') ||
     pathname.startsWith('/seller/dashboard') ||
     pathname.startsWith('/buyer/dashboard') ||
     pathname === '/dashboard' ||
     pathname === '/login' ||
     pathname === '/register' ||
     pathname === '/admin/login' ||
+    pathname === '/partner/login' ||
+    pathname === '/partner/register' ||
     pathname === '/seller/register';
 
   if (isDashboardOrAuth) {

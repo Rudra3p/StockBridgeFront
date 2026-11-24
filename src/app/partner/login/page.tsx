@@ -44,8 +44,8 @@ function PartnerLoginForm() {
         return;
       }
 
-      // Always send partner login directly to seller dashboard
-      router.push('/seller/dashboard');
+      // Always send partner login directly to partner dashboard
+      router.push('/partner/dashboard');
       router.refresh();
     } catch {
       setServerError('An unexpected error occurred during partner sign-in. Please try again.');

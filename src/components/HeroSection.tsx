@@ -100,7 +100,7 @@ export default function HeroSection() {
     if (!user) return '/login';
     switch (user.role) {
       case 'SELLER':
-        return '/seller/dashboard';
+        return '/partner/dashboard';
       case 'BUYER':
         return '/buyer/dashboard';
       default:
@@ -122,7 +122,7 @@ export default function HeroSection() {
     }
 
     // Authenticated: route to buyer dashboard listings or overview map
-    const targetDashboard = user.role === 'SELLER' ? '/seller/dashboard' : '/buyer/dashboard';
+    const targetDashboard = user.role === 'SELLER' ? '/partner/dashboard' : '/buyer/dashboard';
     const params = new URLSearchParams();
     params.set('tab', 'listings');
     if (cleanQuery) params.set('search', cleanQuery);

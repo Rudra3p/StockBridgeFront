@@ -49,7 +49,7 @@ export default function Navbar() {
     if (!user) return '/login';
     switch (user.role) {
       case 'SELLER':
-        return '/seller/dashboard';
+        return '/partner/dashboard';
       case 'BUYER':
         return '/buyer/dashboard';
       default:
@@ -60,6 +60,7 @@ export default function Navbar() {
   // Hide public consumer navbar in authenticated dashboards & admin operations
   const isDashboardRoute =
     (pathname.startsWith('/admin') && pathname !== '/admin/login') ||
+    pathname.startsWith('/partner/dashboard') ||
     pathname.startsWith('/seller/dashboard') ||
     pathname.startsWith('/buyer/dashboard') ||
     pathname === '/dashboard';
@@ -99,7 +100,7 @@ export default function Navbar() {
             {!loading && user && user.role === 'SELLER' ? (
               <div className="flex items-center gap-2.5">
                 <Link
-                  href="/seller/dashboard"
+                  href="/partner/dashboard"
                   className="inline-flex items-center gap-1.5 rounded-lg bg-[#e65c00] px-4 py-2 text-xs sm:text-sm font-bold text-white shadow-sm transition hover:bg-[#c44e00] font-quicksand"
                 >
                   <span>Partner Portal</span>
