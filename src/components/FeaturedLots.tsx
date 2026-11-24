@@ -133,8 +133,8 @@ export default function FeaturedLots() {
               className="group flex flex-col justify-between rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm transition hover:border-slate-300 hover:shadow-md"
             >
               <div>
-                {/* Product Image Box with Badges */}
-                <div className="relative w-full h-44 bg-slate-100 overflow-hidden">
+                {/* Product Image Box (~45% of card visual weight) with Badges */}
+                <div className="relative w-full h-52 sm:h-56 bg-slate-100 overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={lot.imageUrl}
@@ -161,46 +161,42 @@ export default function FeaturedLots() {
                 </div>
 
                 {/* Content Box */}
-                <div className="p-4 sm:p-5">
+                <div className="p-3.5 sm:p-4">
                   {/* Title */}
                   <h4 className="text-sm font-bold text-slate-900 line-clamp-2 leading-snug min-h-[2.5rem]">
                     {lot.title}
                   </h4>
 
-                  {/* Reason tag */}
-                  <div className="mt-2.5 text-[11px] text-slate-500 flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded border border-slate-100">
-                    <span className="text-slate-400">Reason:</span>
-                    <span className="font-medium text-slate-700 truncate">{lot.reasonForSurplus}</span>
-                  </div>
-
-                  {/* Pricing Box */}
-                  <div className="mt-4 pt-3 border-t border-slate-100">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-xl font-extrabold text-slate-900">
+                  {/* Pricing Box: Discounted in Orange #e65c00, Original Muted (No Orange) */}
+                  <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-baseline justify-between gap-1">
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-xl font-extrabold text-[#e65c00] font-mono">
                         {formatINR(lot.discountedPrice)}
                       </span>
-                      <span className="text-xs text-slate-400 line-through">
+                      <span className="text-xs text-slate-400 line-through font-semibold font-mono">
                         {formatINR(lot.originalPrice)}
                       </span>
                     </div>
-                    <span className="text-[11px] text-slate-400 block mt-0.5">
-                      Price per {lot.unit.toLowerCase()} • Excl. GST
+                    <span className="text-[10px] text-slate-400 font-quicksand truncate">
+                      per {lot.unit.toLowerCase()} • Excl. GST
                     </span>
                   </div>
 
-                  {/* Lot Quantities & MOQ */}
-                  <div className="mt-3.5 space-y-1 text-xs text-slate-600 bg-slate-50/60 p-2.5 rounded-lg border border-slate-100">
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">Total Lot Volume:</span>
-                      <span className="font-semibold text-slate-800">{lot.totalQuantity.toLocaleString()} {lot.unit}</span>
+                  {/* Compressed Specifications Grid: Volume, MOQ, Location */}
+                  <div className="mt-2.5 p-2 rounded-lg bg-slate-50 border border-slate-100 text-xs font-quicksand space-y-1">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="flex justify-between items-center text-[11px]">
+                        <span className="text-slate-400">Volume:</span>
+                        <span className="font-bold text-slate-800 font-mono">{lot.totalQuantity.toLocaleString()} {lot.unit}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[11px]">
+                        <span className="text-slate-400">MOQ:</span>
+                        <span className="font-bold text-slate-800 font-mono">{lot.moq} {lot.unit}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">Min. Order (MOQ):</span>
-                      <span className="font-semibold text-slate-800">{lot.moq} {lot.unit}</span>
-                    </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center text-[11px] pt-1 border-t border-slate-200/50">
                       <span className="text-slate-400">Location:</span>
-                      <span className="font-medium text-slate-700 truncate">{lot.location}</span>
+                      <span className="font-semibold text-slate-700 truncate max-w-[170px]">{lot.location}</span>
                     </div>
                   </div>
                 </div>
